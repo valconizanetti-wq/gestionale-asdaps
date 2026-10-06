@@ -228,11 +228,13 @@
                                         <x-dato label="Riga" :valore="'n. ' . $r->id" codice />
                                         <x-dato label="Evento" :valore="$r->evento" codice />
                                         <x-dato label="Indirizzo IP" :valore="$r->ip_address" codice />
-                                        <x-dato label="Hash" :valore="$r->hash ? substr($r->hash, 0, 16) . '…' : 'non presente'" codice />
                                     </dl>
                                     @if ($r->dettaglio)
                                         <p class="audit-dettaglio-testo">{{ $r->dettaglio }}</p>
                                     @endif
+                                    {{-- Impronta per intero, sotto il dettaglio (collaudo J9, v0.35.1) --}}
+                                    <p class="audit-hash-intero"><span class="dato-label">Hash SHA-256</span>
+                                        <span class="code">{{ $r->hash ?: 'non presente' }}</span></p>
                                 </td>
                             </tr>
                         </tbody>

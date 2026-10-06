@@ -461,3 +461,15 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   visibile solo su telefono, es. la riga «Importo» col segno al posto di
   Entrata/Uscita/Stato) accanto a `.td-solo-desktop`. Registro PDF A4
   orizzontale `pdf/prima-nota`. Verificato a 1440 e 375 px.
+- v0.35.1 (06/10/2026, collaudo J): `x-modale` con `:aperta` (finestra già
+  aperta al caricamento, per mostrare un errore di validazione dentro la
+  finestra; errori in un «bag» per finestra). Componente
+  `x-campo-giustificativi` come la tavola PN-3: `pn-file-box` (riquadro
+  tratteggiato), `pn-file-lista`, `pn-file-chip` (nome, `pn-file-peso`,
+  `pn-file-togli` ×), `pn-file-vuoto`, `pn-file-aggiungi`; su telefono in
+  colonna. Anteprime nella scheda: `pn-anteprime`, `pn-anteprima`,
+  `pn-anteprima-apri`, `pn-anteprima-piede`; finestra `pn-visore` (su
+  telefono il PDF non si incorpora: `pn-visore-avviso`). Righe di tabella
+  cliccabili: `tr.riga-link` con `data-href` (gestite in `app.js`, link e
+  pulsanti nella riga invariati). `pn-verso` (giroconto su una riga),
+  `audit-hash-intero`. Icona `documento`. Verificato a 1440 e 375 px.

@@ -28,6 +28,7 @@
         </div>
         @if ($puoModificare)
             <x-slot:azioni>
+                <a href="{{ route('prima-nota.create', ['tipo' => $giroconto ? 'uscita' : $m->tipo]) }}" class="btn btn-secondary"><x-icona nome="piu" width="14" height="14" /> Nuovo movimento</a>
                 @unless ($m->isAnticipoAperto())
                 <a href="{{ route('prima-nota.edit', $m) }}" class="btn btn-primary"><x-icona nome="matita" width="14" height="14" /> {{ $chiuso ? 'Correggi' : 'Modifica' }}</a>
                 @endunless
@@ -93,34 +94,45 @@
                 @if ($m->documenti->isEmpty())
                     <p class="form-help">Nessun giustificativo allegato.</p>
                 @else
-                    <div class="pn-allegati">
+                    {{-- Anteprime: immagine ridotta (o icona del PDF); clic per vederla grande in una finestra (collaudo J4) --}}
+                    <div class="pn-anteprime">
                         @foreach ($m->documenti as $d)
-                            <span class="pn-allegato">
-                                <a href="{{ route('prima-nota.documenti.show', [$m, $d]) }}" target="_blank" rel="noopener">{{ $d->nome }}</a>
-                                <a href="{{ route('prima-nota.documenti.show', [$m, $d, 'scarica' => 1]) }}" class="action-btn" aria-label="Scarica {{ $d->nome }}"><x-icona nome="download" /></a>
-                                @if ($puoModificare)
-                                    <button type="button" class="action-btn" aria-label="Togli {{ $d->nome }}" @click="$dispatch('apri-modale', 'togli-{{ $d->id }}')"><x-icona nome="chiudi" /></button>
-                                @endif
-                            </span>
+                            @php $immagine = in_array(strtolower(pathinfo($d->path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png'], true); @endphp
+                            <figure class="pn-anteprima">
+                                <button type="button" class="pn-anteprima-apri" aria-label="Apri {{ $d->nome }}"
+                                        @click="$dispatch('apri-modale', 'vedi-{{ $d->id }}')">
+                                    @if ($immagine)
+                                        <img src="{{ route('prima-nota.documenti.show', [$m, $d]) }}" alt="" loading="lazy">
+                                    @else
+                                        <span class="pn-anteprima-pdf"><x-icona nome="documento" /><span class="pn-anteprima-tipo">PDF</span></span>
+                                    @endif
+                                </button>
+                                <figcaption class="pn-anteprima-piede">
+                                    <span title="{{ $d->nome }}">{{ $d->nome }}</span>
+                                    <a href="{{ route('prima-nota.documenti.show', [$m, $d, 'scarica' => 1]) }}" class="action-btn" aria-label="Scarica {{ $d->nome }}"><x-icona nome="download" /></a>
+                                    @if ($puoModificare)
+                                        <button type="button" class="action-btn" aria-label="Togli {{ $d->nome }}" @click="$dispatch('apri-modale', 'togli-{{ $d->id }}')"><x-icona nome="cestino" /></button>
+                                    @endif
+                                </figcaption>
+                            </figure>
                         @endforeach
                     </div>
                 @endif
 
                 @if ($puoModificare)
+                    @php $erroriGiust = $errors->giustificativi; @endphp
                     <form method="POST" action="{{ route('prima-nota.documenti.store', $m) }}" enctype="multipart/form-data" class="form-riga form-modale">
                         @csrf
-                        <div @class(['form-field', 'has-error' => $errors->has('documenti') || $errors->has('documenti.*')])>
-                            <label class="form-label" for="aggiungi-documenti">Aggiungi giustificativi</label>
-                            <input id="aggiungi-documenti" type="file" name="documenti[]" multiple accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" class="form-input pn-file">
-                            <div class="form-help">JPG, PNG o PDF, fino a 8 MB ciascuno.</div>
-                            @foreach ($errors->get('documenti*') as $msg)<div class="form-error">{{ $msg[0] }}</div>@endforeach
-                        </div>
+                        <x-campo-giustificativi id="aggiungi-documenti" label="Aggiungi giustificativi"
+                                                :tenuti="$erroriGiust->any() ? \App\Http\Controllers\PrimaNotaController::fileTenuti() : []"
+                                                :errori="array_merge($erroriGiust->get('documenti'), $erroriGiust->get('file_temp'))" />
                         @if ($chiuso)
-                            <div class="form-field">
+                            <div @class(['form-field', 'has-error' => $erroriGiust->has('motivazione')])>
                                 <label class="form-label" for="motivazione-aggiungi">Motivazione<span class="obbligatorio" aria-hidden="true">*</span></label>
                                 <textarea id="motivazione-aggiungi" name="motivazione" rows="2" minlength="15" maxlength="1000" class="form-textarea"
-                                          aria-describedby="motivazione-aggiungi-aiuto"></textarea>
+                                          aria-describedby="motivazione-aggiungi-aiuto">{{ $erroriGiust->any() ? old('motivazione') : '' }}</textarea>
                                 <div class="form-help" id="motivazione-aggiungi-aiuto">L'anno è chiuso: almeno 15 caratteri, restano nell'Audit Log.</div>
+                                @foreach ($erroriGiust->get('motivazione') as $msg)<div class="form-error">{{ $msg }}</div>@endforeach
                             </div>
                         @endif
                         <div><button type="submit" class="btn btn-secondary btn-sm">Carica</button></div>
@@ -129,6 +141,30 @@
             </x-card>
         @endunless
     </div>
+
+    @push('modals')
+        @foreach ($m->documenti as $d)
+            <x-modale nome="vedi-{{ $d->id }}" :titolo="$d->nome" larga>
+                <div class="pn-visore" x-data="{ caricato: false }" x-effect="if (aperta) caricato = true">
+                    <template x-if="caricato">
+                        @if (in_array(strtolower(pathinfo($d->path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png'], true))
+                            <img src="{{ route('prima-nota.documenti.show', [$m, $d]) }}" alt="Giustificativo {{ $d->nome }}">
+                        @else
+                            <div class="pn-visore-pdf">
+                                <iframe src="{{ route('prima-nota.documenti.show', [$m, $d]) }}" title="Giustificativo {{ $d->nome }}"></iframe>
+                                {{-- I browser dei telefoni spesso non mostrano un PDF dentro la pagina --}}
+                                <p class="pn-visore-avviso"><x-icona nome="documento" /> Sul telefono il PDF si apre con «Apri in una nuova scheda» o si scarica.</p>
+                            </div>
+                        @endif
+                    </template>
+                </div>
+                <x-slot:piede>
+                    <a href="{{ route('prima-nota.documenti.show', [$m, $d]) }}" target="_blank" rel="noopener" class="btn btn-ghost">Apri in una nuova scheda</a>
+                    <a href="{{ route('prima-nota.documenti.show', [$m, $d, 'scarica' => 1]) }}" class="btn btn-primary"><x-icona nome="download" width="14" height="14" /> Scarica</a>
+                </x-slot:piede>
+            </x-modale>
+        @endforeach
+    @endpush
 
     @if ($puoModificare)
         @push('modals')

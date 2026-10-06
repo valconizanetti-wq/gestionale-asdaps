@@ -178,7 +178,7 @@
                                 $giroconto = $m->isGiroconto();
                                 $daClassificare = $m->categoria?->codice === \App\Models\PrimaNotaCategoria::DA_CLASSIFICARE;
                             @endphp
-                            <tr>
+                            <tr class="riga-link" data-href="{{ route('prima-nota.show', $m) }}">
                                 <td data-label="N." class="td-solo-desktop"><span class="pn-numero">{{ $m->id }}</span></td>
                                 <td data-label="Data"><strong>{{ $m->data->format('d/m/Y') }}</strong></td>
                                 <td class="td-primario">
@@ -210,7 +210,7 @@
                                 </td>
                                 <td data-label="Conto">
                                     @if ($giroconto && $filtri['conto'] === '')
-                                        {{ $m->contoLabel() }} → {{ $m->giroconto?->contoLabel() }}
+                                        <span class="pn-verso">{{ $m->contoLabel() }} → {{ $m->giroconto?->contoLabel() }}</span>
                                     @else
                                         {{ $m->contoLabel() }}
                                     @endif

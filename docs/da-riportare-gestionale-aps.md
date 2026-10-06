@@ -262,6 +262,16 @@ non riportare".
   importi all'italiana («1.450» = 1450) in un campo di testo invece di
   `type="number"`. *Dove*: `prima-nota.md`; `AnniContabili`,
   `App\Support\Importo`.
+- [ ] **D5. Una riga di audit per operazione** (v0.35.1). Qui un
+  giroconto creato, modificato o eliminato lasciava una riga per ciascuna
+  delle due righe di Prima Nota (identiche a vista), e l'eliminazione di
+  un movimento una riga in più per ogni giustificativo. Ora la riga
+  compagna e i giustificativi si scrivono senza eventi e la riga del
+  movimento porta il verso e i nomi dei file nei valori (metodo
+  `auditContesto()` del model, letto dall'`AuditObserver`). Da verificare
+  se il Gestionale APS ha lo stesso comportamento. *Dove*:
+  `prima-nota.md` §4; `AuditObserver`, `PrimaNota::auditContesto()`.
+  *(anche nel core)*
 
 ## E. PDF ed email
 
@@ -283,3 +293,4 @@ non riportare".
   `MANUALE-ASD.md` §7, `audit-log.md` §8–§9, `domande-iscrizione.md`,
   `privacy-link.md` e `auth.md`.
 - 06/10/2026 (v0.35.0): aggiunte A9–A11 e D4 dalla Prima Nota.
+- 06/10/2026 (v0.35.1): aggiunta D5 dal collaudo J.

@@ -29,6 +29,11 @@ return [
         'Impostazione' => 'Impostazione',
         'AuditLog' => 'Audit Log',
         'AttestazioneTecnica' => 'Attestazione tecnica',
+        'PrimaNota' => 'Prima Nota',
+        'PrimaNotaDocumento' => 'Giustificativo',
+        'PrimaNotaCategoria' => 'Categoria di Prima Nota',
+        'AnnoContabile' => 'Anno contabile',
+        'Tag' => 'Tag',
     ],
 
     'eventi' => [
@@ -50,5 +55,9 @@ return [
         'ATTESTAZIONE_TECNICA_CARICATA' => 'Attestazione tecnica caricata',
         'AUDIT_INTEGRITY_FAIL' => 'Anomalia nella catena',
         'AUDIT_ESPORTATO' => 'Audit Log esportato',
+        'PRIMA_NOTA_ESPORTATA' => 'Prima Nota esportata',
+        'PRIMA_NOTA_CORREZIONE_ANNO_CHIUSO' => 'Correzione su anno chiuso',
+        'SALDI_APERTURA_MODIFICATI' => 'Saldi di apertura modificati',
+        'ANNO_CONTABILE_RIAPERTO' => 'Anno contabile riaperto',
     ],
 ];

@@ -6,6 +6,7 @@ use App\Models\AnnoContabile;
 use App\Models\PrimaNota;
 use App\Models\PrimaNotaCategoria;
 use App\Models\User;
+use App\Models\Verbale;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -19,8 +20,8 @@ use Illuminate\Support\Facades\DB;
  *   sono i saldi finali dell'anno prima, calcolati finché quello è aperto
  *   e fotografati quando si chiude;
  * - si chiude un anno finito, con l'anno prima già chiuso, senza movimenti
- *   da classificare né anticipi da rimborsare, con il riferimento
- *   all'approvazione del rendiconto;
+ *   da classificare né anticipi da rimborsare, scegliendo il verbale
+ *   dell'Assemblea che approva il rendiconto (verbaliApprovazione());
  * - su un anno chiuso ogni correzione chiede una motivazione (nel
  *   controller) e rifà la fotografia dei saldi (aggiornaChiusura()).
  */
@@ -138,10 +139,34 @@ class AnniContabili
             && collect($this->controlliChiusura($anno))->every(fn ($c) => $c[1]);
     }
 
-    /** @throws \RuntimeException */
-    public function chiudi(int $anno, string $dataApprovazione, string $riferimento, User $utente): AnnoContabile
+    /**
+     * Verbali dell'Assemblea tra cui scegliere quello che approva il
+     * rendiconto di $anno (collaudo J11): sedute dell'anno in corso,
+     * successive al 31/12 di $anno e non future.
+     *
+     * @return \Illuminate\Support\Collection<int, Verbale>
+     */
+    public function verbaliApprovazione(int $anno): \Illuminate\Support\Collection
     {
-        return DB::transaction(function () use ($anno, $dataApprovazione, $riferimento, $utente) {
+        $inizio = max($anno + 1, now()->year) . '-01-01';
+
+        return Verbale::where('tipo', 'assemblea')
+            ->whereNotNull('data_seduta')
+            ->whereBetween('data_seduta', [$inizio, today()->toDateString()])
+            ->orderByDesc('data_seduta')->orderByDesc('id')
+            ->get(['id', 'titolo', 'data_seduta', 'stato']);
+    }
+
+    /** @throws \RuntimeException */
+    public function chiudi(int $anno, Verbale $verbale, User $utente): AnnoContabile
+    {
+        if (! $this->verbaliApprovazione($anno)->contains('id', $verbale->id)) {
+            throw new \RuntimeException("Il verbale scelto non è un'Assemblea di quest'anno successiva alla fine del {$anno}.");
+        }
+        $dataApprovazione = $verbale->data_seduta->toDateString();
+        $riferimento = mb_substr($verbale->titolo, 0, 255);
+
+        return DB::transaction(function () use ($anno, $dataApprovazione, $riferimento, $verbale, $utente) {
             $riga = AnnoContabile::where('anno', $anno)->lockForUpdate()->first();
             if (! $riga || $riga->isChiuso()) {
                 throw new \RuntimeException("L'anno {$anno} non è aperto.");
@@ -156,6 +181,7 @@ class AnniContabili
                 'saldo_chiusura_banca' => $finali['banca'],
                 'approvazione_data' => $dataApprovazione,
                 'approvazione_rif' => $riferimento,
+                'approvazione_verbale_id' => $verbale->id,
                 'chiuso_il' => now(),
                 'chiuso_da' => $utente->id,
             ]);

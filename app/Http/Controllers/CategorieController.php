@@ -46,7 +46,9 @@ class CategorieController extends Controller
     public function store(Request $request)
     {
         $this->richiediModifica($request);
-        $dati = $request->validate([
+        // Errori in un "bag" per finestra: la pagina riapre la finestra
+        // giusta con il messaggio, invece di chiuderla (collaudo J2).
+        $dati = $request->validateWithBag('nuovaCategoria', [
             'tipo' => ['required', 'in:entrata,uscita'],
             'nome' => ['required', 'string', 'max:150', $this->nomeUnico($request->input('tipo'))],
             'natura' => ['required', Rule::in(array_keys(self::NATURE))],
@@ -69,7 +71,7 @@ class CategorieController extends Controller
         $this->richiediModifica($request);
         $this->nonDiSistema($categoria);
 
-        $dati = $request->validate([
+        $dati = $request->validateWithBag('categoria', [
             'nome' => ['required', 'string', 'max:150', $this->nomeUnico($categoria->tipo, $categoria->id)],
             'natura' => ['required', Rule::in(array_keys(self::NATURE))],
         ], [], ['nome' => 'nome della categoria']);
@@ -129,7 +131,7 @@ class CategorieController extends Controller
     public function updateTag(Request $request, Tag $tag)
     {
         $this->richiediModifica($request);
-        $dati = $request->validate([
+        $dati = $request->validateWithBag('tag', [
             'nome' => ['required', 'string', 'max:100', function ($a, $v, $fail) use ($tag) {
                 if (Tag::whereRaw('LOWER(nome) = ?', [mb_strtolower(trim($v))])->where('id', '!=', $tag->id)->exists()) {
                     $fail('Esiste già un tag con questo nome.');

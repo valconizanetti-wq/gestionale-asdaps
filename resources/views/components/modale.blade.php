@@ -6,9 +6,12 @@
     </x-modale>
     Su telefono sale dal basso (app.css). Esc e clic fuori la chiudono.
     larga: per testi lunghi (statuto, informativa), corpo che scorre.
+    aperta: già aperta al caricamento (es. dopo un errore di validazione,
+    per mostrare l'errore nella finestra invece di chiuderla).
 --}}
-@props(['nome', 'titolo', 'piede' => null, 'larga' => false])
-<div x-data="{ aperta: false }"
+@props(['nome', 'titolo', 'piede' => null, 'larga' => false, 'aperta' => false])
+<div x-data="{ aperta: @js((bool) $aperta) }"
+     @if ($aperta) x-init="$nextTick(() => $refs.pannello.focus())" @endif
      x-on:apri-modale.window="if ($event.detail === '{{ $nome }}') { aperta = true; $nextTick(() => $refs.pannello.focus()) }"
      x-on:keydown.escape.window="aperta = false">
     <div class="modal-backdrop" x-show="aperta" x-cloak x-transition.opacity @click.self="aperta = false">

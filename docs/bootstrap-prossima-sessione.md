@@ -1,4 +1,4 @@
-# Bootstrap — Gestionale ASD, dopo la v0.35.0 (Prima Nota, 06/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.35.1 (Prima Nota, 06/10/2026)
 
 ## Contesto
 Come in `bootstrap-voto-cd.md` (progetto, ambienti, regole di lavoro,
@@ -84,9 +84,16 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
 - **In produzione** (deploy di Paolo, 06/10/2026): v0.34.2, con v0.33.0
   (link privacy) e v0.34.0–v0.34.2 (Audit Log). Collaudo del blocco I
   chiuso. IBAN non ancora disponibile: resta il segnaposto.
-- **v0.35.0 consegnata** (Prima Nota, sotto): da installare
-  (`LEGGIMI-v0.35.0.txt`: 3 migration, seeder delle categorie,
-  `npm run build`) e collaudare con il blocco J della lista di collaudo.
+- **v0.35.0 consegnata** (Prima Nota, sotto) e collaudata da Paolo il
+  06/10/2026 (blocco J): le correzioni sono nella **v0.35.1** (sotto), da
+  installare (`LEGGIMI-v0.35.1.txt`: 1 migration, `npm run build`) e
+  ricontrollare (le voci «v0.35.1» del blocco J).
+- **Domanda di Paolo (J10)**: la quota di un socio inserito a mano non ha
+  dove registrarsi; oggi la registra solo la domanda online accolta
+  (scheda della domanda, «quota versata»: socio, rinnovo e movimento
+  insieme). Serve il modulo **Rinnovi quota** (ricevuta numerata +
+  movimento), da usare dal 01/01/2027: proposto di anticiparlo prima della
+  v0.36.0 (scontrini). Da decidere con Paolo.
 - Poi, nell'ordine concordato: **v0.36.0 Scontrini** dal telefono con OCR
   (tavole PN-4 e PN-5; stessa chiave OCR.space di `gestionale-acv`, in
   `.env` o Impostazioni), **v0.37.0 anticipi e note di rimborso** (PN-6,
@@ -96,6 +103,23 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
 - Riporto sul Gestionale APS e sul core: `da-riportare-gestionale-aps.md`
   (con A9–A11 e D4 dalla Prima Nota) e `MANUALE-ASD.md` §7, quando Paolo
   lo decide.
+
+## Fatto il 06/10/2026: v0.35.1 (collaudo J della Prima Nota)
+- J2 errore nella finestra della categoria (e del tag) senza chiuderla
+  (`x-modale :aperta`, bag per finestra).
+- J4 «Nuovo movimento» nella scheda; giustificativi che restano dopo un
+  errore (messi da parte prima della validazione, `tmp/prima-nota/`);
+  campo dei file come la tavola (`x-campo-giustificativi`); nome del file
+  codificato `PN<anno>-<n.>-<progr.>`; riga dell'elenco cliccabile;
+  anteprime con finestra (su telefono il PDF si apre con i pulsanti).
+- J6 «Cassa → Banca» su una riga. Il saldo negativo della banca è
+  corretto (confermato da Paolo).
+- J9 una riga di audit per operazione (giroconto, eliminazione con
+  giustificativi: `auditContesto()` del model), etichette leggibili, hash
+  per intero nel dettaglio.
+- J11 verbale di chiusura scelto dall'elenco delle Assemblee dell'anno in
+  corso (`approvazione_verbale_id`); senza modulo Verbali l'elenco è vuoto.
+- 64 test; tre giri di revisione in `prima-nota.md` §7.
 
 ## Fatto il 06/10/2026: v0.35.0 (Prima Nota)
 Materiale letto: Gestionale APS del Dante e plugin `gestionale-acv` della
@@ -248,5 +272,11 @@ documentata; le modifiche da riportare al Gestionale APS in
   già decisa" (`domande-iscrizione.md` §7, v0.30.3): dimissioni al CD per
   email (statuto art. 9), dati della domanda conservati.
 - Pagina Impostazioni (quote, promozione, versioni dei testi).
+- Quota di un socio inserito a mano (J10): modulo Rinnovi quota.
+- Modulo Verbali: serve anche per scegliere il verbale di chiusura
+  dell'anno contabile (prima chiusura: il 2027, nel 2028).
+- Campo del documento dei saldi di apertura (Anni contabili): è ancora il
+  campo file del browser; da allineare allo stile di
+  `x-campo-giustificativi` se Paolo lo chiede.
 - Numero di ricevuta della prima quota (modulo Rinnovi quota).
 - Richiesta di riunione da un terzo dei consiglieri (art. 16.4 lett. f).

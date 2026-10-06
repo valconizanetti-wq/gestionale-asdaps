@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -40,9 +42,14 @@ class PrimaNotaController extends Controller
         'anticipi' => 'Anticipi da rimborsare',
     ];
 
-    private const MIMES = 'mimes:jpg,jpeg,png,pdf';
-
     private const MAX_KB = 8192;
+
+    private const MAX_FILE = 10;
+
+    private const ESTENSIONI = ['jpg', 'jpeg', 'png', 'pdf'];
+
+    /** Giustificativi caricati e messi da parte finché il movimento non si salva. */
+    private const SESSIONE_FILE = 'prima_nota_file_temp';
 
     public function __construct(private AnniContabili $anni)
     {
@@ -203,21 +210,24 @@ class PrimaNotaController extends Controller
     public function store(Request $request)
     {
         $this->richiediModifica($request);
-        $dati = $this->valida($request);
+        $erroriFile = $this->trattieniFile($request);
+        $dati = $this->valida($request, null, false, $erroriFile);
 
         $anno = (int) substr($dati['data'], 0, 4);
         if ($this->anni->chiuso($anno)) {
             return back()->withInput()->with('error', "L'anno {$anno} è chiuso: non si registrano nuovi movimenti.");
         }
 
-        $movimento = DB::transaction(function () use ($dati, $request, $anno) {
+        $movimento = $this->archiviaInSicurezza(function () use ($dati, $request, $anno) {
             $this->anni->assicura($anno);
             $m = new PrimaNota();
             $m->fill($this->campi($dati))->forceFill(['registrato_da' => $request->user()->id])->save();
-            $this->salvaFile($m, $request->file('documenti', []), $request);
+            $this->salvaFile($m, $dati['file_temp'] ?? [], $request);
 
             return $m;
         });
+
+        $this->liberaFile($request, $dati['file_temp'] ?? []);
 
         if ($request->boolean('salva_altro')) {
             return redirect()->route('prima-nota.create', ['tipo' => $movimento->tipo])
@@ -261,22 +271,24 @@ class PrimaNotaController extends Controller
 
         $annoPrima = $movimento->annoMovimento();
         $chiusoPrima = $this->anni->chiuso($annoPrima);
-        $dati = $this->valida($request, $movimento, $chiusoPrima);
+        $erroriFile = $this->trattieniFile($request);
+        $dati = $this->valida($request, $movimento, $chiusoPrima, $erroriFile);
         $annoDopo = (int) substr($dati['data'], 0, 4);
 
         if ($risposta = $this->controllaAnni($annoPrima, $annoDopo, $chiusoPrima)) {
             return $risposta;
         }
 
-        DB::transaction(function () use ($movimento, $dati, $request, $annoDopo, $chiusoPrima, $annoPrima) {
+        $this->archiviaInSicurezza(function () use ($movimento, $dati, $request, $annoDopo, $chiusoPrima, $annoPrima) {
             $this->anni->assicura($annoDopo);
             $movimento->fill($this->campi($dati))->save();
-            $this->salvaFile($movimento, $request->file('documenti', []), $request);
+            $this->salvaFile($movimento, $dati['file_temp'] ?? [], $request);
             if ($chiusoPrima) {
                 $this->registraCorrezione($movimento, 'modifica', $dati['motivazione']);
                 $this->anni->aggiornaChiusura($annoPrima);
             }
         });
+        $this->liberaFile($request, $dati['file_temp'] ?? []);
 
         return redirect()->route('prima-nota.show', $movimento)->with('success', 'Movimento aggiornato.');
     }
@@ -303,28 +315,34 @@ class PrimaNotaController extends Controller
             'motivazione.min' => 'La motivazione deve avere almeno 15 caratteri.',
         ]);
 
-        $righe = $movimento->isGiroconto()
-            ? PrimaNota::whereKey([$movimento->id, $movimento->giroconto_id])->with('documenti')->get()
-            : collect([$movimento->load('documenti')]);
+        // Di un giroconto si elimina con gli eventi solo la riga di uscita
+        // (con il verso nei valori dell'audit, PrimaNota::auditContesto);
+        // l'altra riga e i giustificativi si tolgono senza eventi: una
+        // operazione, una riga nell'Audit Log (collaudo J9).
+        if ($movimento->isGiroconto() && $movimento->isEntrata()) {
+            $movimento = $movimento->giroconto;
+        }
+        $movimento->load('documenti');
+        $compagna = $movimento->isGiroconto() ? $movimento->giroconto : null;
+        $righe = collect([$movimento, $compagna])->filter();
         $numero = $movimento->id;
 
-        DB::transaction(function () use ($righe, $chiuso, $request, $movimento, $anno) {
+        DB::transaction(function () use ($movimento, $compagna, $chiuso, $request, $anno) {
             if ($chiuso) {
                 $this->registraCorrezione($movimento, 'eliminazione', $request->input('motivazione'));
             }
-            foreach ($righe as $r) {
-                foreach ($r->documenti as $d) {
-                    $d->delete();
-                }
-                $r->delete();
-            }
+            PrimaNota::withoutEvents(function () use ($movimento, $compagna) {
+                PrimaNotaDocumento::whereIn('prima_nota_id', array_filter([$movimento->id, $compagna?->id]))->delete();
+                $compagna?->delete();
+            });
+            $movimento->delete();
             if ($chiuso) {
                 $this->anni->aggiornaChiusura($anno);
             }
         });
         // File cancellati solo dopo la transazione: se fallisce, restano.
         foreach ($righe as $r) {
-            foreach ($r->documenti as $d) {
+            foreach ($r->documenti ?? [] as $d) {
                 Storage::disk('local')->delete($d->path);
             }
         }
@@ -355,12 +373,15 @@ class PrimaNotaController extends Controller
         $uscita = DB::transaction(function () use ($dati, $request, $anno) {
             $this->anni->assicura($anno);
             $comune = ['data' => $dati['data'], 'importo' => $dati['importo'], 'descrizione' => $dati['descrizione'], 'note' => $dati['note']];
-            $uscita = new PrimaNota();
-            $uscita->fill($comune + ['tipo' => 'uscita', 'conto' => $dati['conto_da']])->forceFill(['registrato_da' => $request->user()->id])->save();
+            // Nell'Audit Log una riga sola, quella dell'uscita (con il verso):
+            // la riga di entrata si scrive senza eventi.
             $entrata = new PrimaNota();
-            $entrata->fill($comune + ['tipo' => 'entrata', 'conto' => $dati['conto_a'], 'giroconto_id' => $uscita->id])
+            PrimaNota::withoutEvents(fn () => $entrata->fill($comune + ['tipo' => 'entrata', 'conto' => $dati['conto_a']])
+                ->forceFill(['registrato_da' => $request->user()->id])->save());
+            $uscita = new PrimaNota();
+            $uscita->fill($comune + ['tipo' => 'uscita', 'conto' => $dati['conto_da'], 'giroconto_id' => $entrata->id])
                 ->forceFill(['registrato_da' => $request->user()->id])->save();
-            $uscita->update(['giroconto_id' => $entrata->id]);
+            PrimaNota::withoutEvents(fn () => $entrata->update(['giroconto_id' => $uscita->id]));
 
             return $uscita;
         });
@@ -382,7 +403,7 @@ class PrimaNotaController extends Controller
             $this->anni->assicura($annoDopo);
             $comune = ['data' => $dati['data'], 'importo' => $dati['importo'], 'descrizione' => $dati['descrizione'], 'note' => $dati['note']];
             $uscita->update($comune + ['conto' => $dati['conto_da']]);
-            $uscita->giroconto->update($comune + ['conto' => $dati['conto_a']]);
+            PrimaNota::withoutEvents(fn () => $uscita->giroconto->update($comune + ['conto' => $dati['conto_a']]));
             if ($chiusoPrima) {
                 $this->registraCorrezione($uscita, 'modifica', $dati['motivazione']);
                 $this->anni->aggiornaChiusura($annoPrima);
@@ -400,24 +421,26 @@ class PrimaNotaController extends Controller
     {
         $this->richiediModifica($request);
         $chiuso = $this->anni->chiuso($movimento->annoMovimento());
-        $request->validate([
-            'documenti' => ['required', 'array', 'max:10'],
-            'documenti.*' => ['file', self::MIMES, 'max:' . self::MAX_KB],
+        $erroriFile = $this->trattieniFile($request);
+        $dati = Validator::make($request->all(), [
+            'file_temp' => ['required', 'array', 'max:' . self::MAX_FILE],
+            'file_temp.*' => ['string'],
             'motivazione' => [Rule::requiredIf($chiuso), 'nullable', 'string', 'min:15', 'max:1000'],
         ], [
-            'documenti.required' => 'Scegli almeno un file.',
-            'documenti.*.mimes' => 'I giustificativi devono essere JPG, PNG o PDF.',
-            'documenti.*.max' => 'Ogni giustificativo può pesare al massimo 8 MB.',
+            'file_temp.required' => 'Scegli almeno un file.',
+            'file_temp.max' => 'Al massimo ' . self::MAX_FILE . ' giustificativi per volta.',
             'motivazione.required' => "L'anno è chiuso: scrivi perché aggiungi il giustificativo.",
             'motivazione.min' => 'La motivazione deve avere almeno 15 caratteri.',
-        ], ['documenti.*' => 'file']);
+        ])->after(fn ($v) => array_map(fn ($e) => $v->errors()->add('documenti', $e), $erroriFile))
+            ->validateWithBag('giustificativi');
 
-        DB::transaction(function () use ($movimento, $request, $chiuso) {
-            $this->salvaFile($movimento, $request->file('documenti'), $request);
+        $this->archiviaInSicurezza(function () use ($movimento, $request, $chiuso, $dati) {
+            $this->salvaFile($movimento, $dati['file_temp'], $request);
             if ($chiuso) {
                 $this->registraCorrezione($movimento, 'giustificativo aggiunto', $request->input('motivazione'));
             }
         });
+        $this->liberaFile($request, $dati['file_temp']);
 
         return redirect()->route('prima-nota.show', $movimento)->with('success', 'Giustificativi aggiunti.');
     }
@@ -523,12 +546,13 @@ class PrimaNotaController extends Controller
     }
 
     /** Dati validati del movimento (non giroconto). */
-    private function valida(Request $request, ?PrimaNota $attuale = null, bool $chiuso = false): array
+    /** @param string[] $erroriFile giustificativi rifiutati da trattieniFile() */
+    private function valida(Request $request, ?PrimaNota $attuale = null, bool $chiuso = false, array $erroriFile = []): array
     {
         $tipo = $request->input('tipo') === 'entrata' ? 'entrata' : 'uscita';
         $categoriaAttuale = $attuale && $attuale->tipo === $tipo ? $attuale->categoria_id : null;
 
-        $dati = $request->validate([
+        $dati = Validator::make($request->all(), [
             'tipo' => ['required', 'in:entrata,uscita'],
             'conto' => ['required', Rule::in(array_keys(PrimaNota::CONTI))],
             'data' => ['required', 'date_format:Y-m-d', 'after_or_equal:2000-01-01', 'before_or_equal:' . today()->addYear()->toDateString()],
@@ -550,19 +574,19 @@ class PrimaNotaController extends Controller
             'numero_documento' => ['nullable', 'string', 'max:100'],
             'data_documento' => ['nullable', 'date_format:Y-m-d'],
             'note' => ['nullable', 'string', 'max:2000'],
-            'documenti' => ['nullable', 'array', 'max:10'],
-            'documenti.*' => ['file', self::MIMES, 'max:' . self::MAX_KB],
+            // I file arrivano già messi da parte (trattieniFile): qui i loro gettoni.
+            'file_temp' => ['nullable', 'array', 'max:' . self::MAX_FILE],
+            'file_temp.*' => ['string'],
             'motivazione' => [Rule::requiredIf($chiuso), 'nullable', 'string', 'min:15', 'max:1000'],
         ], [
             'data.before_or_equal' => 'La data è troppo avanti nel tempo.',
             'motivazione.required' => "L'anno è chiuso: scrivi perché correggi il movimento.",
             'motivazione.min' => 'La motivazione deve avere almeno 15 caratteri.',
-            'documenti.*.mimes' => 'I giustificativi devono essere JPG, PNG o PDF.',
-            'documenti.*.max' => 'Ogni giustificativo può pesare al massimo 8 MB.',
+            'file_temp.max' => 'Al massimo ' . self::MAX_FILE . ' giustificativi per volta.',
         ], [
             'categoria_id' => 'categoria', 'progetto_id' => 'progetto', 'socio_id' => 'socio',
             'tipo_documento' => 'tipo di documento', 'numero_documento' => 'numero', 'data_documento' => 'data del documento',
-        ]);
+        ])->after(fn ($v) => array_map(fn ($e) => $v->errors()->add('documenti', $e), $erroriFile))->validate();
 
         $dati['importo'] = Importo::leggi($dati['importo']);
         if ($dati['tipo'] === 'uscita') {
@@ -622,18 +646,162 @@ class PrimaNotaController extends Controller
         ];
     }
 
-    /** @param \Illuminate\Http\UploadedFile[] $files */
-    private function salvaFile(PrimaNota $m, array $files, Request $request): void
+    /**
+     * Giustificativi scelti nel modulo: si controllano e si mettono da parte
+     * PRIMA della validazione del resto, così dopo un errore restano nel
+     * modulo (collaudo J4). Ogni file diventa un gettone in sessione; il
+     * modulo li rimanda come file_temp[]. Restituisce i messaggi dei file
+     * rifiutati.
+     *
+     * @return string[]
+     */
+    private function trattieniFile(Request $request): array
     {
-        foreach ($files as $file) {
-            $path = $file->store('prima-nota/' . $m->annoMovimento(), 'local');
+        $sessione = $this->pulisciFileTemp($request);
+        $tenuti = array_values(array_unique(array_intersect(
+            array_map('strval', (array) $request->input('file_temp', [])), array_keys($sessione))));
+        $errori = [];
+
+        $files = $request->file('documenti', []);
+        foreach (is_array($files) ? $files : [$files] as $file) {
+            if (! $file instanceof \Illuminate\Http\UploadedFile) {
+                continue;
+            }
+            $nome = mb_substr($file->getClientOriginalName(), 0, 255) ?: 'file';
+            $ext = strtolower((string) $file->guessExtension());
+            if (! $file->isValid()) {
+                $errori[] = "«{$nome}» non è arrivato per intero: riprova.";
+            } elseif (! in_array($ext, self::ESTENSIONI, true)) {
+                $errori[] = "«{$nome}»: i giustificativi devono essere JPG, PNG o PDF.";
+            } elseif ($file->getSize() > self::MAX_KB * 1024) {
+                $errori[] = "«{$nome}» pesa più di 8 MB.";
+            } elseif (count($tenuti) >= self::MAX_FILE) {
+                $errori[] = 'Al massimo ' . self::MAX_FILE . ' giustificativi per volta.';
+                break;
+            } else {
+                $gettone = Str::random(40);
+                $ext = $ext === 'jpeg' ? 'jpg' : $ext;
+                $sessione[$gettone] = [
+                    'path' => $file->storeAs('tmp/prima-nota/' . $request->user()->id, $gettone . '.' . $ext, 'local'),
+                    'nome' => $nome,
+                    'peso' => $file->getSize(),
+                    'ext' => $ext,
+                    'ora' => now()->timestamp,
+                ];
+                $tenuti[] = $gettone;
+            }
+        }
+
+        $request->session()->put(self::SESSIONE_FILE, $sessione);
+        $request->merge(['file_temp' => $tenuti]);
+
+        return $errori;
+    }
+
+    /** File messi da parte da più di un giorno: si cancellano (moduli abbandonati). */
+    private function pulisciFileTemp(Request $request): array
+    {
+        $sessione = (array) $request->session()->get(self::SESSIONE_FILE, []);
+        $limite = now()->subDay()->timestamp;
+        foreach ($sessione as $gettone => $f) {
+            if (($f['ora'] ?? 0) < $limite || ! Storage::disk('local')->exists($f['path'] ?? '')) {
+                Storage::disk('local')->delete($f['path'] ?? '');
+                unset($sessione[$gettone]);
+            }
+        }
+        $cartella = 'tmp/prima-nota/' . $request->user()->id;
+        $inUso = array_column($sessione, 'path');
+        foreach (Storage::disk('local')->files($cartella) as $path) {
+            if (! in_array($path, $inUso, true) && Storage::disk('local')->lastModified($path) < $limite) {
+                Storage::disk('local')->delete($path);
+            }
+        }
+
+        return $sessione;
+    }
+
+    /** Dopo il salvataggio i gettoni usati escono dalla sessione e i file temporanei si cancellano. */
+    private function liberaFile(Request $request, array $gettoni): void
+    {
+        $sessione = (array) $request->session()->get(self::SESSIONE_FILE, []);
+        foreach ($gettoni as $g) {
+            if (isset($sessione[$g])) {
+                Storage::disk('local')->delete($sessione[$g]['path']);
+            }
+        }
+        $request->session()->put(self::SESSIONE_FILE, array_diff_key($sessione, array_flip($gettoni)));
+        $this->archiviati = [];
+    }
+
+    /** @var string[] file copiati nell'archivio durante la transazione in corso */
+    private array $archiviati = [];
+
+    /**
+     * Esegue la transazione; se fallisce, toglie dall'archivio le copie già
+     * fatte (i file messi da parte restano per un nuovo invio).
+     */
+    private function archiviaInSicurezza(\Closure $operazione): mixed
+    {
+        try {
+            return DB::transaction($operazione);
+        } catch (\Throwable $e) {
+            foreach ($this->archiviati as $path) {
+                Storage::disk('local')->delete($path);
+            }
+            $this->archiviati = [];
+            throw $e;
+        }
+    }
+
+    /**
+     * Archivia i file messi da parte con un nome codificato, non quello
+     * originale (collaudo J4): PN<anno>-<n. movimento>-<progressivo>.<est>,
+     * es. PN2026-00005-01.pdf. Lo stesso nome si vede nella scheda e nel
+     * file scaricato.
+     *
+     * @param string[] $gettoni
+     */
+    private function salvaFile(PrimaNota $m, array $gettoni, Request $request): void
+    {
+        $sessione = (array) $request->session()->get(self::SESSIONE_FILE, []);
+        $anno = $m->annoMovimento();
+        $progressivo = PrimaNotaDocumento::where('prima_nota_id', $m->id)->count();
+
+        foreach ($gettoni as $gettone) {
+            $f = $sessione[$gettone] ?? null;
+            if (! $f || ! Storage::disk('local')->exists($f['path'])) {
+                continue;
+            }
+            do {
+                $progressivo++;
+                $nome = sprintf('PN%d-%05d-%02d.%s', $anno, $m->id, $progressivo, $f['ext']);
+                $path = "prima-nota/{$anno}/{$nome}";
+            } while (Storage::disk('local')->exists($path));
+
+            // Copia, non spostamento: se la transazione fallisce il file messo
+            // da parte resta e il modulo lo ripresenta; la copia si toglie
+            // (archiviaInSicurezza). Il file temporaneo si cancella dopo il
+            // salvataggio riuscito (liberaFile).
+            Storage::disk('local')->copy($f['path'], $path);
+            $this->archiviati[] = $path;
             PrimaNotaDocumento::create([
                 'prima_nota_id' => $m->id,
                 'path' => $path,
-                'nome' => mb_substr($file->getClientOriginalName(), 0, 255),
+                'nome' => $nome,
                 'caricato_da' => $request->user()->id,
             ]);
         }
+    }
+
+    /** Giustificativi già messi da parte, per ripresentarli nel modulo dopo un errore. */
+    public static function fileTenuti(): array
+    {
+        $sessione = (array) session(self::SESSIONE_FILE, []);
+
+        return collect((array) old('file_temp', []))
+            ->filter(fn ($g) => is_string($g) && isset($sessione[$g]))
+            ->map(fn ($g) => ['gettone' => $g, 'nome' => $sessione[$g]['nome'], 'peso' => $sessione[$g]['peso']])
+            ->values()->all();
     }
 
     /** Spesa anticipata non ancora rimborsata: si gestisce dal rimborso (v0.37.0), non dal modulo. */

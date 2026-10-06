@@ -131,14 +131,19 @@
                         <form method="POST" action="{{ route('prima-nota.anni.chiudi', $daChiudere->anno) }}" class="form-modale form-riga"
                               x-data="{ inviato: false }" x-on:submit="inviato = true">
                             @csrf
-                            <div class="form-grid">
-                                <x-campo name="approvazione_data" label="Rendiconto approvato il" tipo="date" required />
-                                <x-campo name="approvazione_rif" label="Verbale dell'Assemblea" required maxlength="255"
-                                         aiuto="Es. «Assemblea ordinaria, verbale n. 2/2028»." />
-                            </div>
+                            @if ($verbali->isEmpty())
+                                <x-avviso tipo="info" titolo="Nessun verbale da scegliere.">
+                                    Serve il verbale dell'Assemblea del {{ max($daChiudere->anno + 1, now()->year) }} che approva il rendiconto {{ $daChiudere->anno }}:
+                                    quando sarà registrato tra i verbali, comparirà qui.
+                                </x-avviso>
+                            @else
+                                <x-campo name="verbale_id" label="Verbale dell'Assemblea che approva il rendiconto" tipo="select" required vuota="Scegli…"
+                                         :opzioni="$verbali->mapWithKeys(fn ($v) => [$v->id => $v->data_seduta->format('d/m/Y') . ' — ' . $v->titolo . ($v->stato === 'bozza' ? ' (bozza)' : '')])->all()"
+                                         aiuto="Assemblee dell'anno in corso. La data della seduta diventa la data di approvazione." />
+                            @endif
                             <p class="form-help">Alla chiusura i saldi finali diventano l'apertura del {{ $daChiudere->anno + 1 }}; dopo, ogni correzione chiede una motivazione.</p>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary" @disabled(! $chiudibile) x-bind:disabled="inviato || {{ $chiudibile ? 'false' : 'true' }}">Chiudi l'anno {{ $daChiudere->anno }}</button>
+                                <button type="submit" class="btn btn-primary" @disabled(! $chiudibile || $verbali->isEmpty()) x-bind:disabled="inviato || {{ $chiudibile && $verbali->isNotEmpty() ? 'false' : 'true' }}">Chiudi l'anno {{ $daChiudere->anno }}</button>
                             </div>
                         </form>
                     @endif

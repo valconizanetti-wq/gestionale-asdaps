@@ -9,9 +9,25 @@
     @php
         $puoModificare = auth()->user()->puoModificare('prima_nota');
         $tutte = $uscite->concat($entrate);
+
+        // Dopo un errore la finestra si riapre con i dati scritti e il
+        // messaggio (bag per finestra, CategorieController). Il campo _id
+        // dice quale categoria o tag si stava modificando.
+        $erroreNuova = $errors->nuovaCategoria->any();
+        $erroreCategoria = $errors->categoria->any() && $tutte->contains('id', (int) old('_id'));
+        $erroreTag = $errors->tag->any() && $tags->contains('id', (int) old('_id'));
+        $statoIniziale = [
+            'c' => $erroreCategoria
+                ? ['nome' => old('nome'), 'natura' => old('natura', 'istituzionale'), 'azione' => route('prima-nota.categorie.update', (int) old('_id')), 'id' => (int) old('_id')]
+                : ['nome' => '', 'natura' => 'istituzionale', 'azione' => '', 'id' => null],
+            't' => $erroreTag
+                ? ['nome' => old('nome'), 'azione' => route('prima-nota.tag.update', (int) old('_id')), 'id' => (int) old('_id')]
+                : ['nome' => '', 'azione' => '', 'id' => null],
+            'nuova' => $erroreNuova && old('tipo') === 'entrata' ? 'entrata' : 'uscita',
+        ];
     @endphp
 
-    <div x-data="{ c: { nome: '', natura: 'istituzionale', azione: '' }, t: { nome: '', azione: '' }, nuova: 'uscita' }" class="form-pagina">
+    <div x-data="@js($statoIniziale)" class="form-pagina">
         <x-page-header titolo="Categorie e" evidenza="tag"
                        :sottotitolo="$tutte->count() . ' categorie (' . $tutte->where('attiva', true)->count() . ' attive) e ' . $tags->count() . ' ' . ($tags->count() === 1 ? 'tag' : 'tag')"
                        :indietro="route('prima-nota.index')" indietro-label="Prima Nota">
@@ -91,7 +107,7 @@
                                             @endforeach
                                             @unless ($cat->isSistema())
                                                 <button type="button" class="action-btn" aria-label="Modifica {{ $cat->nome }}"
-                                                        @click="c = { nome: @js($cat->nome), natura: @js($natura), azione: @js(route('prima-nota.categorie.update', $cat)) }; $dispatch('apri-modale', 'categoria')">
+                                                        @click="c = { nome: @js($cat->nome), natura: @js($natura), azione: @js(route('prima-nota.categorie.update', $cat)), id: {{ $cat->id }} }; $dispatch('apri-modale', 'categoria')">
                                                     <x-icona nome="matita" />
                                                 </button>
                                                 <form method="POST" action="{{ route('prima-nota.categorie.attiva', $cat) }}">
@@ -143,7 +159,7 @@
                                     <td class="td-azioni">
                                         @if ($puoModificare)
                                             <button type="button" class="action-btn" aria-label="Rinomina {{ $tag->nome }}"
-                                                    @click="t = { nome: @js($tag->nome), azione: @js(route('prima-nota.tag.update', $tag)) }; $dispatch('apri-modale', 'tag')">
+                                                    @click="t = { nome: @js($tag->nome), azione: @js(route('prima-nota.tag.update', $tag)), id: {{ $tag->id }} }; $dispatch('apri-modale', 'tag')">
                                                 <x-icona nome="matita" />
                                             </button>
                                             @if ($tag->movimenti_count === 0)
@@ -165,13 +181,17 @@
         </x-card>
 
         @if ($puoModificare)
-            <x-modale nome="categoria" titolo="Modifica la categoria">
+            <x-modale nome="categoria" titolo="Modifica la categoria" :aperta="$erroreCategoria">
                 <form method="POST" x-bind:action="c.azione" class="form-modale" id="form-categoria">
                     @csrf
                     @method('PUT')
-                    <div class="form-field">
+                    <input type="hidden" name="_id" x-bind:value="c.id">
+                    <div @class(['form-field', 'has-error' => $erroreCategoria && $errors->categoria->has('nome')])>
                         <label class="form-label" for="categoria-nome">Nome<span class="obbligatorio" aria-hidden="true">*</span></label>
                         <input id="categoria-nome" name="nome" class="form-input" maxlength="150" required x-model="c.nome">
+                        @if ($erroreCategoria)
+                            @foreach ($errors->categoria->all() as $msg)<div class="form-error">{{ $msg }}</div>@endforeach
+                        @endif
                     </div>
                     <div class="form-field">
                         <label class="form-label" for="categoria-natura">Natura</label>
@@ -187,7 +207,7 @@
                 </x-slot:piede>
             </x-modale>
 
-            <x-modale nome="nuova-categoria" titolo="Nuova categoria">
+            <x-modale nome="nuova-categoria" titolo="Nuova categoria" :aperta="$erroreNuova">
                 <form method="POST" action="{{ route('prima-nota.categorie.store') }}" class="form-modale" id="form-nuova-categoria">
                     @csrf
                     <fieldset class="scelta-gruppo">
@@ -197,15 +217,18 @@
                             <label class="scelta"><input type="radio" name="tipo" value="entrata" x-model="nuova"> <span>Entrata</span></label>
                         </div>
                     </fieldset>
-                    <div class="form-field">
+                    <div @class(['form-field', 'has-error' => $erroreNuova && $errors->nuovaCategoria->has('nome')])>
                         <label class="form-label" for="nuova-nome">Nome<span class="obbligatorio" aria-hidden="true">*</span></label>
-                        <input id="nuova-nome" name="nome" class="form-input" maxlength="150" required value="{{ old('nome') }}">
+                        <input id="nuova-nome" name="nome" class="form-input" maxlength="150" required value="{{ $erroreNuova ? old('nome') : '' }}">
                         <div class="form-help">Il tipo non si potrà più cambiare. La categoria va in fondo all'elenco: si sposta con le frecce.</div>
+                        @if ($erroreNuova)
+                            @foreach ($errors->nuovaCategoria->all() as $msg)<div class="form-error">{{ $msg }}</div>@endforeach
+                        @endif
                     </div>
                     <div class="form-field">
                         <label class="form-label" for="nuova-natura">Natura</label>
                         <select id="nuova-natura" name="natura" class="form-select">
-                            @foreach (CategorieController::NATURE as $v => $l)<option value="{{ $v }}">{{ $l }}</option>@endforeach
+                            @foreach (CategorieController::NATURE as $v => $l)<option value="{{ $v }}" @selected($erroreNuova && old('natura') === $v)>{{ $l }}</option>@endforeach
                         </select>
                     </div>
                 </form>
@@ -215,14 +238,18 @@
                 </x-slot:piede>
             </x-modale>
 
-            <x-modale nome="tag" titolo="Rinomina il tag">
+            <x-modale nome="tag" titolo="Rinomina il tag" :aperta="$erroreTag">
                 <form method="POST" x-bind:action="t.azione" class="form-modale" id="form-tag">
                     @csrf
                     @method('PUT')
-                    <div class="form-field">
+                    <input type="hidden" name="_id" x-bind:value="t.id">
+                    <div @class(['form-field', 'has-error' => $erroreTag])>
                         <label class="form-label" for="tag-nome">Nome<span class="obbligatorio" aria-hidden="true">*</span></label>
                         <input id="tag-nome" name="nome" class="form-input" maxlength="100" required x-model="t.nome">
                         <div class="form-help">Il nuovo nome vale per tutti i movimenti con questo tag.</div>
+                        @if ($erroreTag)
+                            @foreach ($errors->tag->all() as $msg)<div class="form-error">{{ $msg }}</div>@endforeach
+                        @endif
                     </div>
                 </form>
                 <x-slot:piede>

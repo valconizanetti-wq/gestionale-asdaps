@@ -78,6 +78,20 @@ class AuditObserver
                 $old = $operazione === 'deleted' ? $this->filtra($model->getAttributes()) : null;
             }
 
+            // Model che aggiungono un contesto ai valori (es. PrimaNota: il
+            // verso del giroconto, i giustificativi tolti con il movimento),
+            // così un'operazione dell'utente resta una riga sola (v0.35.1).
+            if ($operazione !== 'restored' && method_exists($model, 'auditContesto')) {
+                $extra = $model->auditContesto($operazione);
+                if ($extra) {
+                    if ($operazione === 'deleted') {
+                        $old = ($old ?? []) + $extra;
+                    } else {
+                        $new = ($new ?? []) + $extra;
+                    }
+                }
+            }
+
             // Model che dichiarano quali campi possono comparire con il
             // valore (es. Domanda): degli altri resta solo il nome in
             // campi_modificati. Serve per i dati personali che vanno

@@ -1403,6 +1403,8 @@
     .audit-diff-riga.cambiato.nuovo .audit-diff-valore { color: var(--color-ok); }
     .audit-meta { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 12px; }
     .audit-dettaglio-testo { margin-top: 10px; font-size: 12.5px; color: var(--color-testo-2); overflow-wrap: anywhere; }
+    .audit-hash-intero { display: flex; flex-direction: column; gap: 2px; margin-top: 10px; }
+    .audit-hash-intero .code { font-size: 12px; color: var(--color-testo-2); overflow-wrap: anywhere; word-break: break-all; }
 
     .audit-verifica-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
     .audit-verifica-form .form-select { min-width: 120px; }
@@ -1485,7 +1487,58 @@
     }
     .pn-allegato a { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
     .pn-allegato form { display: inline; }
-    .pn-file { font-size: 13px; }
+
+    /* Campo dei giustificativi come nella tavola PN-3 (v0.35.1) */
+    .pn-file-box {
+        display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 52px;
+        padding: 10px 12px 10px 14px; border: 1.5px dashed var(--color-bordo-forte); border-radius: var(--radius-card);
+        background: var(--color-superficie-2);
+    }
+    .has-error .pn-file-box { border-color: var(--color-ko); }
+    .pn-file-lista { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .pn-file-chip {
+        display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 5px 6px 5px 10px; font-size: 12.5px;
+        background: var(--color-superficie); border: 1px solid var(--color-bordo); border-radius: var(--radius-ctrl);
+    }
+    .pn-file-chip strong { min-width: 0; font-weight: 600; color: var(--color-notte); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pn-file-peso { color: var(--color-etichetta); white-space: nowrap; }
+    .pn-file-togli {
+        display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px;
+        font-size: 16px; font-weight: 700; line-height: 1; color: var(--color-ko); background: none; border: 0; cursor: pointer;
+    }
+    .pn-file-togli:hover, .pn-file-togli:focus-visible { background: rgb(158 35 40 / 0.08); }
+    .pn-file-vuoto { font-size: 13px; color: var(--color-etichetta); }
+    .pn-file-aggiungi { flex-shrink: 0; cursor: pointer; }
+    .pn-file-aggiungi:focus-within { outline: 2px solid var(--color-primario); outline-offset: 2px; }
+    .pn-file-vero { display: none; }
+
+    /* Anteprime dei giustificativi nella scheda del movimento */
+    .pn-anteprime { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .pn-anteprima {
+        display: flex; flex-direction: column; min-width: 0; overflow: hidden;
+        border: 1px solid var(--color-bordo); border-radius: var(--radius-card); background: var(--color-superficie);
+    }
+    .pn-anteprima-apri {
+        display: flex; align-items: center; justify-content: center; height: 120px; padding: 0; border: 0;
+        background: var(--color-superficie-2); cursor: zoom-in; color: var(--color-etichetta);
+    }
+    .pn-anteprima-apri img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .pn-anteprima-apri svg { width: 34px; height: 34px; }
+    .pn-anteprima-apri .pn-anteprima-tipo { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; margin-top: 4px; }
+    .pn-anteprima-pdf { display: flex; flex-direction: column; align-items: center; }
+    .pn-anteprima-piede { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 2px 4px; padding: 6px 6px 6px 10px; border-top: 1px solid var(--color-bordo); }
+    .pn-anteprima-piede span { flex: 1 1 100%; min-width: 0; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+    .pn-visore { display: flex; justify-content: center; align-items: center; background: var(--color-superficie-2); border-radius: var(--radius-ctrl); }
+    .pn-visore img { max-width: 100%; max-height: 70vh; object-fit: contain; }
+    .pn-visore-pdf { width: 100%; }
+    .pn-visore iframe { display: block; width: 100%; height: 70vh; border: 0; }
+    .pn-visore-avviso { display: none; align-items: center; gap: 10px; padding: 28px 16px; font-size: 13px; color: var(--color-testo-2); }
+    .pn-visore-avviso svg { width: 28px; height: 28px; flex-shrink: 0; color: var(--color-etichetta); }
+
+    /* Elenco: riga intera cliccabile; verso del giroconto su una riga */
+    .data-table tr.riga-link { cursor: pointer; }
+    .data-table tbody tr.riga-link:hover { background: var(--color-primario-tenue); }
+    .pn-verso { white-space: nowrap; }
 
     /* Anni contabili: lista di controllo della chiusura */
     .pn-controlli { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -1511,6 +1564,14 @@
 
 @media (max-width: 768px) {
     .pn-scelte { grid-template-columns: 1fr; }
+    /* Giustificativi su telefono: etichette una sotto l'altra, pulsante sotto */
+    .pn-file-box { flex-direction: column; align-items: stretch; }
+    .pn-file-lista { flex-direction: column; }
+    .pn-file-chip { width: 100%; }
+    .pn-file-chip strong { flex: 1; }
+    .pn-file-aggiungi { align-self: flex-start; }
+    .pn-visore iframe { display: none; }
+    .pn-visore-avviso { display: flex; }
     .pn-etichette { margin-left: 0; margin-top: 4px; }
     .data-table.responsive td.td-solo-mobile { display: flex; }
     .pn-categorie .td-azioni { justify-content: flex-end; }

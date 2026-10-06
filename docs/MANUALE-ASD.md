@@ -1135,6 +1135,12 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     01/01/2027 (migrati solo i saldi). Prossime: v0.36.0 scontrini dal
     telefono con OCR, v0.37.0 anticipi e note di rimborso; poi
     riconciliazione bancaria e chiusura mensile della cassa.
+    **v0.35.1** (06/10/2026): correzioni dal collaudo della Prima Nota
+    (blocco J): errori nelle finestre senza chiuderle, giustificativi che
+    restano dopo un errore, campo dei file come la tavola, nomi dei file
+    codificati, anteprime con finestra, riga intera cliccabile, una riga di
+    audit per operazione con hash per intero, verbale di chiusura scelto
+    dall'elenco.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

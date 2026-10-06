@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AnnoContabile;
 use App\Models\PrimaNota;
+use App\Models\Verbale;
 use App\Services\AnniContabili;
 use App\Services\AuditLogService;
 use App\Support\Importo;
@@ -54,6 +55,7 @@ class AnniContabiliController extends Controller
             'daChiudere' => $daChiudere,
             'controlli' => $daChiudere ? $this->anni->controlliChiusura($daChiudere->anno) : [],
             'chiudibile' => $daChiudere ? $this->anni->chiudibile($daChiudere->anno) : false,
+            'verbali' => $daChiudere ? $this->anni->verbaliApprovazione($daChiudere->anno) : collect(),
             'daRiaprire' => $daRiaprire,
         ]);
     }
@@ -137,15 +139,18 @@ class AnniContabiliController extends Controller
     public function chiudi(Request $request, int $anno)
     {
         $this->richiediModifica($request);
+        // Il verbale si sceglie dall'elenco delle Assemblee dell'anno in corso
+        // (collaudo J11); data e riferimento si prendono dal verbale.
+        $ammessi = $this->anni->verbaliApprovazione($anno)->pluck('id')->all();
         $dati = $request->validate([
-            'approvazione_data' => ['required', 'date_format:Y-m-d', 'after:' . $anno . '-12-31', 'before_or_equal:today'],
-            'approvazione_rif' => ['required', 'string', 'max:255'],
+            'verbale_id' => ['required', 'integer', Rule::in($ammessi)],
         ], [
-            'approvazione_data.after' => "L'approvazione del rendiconto {$anno} è per forza successiva al 31/12/{$anno}.",
-        ], ['approvazione_data' => "data dell'approvazione", 'approvazione_rif' => 'riferimento al verbale']);
+            'verbale_id.required' => "Scegli il verbale dell'Assemblea che ha approvato il rendiconto {$anno}.",
+            'verbale_id.in' => "Scegli un verbale dell'Assemblea dell'anno in corso, successivo alla fine del {$anno}.",
+        ]);
 
         try {
-            $this->anni->chiudi($anno, $dati['approvazione_data'], $dati['approvazione_rif'], $request->user());
+            $this->anni->chiudi($anno, Verbale::findOrFail($dati['verbale_id']), $request->user());
         } catch (\RuntimeException $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }

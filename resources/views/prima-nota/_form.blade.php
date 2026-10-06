@@ -113,13 +113,8 @@
                 <x-campo name="numero_documento" label="Numero" :value="$m->numero_documento" maxlength="100" />
                 <x-campo name="data_documento" label="Data del documento" tipo="date" :value="$m->data_documento" />
             </div>
-            <div @class(['form-field', 'form-riga', 'has-error' => $errors->has('documenti') || $errors->has('documenti.*')])>
-                <label class="form-label" for="campo-documenti">{{ $m->exists ? 'Aggiungi giustificativi' : 'Giustificativi' }}</label>
-                <input id="campo-documenti" type="file" name="documenti[]" multiple accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-                       class="form-input pn-file" aria-describedby="campo-documenti-aiuto">
-                <div class="form-help" id="campo-documenti-aiuto">JPG, PNG o PDF, fino a 8 MB ciascuno e 10 per volta. Dal telefono si può scattare una foto.</div>
-                @foreach ($errors->get('documenti*') as $msg)<div class="form-error">{{ $msg[0] }}</div>@endforeach
-            </div>
+            <x-campo-giustificativi id="campo-documenti" class="form-riga" :label="$m->exists ? 'Aggiungi giustificativi' : 'Giustificativi'"
+                                    :tenuti="\App\Http\Controllers\PrimaNotaController::fileTenuti()" :errori="$errors->get('documenti')" />
             <div class="form-riga">
                 <x-campo name="note" label="Note" tipo="textarea" :value="$m->note" rows="3" maxlength="2000" />
             </div>

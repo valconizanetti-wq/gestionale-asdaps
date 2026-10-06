@@ -77,6 +77,11 @@ class PrimaNotaTest extends TestCase
         return $m;
     }
 
+    private function verbale(string $data, string $titolo, string $tipo = 'assemblea'): \App\Models\Verbale
+    {
+        return \App\Models\Verbale::create(['tipo' => $tipo, 'titolo' => $titolo, 'data_seduta' => $data, 'corpo_html' => '<p>Verbale</p>']);
+    }
+
     private function datiForm(array $extra = []): array
     {
         return $extra + [
@@ -153,14 +158,16 @@ class PrimaNotaTest extends TestCase
         $this->assertTrue(AnnoContabile::where('anno', 2027)->where('stato', 'aperto')->exists());
         $d = $m->documenti()->firstOrFail();
         Storage::disk('local')->assertExists($d->path);
-        $this->assertStringStartsWith('prima-nota/2027/', $d->path);
+        // Nome codificato, non quello originale (collaudo J4)
+        $this->assertSame('PN2027-' . sprintf('%05d', $m->id) . '-01.pdf', $d->nome);
+        $this->assertSame('prima-nota/2027/' . $d->nome, $d->path);
         $this->assertTrue(DB::table('gl_audit_log')->where('evento', 'PRIMANOTA_CREATED')->exists());
 
         // Stesso tag con un'altra grafia: nessun doppione
         $this->actingAs($this->tesoriere)->post(route('prima-nota.store'), $this->datiForm(['tag' => 'tettoia', 'importo' => '28,70']));
         $this->assertSame(1, Tag::count());
 
-        $this->actingAs($this->revisore)->get(route('prima-nota.show', $m))->assertOk()->assertSee('fattura.pdf')->assertSee('1.450,00');
+        $this->actingAs($this->revisore)->get(route('prima-nota.show', $m))->assertOk()->assertSee($d->nome)->assertDontSee('fattura.pdf')->assertSee('1.450,00');
         $this->actingAs($this->revisore)->get(route('prima-nota.documenti.show', [$m, $d]))->assertOk();
     }
 
@@ -178,7 +185,7 @@ class PrimaNotaTest extends TestCase
             ->assertSessionHasErrors('categoria_id');
         $this->actingAs($this->tesoriere)->post(route('prima-nota.store'), $this->datiForm([
             'documenti' => [UploadedFile::fake()->create('virus.exe', 10)],
-        ]))->assertSessionHasErrors('documenti.0');
+        ]))->assertSessionHasErrors('documenti');
         // Nessun movimento e nessun fornitore o tag "fantasma"
         $this->actingAs($this->tesoriere)->post(route('prima-nota.store'), $this->datiForm(['importo' => 'x', 'soggetto' => 'Nuovo', 'tag' => 'Nuovo']));
         $this->assertSame(0, PrimaNota::count());
@@ -262,12 +269,23 @@ class PrimaNotaTest extends TestCase
         $daClass->update(['categoria_id' => $this->cat('Altre spese')->id]);
         $this->assertTrue($anni->chiudibile(2027));
 
-        $this->actingAs($this->tesoriere)->post(route('prima-nota.anni.chiudi', 2027), ['approvazione_data' => '2027-12-01', 'approvazione_rif' => 'Verbale 1'])
-            ->assertSessionHasErrors('approvazione_data');
-        $this->actingAs($this->tesoriere)->post(route('prima-nota.anni.chiudi', 2027), ['approvazione_data' => '2028-04-18', 'approvazione_rif' => 'Assemblea ordinaria, verbale n. 2/2028'])
+        // Il verbale si sceglie tra le Assemblee dell'anno in corso (collaudo J11)
+        $this->actingAs($this->tesoriere)->get(route('prima-nota.anni.index'))->assertSee('Nessun verbale da scegliere.');
+        $vecchio = $this->verbale('2027-12-01', 'Assemblea di dicembre');
+        $cd = $this->verbale('2028-02-01', 'Consiglio direttivo', 'cd_delibera');
+        $giusto = $this->verbale('2028-04-18', 'Assemblea ordinaria, verbale n. 2/2028');
+        $this->actingAs($this->tesoriere)->get(route('prima-nota.anni.index'))
+            ->assertSee('18/04/2028 — Assemblea ordinaria, verbale n. 2/2028 (bozza)')->assertDontSee('Assemblea di dicembre')->assertDontSee('Consiglio direttivo');
+        foreach ([$vecchio, $cd] as $v) {
+            $this->actingAs($this->tesoriere)->post(route('prima-nota.anni.chiudi', 2027), ['verbale_id' => $v->id])->assertSessionHasErrors('verbale_id');
+        }
+        $this->actingAs($this->tesoriere)->post(route('prima-nota.anni.chiudi', 2027), ['verbale_id' => $giusto->id])
             ->assertRedirect(route('prima-nota.anni.index'));
         $riga = $anni->trova(2027);
         $this->assertTrue($riga->isChiuso());
+        $this->assertSame($giusto->id, (int) $riga->approvazione_verbale_id);
+        $this->assertSame('2028-04-18', $riga->approvazione_data->toDateString());
+        $this->assertSame('Assemblea ordinaria, verbale n. 2/2028', $riga->approvazione_rif);
         $this->assertSame('55.00', $riga->saldo_chiusura_cassa);
         $this->assertSame(55.0, $anni->apertura(2028)['cassa']);
         $this->assertSame('HIGH', DB::table('gl_audit_log')->where('evento', 'ANNOCONTABILE_UPDATED')->orderByDesc('id')->value('livello_rischio'));
@@ -334,7 +352,7 @@ class PrimaNotaTest extends TestCase
             ->assertSee('Taglio erba')->assertSee('Solo bilancio')->assertSee('Da verificare (398)', false);
 
         $this->actingAs($this->tesoriere)->post(route('prima-nota.categorie.store'), ['tipo' => 'uscita', 'nome' => 'taglio ERBA', 'natura' => 'istituzionale'])
-            ->assertSessionHasErrors('nome');
+            ->assertSessionHasErrorsIn('nuovaCategoria', 'nome');
         // Stesso nome con tipo diverso: ammesso (gestionale-acv 1.0.2)
         $this->actingAs($this->tesoriere)->post(route('prima-nota.categorie.store'), ['tipo' => 'entrata', 'nome' => 'Taglio erba', 'natura' => 'commerciale'])
             ->assertRedirect();
@@ -370,7 +388,7 @@ class PrimaNotaTest extends TestCase
         $t2 = Tag::create(['nome' => 'Campo']);
         $this->movimento(['tag_id' => $t1->id, 'categoria_id' => $this->cat('Opere e progetti')->id, 'importo' => '412.00']);
         $this->actingAs($this->tesoriere)->get(route('prima-nota.categorie.index'))->assertOk()->assertSee('412,00');
-        $this->actingAs($this->tesoriere)->put(route('prima-nota.tag.update', $t2), ['nome' => 'tettoia'])->assertSessionHasErrors('nome');
+        $this->actingAs($this->tesoriere)->put(route('prima-nota.tag.update', $t2), ['nome' => 'tettoia'])->assertSessionHasErrorsIn('tag', 'nome');
         $this->actingAs($this->tesoriere)->put(route('prima-nota.tag.update', $t2), ['nome' => 'Campo estivo'])->assertRedirect();
         $this->actingAs($this->tesoriere)->delete(route('prima-nota.tag.destroy', $t1))->assertSessionHas('error');
         $this->actingAs($this->tesoriere)->delete(route('prima-nota.tag.destroy', $t2))->assertRedirect();
@@ -392,7 +410,8 @@ class PrimaNotaTest extends TestCase
         ])->assertRedirect();
         $d = $m->documenti()->firstOrFail();
         $r = $this->actingAs($this->tesoriere)->get(route('prima-nota.documenti.show', [$m, $d, 'scarica' => 1]))->assertOk();
-        $this->assertStringContainsString("filename*=utf-8''ricevuta%20caff%C3%A8.pdf", $r->headers->get('content-disposition'));
+        // Dalla v0.35.1 il nome è codificato (PN…): niente accenti, ma l'intestazione resta valida
+        $this->assertStringContainsString('filename=' . $d->nome, $r->headers->get('content-disposition'));
 
         // Spesa anticipata non rimborsata: non si modifica dal modulo normale
         $anticipo = $this->movimento(['conto' => null, 'sospeso' => true, 'anticipato_da' => 'Luigi Tascio']);
@@ -404,7 +423,7 @@ class PrimaNotaTest extends TestCase
         AnnoContabile::where('anno', 2027)->update(['stato' => 'chiuso', 'saldo_chiusura_cassa' => 0, 'saldo_chiusura_banca' => 0]);
         $this->actingAs($this->tesoriere)->post(route('prima-nota.documenti.store', $m), [
             'documenti' => [UploadedFile::fake()->image('altra.jpg')],
-        ])->assertSessionHasErrors('motivazione');
+        ])->assertSessionHasErrorsIn('giustificativi', 'motivazione');
         $this->assertSame(1, $m->documenti()->count());
         $this->actingAs($this->tesoriere)->post(route('prima-nota.documenti.store', $m), [
             'documenti' => [UploadedFile::fake()->image('altra.jpg')], 'motivazione' => 'Ritrovata la ricevuta originale cartacea.',
@@ -426,5 +445,110 @@ class PrimaNotaTest extends TestCase
         $this->assertSame(85.0, $anni->finali(2028)['cassa']);
         // Anno mai usato prima del primo: nessun avviso sui saldi
         $this->actingAs($this->revisore)->get(route('prima-nota.index', ['anno' => 2020]))->assertOk()->assertDontSee('Saldi di apertura 2020 da impostare');
+    }
+
+    // ----------------------------------------------------------------
+    // Collaudo J del 06/10/2026 (v0.35.1)
+    // ----------------------------------------------------------------
+
+    /** J2: nome doppio → la finestra resta aperta con l'errore. */
+    public function test_collaudo_j2_finestra_categoria_con_errore(): void
+    {
+        $this->actingAs($this->tesoriere)->from(route('prima-nota.categorie.index'))
+            ->post(route('prima-nota.categorie.store'), ['tipo' => 'uscita', 'nome' => 'acquisto MATERIALI', 'natura' => 'istituzionale'])
+            ->assertRedirect(route('prima-nota.categorie.index'))
+            ->assertSessionHasErrorsIn('nuovaCategoria', 'nome');
+        $pagina = $this->actingAs($this->tesoriere)->followingRedirects()->from(route('prima-nota.categorie.index'))
+            ->post(route('prima-nota.categorie.store'), ['tipo' => 'entrata', 'nome' => 'Quote associative', 'natura' => 'commerciale']);
+        $pagina->assertSee('Esiste già una categoria di entrata con questo nome.')
+            ->assertSee('value="Quote associative"', false)                  // il nome scritto resta
+            ->assertSee('<option value="commerciale" selected>', false)      // e la natura scelta
+            ->assertDontSee('Operazione non eseguita.');                     // niente avviso in cima: l'errore è nella finestra
+
+        $cat = $this->cat('Altre spese');
+        $this->actingAs($this->tesoriere)->followingRedirects()->from(route('prima-nota.categorie.index'))
+            ->put(route('prima-nota.categorie.update', $cat), ['_id' => $cat->id, 'nome' => 'Acquisto materiali', 'natura' => 'istituzionale'])
+            ->assertSee('Esiste già una categoria di uscita con questo nome.');
+    }
+
+    /** J4: dopo un errore i file restano; nome codificato; anteprima; Nuovo movimento nella scheda. */
+    public function test_collaudo_j4_giustificativi_trattenuti(): void
+    {
+        $this->actingAs($this->tesoriere)->from(route('prima-nota.create'))->post(route('prima-nota.store'), $this->datiForm([
+            'importo' => '1,450',   // errore
+            'documenti' => [UploadedFile::fake()->image('IMG_20271002.jpg'), UploadedFile::fake()->create('fattura.pdf', 50, 'application/pdf')],
+        ]))->assertSessionHasErrors('importo');
+        $this->assertSame(0, PrimaNota::count());
+        $gettoni = session()->getOldInput('file_temp');
+        $this->assertCount(2, $gettoni);
+        $this->assertSame(2, count(Storage::disk('local')->files('tmp/prima-nota/' . $this->tesoriere->id)));
+
+        // Il modulo li ripresenta come "già caricato"
+        $this->actingAs($this->tesoriere)->get(route('prima-nota.create'))
+            ->assertSee('IMG_20271002.jpg')->assertSee('già caricato')->assertSee('value="' . $gettoni[0] . '"', false);
+
+        // Secondo invio: corretto l'importo, i file tornano come gettoni; uno sconosciuto si ignora
+        $this->actingAs($this->tesoriere)->post(route('prima-nota.store'), $this->datiForm(['file_temp' => [...$gettoni, 'gettone-inventato']]))
+            ->assertRedirect();
+        $m = PrimaNota::firstOrFail();
+        $this->assertSame(['PN2027-' . sprintf('%05d', $m->id) . '-01.jpg', 'PN2027-' . sprintf('%05d', $m->id) . '-02.pdf'],
+            $m->documenti()->orderBy('id')->pluck('nome')->all());
+        $this->assertSame([], Storage::disk('local')->files('tmp/prima-nota/' . $this->tesoriere->id));
+        $this->assertSame([], session('prima_nota_file_temp'));
+
+        // Un gettone già usato non si riusa
+        $this->actingAs($this->tesoriere)->post(route('prima-nota.store'), $this->datiForm(['file_temp' => $gettoni]))->assertRedirect();
+        $this->assertSame(0, PrimaNota::latest('id')->first()->documenti()->count());
+
+        // Scheda: Nuovo movimento, anteprima dell'immagine, PDF con icona, visore
+        $this->actingAs($this->tesoriere)->get(route('prima-nota.show', $m))->assertOk()
+            ->assertSee('Nuovo movimento')
+            ->assertSee('<img src="' . route('prima-nota.documenti.show', [$m, $m->documenti()->first()]) . '" alt="" loading="lazy">', false)
+            ->assertSee('pn-anteprima-pdf', false)
+            ->assertSee('Apri in una nuova scheda');
+        $this->actingAs($this->revisore)->get(route('prima-nota.show', $m))->assertDontSee('Nuovo movimento');
+
+        // Elenco: riga intera cliccabile
+        $this->actingAs($this->tesoriere)->get(route('prima-nota.index', ['anno' => 2027]))
+            ->assertSee('data-href="' . route('prima-nota.show', $m) . '"', false);
+    }
+
+    /** J9: ogni operazione dell'utente è una riga sola dell'Audit Log. */
+    public function test_collaudo_j9_una_riga_per_operazione(): void
+    {
+        $conta = fn () => DB::table('gl_audit_log')->whereIn('entita_tipo', ['PrimaNota', 'PrimaNotaDocumento'])->count();
+
+        $this->actingAs($this->tesoriere)->post(route('prima-nota.giroconto.store'), ['data' => '2027-03-01', 'conto_da' => 'cassa', 'conto_a' => 'banca', 'importo' => '100']);
+        $this->assertSame(1, $conta());
+        $riga = DB::table('gl_audit_log')->where('evento', 'PRIMANOTA_CREATED')->first();
+        $this->assertSame('Cassa → Banca', json_decode($riga->new_values, true)['giroconto']);
+        $uscita = PrimaNota::where('tipo', 'uscita')->firstOrFail();
+        $this->assertSame((int) $uscita->id, (int) $riga->entita_id);
+        $this->assertNotNull($uscita->giroconto->giroconto_id);   // coppia collegata nei due sensi
+
+        $this->actingAs($this->tesoriere)->put(route('prima-nota.update', $uscita), ['data' => '2027-03-01', 'conto_da' => 'banca', 'conto_a' => 'cassa', 'importo' => '120']);
+        $this->assertSame(2, $conta());
+        $this->assertSame('cassa', $uscita->fresh()->giroconto->conto);
+
+        // Eliminazione dalla riga di entrata: una riga sola, quella dell'uscita
+        $this->actingAs($this->tesoriere)->delete(route('prima-nota.destroy', $uscita->giroconto_id), ['conferma' => 'si'])->assertRedirect();
+        $this->assertSame(0, PrimaNota::count());
+        $this->assertSame(3, $conta());
+        $this->assertSame((int) $uscita->id, (int) DB::table('gl_audit_log')->where('evento', 'PRIMANOTA_DELETED')->value('entita_id'));
+
+        // Movimento con giustificativo: all'eliminazione una riga, con i giustificativi nei valori
+        $this->actingAs($this->tesoriere)->post(route('prima-nota.store'), $this->datiForm(['documenti' => [UploadedFile::fake()->image('a.jpg')]]));
+        $m = PrimaNota::firstOrFail();
+        $prima = $conta();
+        $this->actingAs($this->tesoriere)->delete(route('prima-nota.destroy', $m), ['conferma' => 'si']);
+        $this->assertSame($prima + 1, $conta());
+        $old = json_decode(DB::table('gl_audit_log')->where('evento', 'PRIMANOTA_DELETED')->orderByDesc('id')->value('old_values'), true);
+        $this->assertSame('PN2027-' . sprintf('%05d', $m->id) . '-01.jpg', $old['giustificativi']);
+        $this->assertSame(0, PrimaNotaDocumento::count());
+
+        // Etichette leggibili e hash per intero nel dettaglio
+        $hash = DB::table('gl_audit_log')->orderByDesc('id')->value('hash');
+        $this->actingAs($this->presidente)->get(route('audit-log.index', ['anno' => 2027]))->assertOk()
+            ->assertSee('Prima Nota: eliminazione')->assertSee($hash);
     }
 }

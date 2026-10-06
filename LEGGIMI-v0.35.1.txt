@@ -1,0 +1,49 @@
+Gestionale ASD - v0.35.1 (06/10/2026)
+Prima Nota: correzioni dal collaudo del blocco J
+
+Da applicare sopra la v0.35.0. 1 migration, CSS e JavaScript cambiati (npm run build).
+
+COSA CAMBIA
+  J2  L'errore di una categoria (o di un tag) compare nella finestra, che resta aperta
+      con i dati scritti.
+  J4  - "Nuovo movimento" anche nella scheda del movimento.
+      - Dopo un errore nel modulo i giustificativi restano ("gia' caricato").
+      - Campo dei file come la tavola: riquadro, un'etichetta per file con x, "Aggiungi file".
+      - Nome del file codificato: PN<anno>-<n. movimento>-<progressivo>, es. PN2026-00005-01.pdf
+        (su disco, nella scheda e nel download). I file gia' caricati con la v0.35.0
+        tengono il nome originale: sono dati di prova, si azzerano con J12.
+      - Nell'elenco tutta la riga apre il movimento.
+      - Nella scheda anteprima dei giustificativi; clic = finestra con l'immagine o il PDF.
+  J6  "Cassa -> Banca" su una riga. Il saldo negativo della banca e' corretto.
+  J9  Una riga di Audit Log per operazione (giroconto, eliminazione con giustificativi);
+      nomi dei moduli leggibili; hash per intero nel dettaglio.
+  J11 Chiusura dell'anno: il verbale dell'Assemblea si sceglie dall'elenco dei verbali
+      dell'anno in corso (oggi vuoto: manca il modulo Verbali).
+
+FILE
+  app/Http/Controllers/PrimaNotaController.php, AnniContabiliController.php, CategorieController.php
+  app/Models/PrimaNota.php, AnnoContabile.php; app/Observers/AuditObserver.php
+  app/Services/AnniContabili.php; config/audit.php
+  database/migrations/2026_10_06_000097_add_approvazione_verbale_id_to_gl_anni_contabili_table.php (nuova)
+  resources/views/components/campo-giustificativi.blade.php (nuovo), modale.blade.php, icona.blade.php
+  resources/views/prima-nota/_form, anni, categorie, index, show; audit-log/index
+  resources/css/app.css, resources/js/app.js
+  tests/Feature/PrimaNotaTest.php
+  docs/specifiche/prima-nota.md, MANUALE-ASD.md (tutte e due le copie), ui.md,
+    da-riportare-gestionale-aps.md, bootstrap-prossima-sessione.md,
+    test/test-domande-iscrizione.md e docs/test-domande-iscrizione.md
+
+LOCALE
+  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.35.0.txt.
+  2. php artisan migrate
+  3. php artisan test   -> 64 superati
+  4. git add -A && git commit -m "v0.35.1: Prima Nota, collaudo J"
+  5. npm run build ; git archive -o deploy.zip HEAD ; build.zip da public\build
+
+SERVER
+  Come la v0.35.0 (deploy.md par. 5: unzip, build.zip, migrate --force, optimize:clear
+  e cache). Nessun seeder. Dopo: svuotare la cache del browser (CSS e JS nuovi).
+
+COLLAUDO
+  Blocco J, le voci "v0.35.1" (J2, J4, J6, J9, J10, J11); J12 ora cancella anche
+  storage/app/private/tmp/prima-nota.

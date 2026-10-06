@@ -163,6 +163,26 @@ class PrimaNota extends Model
         return (int) $this->data->format('Y');
     }
 
+    /**
+     * Valori aggiunti alla riga dell'Audit Log (AuditObserver). Di un
+     * giroconto si registra solo la riga di uscita (l'altra si salva senza
+     * eventi, PrimaNotaController): qui il verso, perché l'operazione resti
+     * una riga sola; all'eliminazione anche i giustificativi tolti.
+     */
+    public function auditContesto(string $operazione): array
+    {
+        $extra = [];
+        if ($this->giroconto_id && $this->tipo === 'uscita') {
+            $arrivo = $this->conto === 'cassa' ? 'banca' : 'cassa';
+            $extra['giroconto'] = self::CONTI[$this->conto] . ' → ' . self::CONTI[$arrivo];
+        }
+        if ($operazione === 'deleted' && $this->relationLoaded('documenti') && $this->documenti->isNotEmpty()) {
+            $extra['giustificativi'] = $this->documenti->pluck('nome')->implode(', ');
+        }
+
+        return $extra;
+    }
+
     /** Movimenti che contano nel saldo: tutti tranne gli anticipi non rimborsati. */
     public function scopeEffettivi(Builder $q): Builder
     {

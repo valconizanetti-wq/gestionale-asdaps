@@ -20,7 +20,7 @@ class AnnoContabile extends Model
         'saldo_apertura_cassa', 'saldo_apertura_banca', 'saldi_fonte',
         'saldi_documento_path', 'saldi_documento_nome',
         'saldo_chiusura_cassa', 'saldo_chiusura_banca',
-        'approvazione_data', 'approvazione_rif', 'chiuso_il', 'chiuso_da',
+        'approvazione_data', 'approvazione_rif', 'approvazione_verbale_id', 'chiuso_il', 'chiuso_da',
     ];
 
     protected function casts(): array
@@ -38,6 +38,11 @@ class AnnoContabile extends Model
     public function chiusoDa(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'chiuso_da');
+    }
+
+    public function verbaleApprovazione(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Verbale::class, 'approvazione_verbale_id');
     }
 
     public function isChiuso(): bool
