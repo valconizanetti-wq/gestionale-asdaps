@@ -1,0 +1,56 @@
+Gestionale ASD - v0.35.0 (06/10/2026)
+Prima Nota: movimenti, giroconti, anni contabili, categorie e tag
+
+Da applicare sopra la v0.34.2. 3 migration, 1 seeder, CSS cambiato (npm run build).
+Scheda: docs/specifiche/prima-nota.md. Tavole: docs/mockup/Tavole-prima-nota.pdf.
+
+COSA CAMBIA
+  - Prima Nota (menu "Prima Nota"): movimenti di cassa e banca con giustificativi,
+    giroconti, fornitori e tag "trova o crea", filtri, totali, CSV e registro PDF.
+    Importi all'italiana: "1.450" = 1450,00; "12,5" = 12,50.
+  - Anni contabili (Prima Nota > Anni contabili): saldi di apertura solo per il
+    primo anno (per noi il 2027: saldi al 31/12/2026 di gestionale-acv), chiusura
+    dopo l'approvazione del rendiconto, correzioni motivate, riapertura del Presidente.
+    gl_anni_contabili sostituisce gl_prima_nota_anni_chiusi (la migration copia
+    eventuali anni chiusi e toglie la vecchia tabella).
+  - Categorie e tag: le 33 categorie di gestionale-acv (23 attive), con uso e natura.
+  - L'iscrizione da domanda scrive la quota nella categoria "Quote associative".
+
+FILE
+  app/Http/Controllers/PrimaNotaController.php, AnniContabiliController.php,
+    CategorieController.php (nuovi)
+  app/Models/AnnoContabile.php, Tag.php (nuovi); PrimaNota.php, PrimaNotaCategoria.php,
+    PrimaNotaDocumento.php; PrimaNotaAnnoChiuso.php DA CANCELLARE
+  app/Services/AnniContabili.php (nuovo), IscrizioneSocio.php, RiskMatrix.php
+  app/Support/Importo.php (nuovo)
+  database/migrations/2026_10_06_000094..000096 (nuove)
+  database/seeders/PrimaNotaCategoriaSeeder.php (nuovo), DatabaseSeeder.php
+  resources/views/prima-nota/* (nuove), pdf/prima-nota.blade.php (nuova)
+  resources/css/app.css, routes/web.php
+  tests/Feature/PrimaNotaTest.php (nuovo)
+  docs/specifiche/prima-nota.md (nuova), scontrini.md, MANUALE-ASD.md (tutte e due
+    le copie), ui.md, da-riportare-gestionale-aps.md, bootstrap-prossima-sessione.md,
+    test/test-domande-iscrizione.md e docs/test-domande-iscrizione.md,
+    mockup/Tavole-prima-nota.pdf
+
+LOCALE
+  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.34.2.txt e
+     app/Models/PrimaNotaAnnoChiuso.php.
+  2. php artisan migrate
+     php artisan db:seed --class=PrimaNotaCategoriaSeeder
+  3. php artisan test   -> 61 superati
+  4. git add -A && git commit -m "v0.35.0: Prima Nota"
+  5. npm run build ; git archive -o deploy.zip HEAD ; build.zip da public\build
+
+SERVER
+  Come la v0.34.2 (deploy.md par. 5: unzip, build.zip, migrate, optimize:clear e
+  cache), con in piu' dopo "php artisan migrate --force":
+     php artisan db:seed --class=PrimaNotaCategoriaSeeder --force
+  Se esiste ancora app/Models/PrimaNotaAnnoChiuso.php sul server, cancellarlo
+  (l'estrazione dello ZIP non toglie i file vecchi).
+
+COLLAUDO
+  Lista di collaudo, blocco J. Solo movimenti di prova: prima di scrivere i saldi
+  veri del 2027 va fatto l'azzeramento J12 (movimenti, giustificativi,
+  gl_anni_contabili, gl_tag, fornitori di prova, storage/app/private/prima-nota),
+  altrimenti il 2026 delle domande di prova risulta primo anno.

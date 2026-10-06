@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\AuditObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+/** Giustificativo allegato a un movimento (disco 'local', prima-nota/<anno>/). */
+#[ObservedBy([AuditObserver::class])]
 class PrimaNotaDocumento extends Model
 {
     protected $table = 'gl_prima_nota_documenti';

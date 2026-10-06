@@ -57,6 +57,10 @@ class RiskMatrix
         }
 
         if ($operazione === 'updated') {
+            // Chiusura e riapertura dell'anno contabile (v0.35.0, prima-nota.md §3)
+            if ($modello === 'AnnoContabile') {
+                return array_key_exists('stato', $dirty) ? 'HIGH' : 'MEDIUM';
+            }
             if ($modello === 'Bilancio' && ($dirty['stato'] ?? null) === 'approvato') {
                 return 'HIGH';
             }

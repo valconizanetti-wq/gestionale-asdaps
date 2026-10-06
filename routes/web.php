@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AnniContabiliController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DomandeController;
 use App\Http\Controllers\ImpostazioniEnteController;
+use App\Http\Controllers\PrimaNotaController;
 use App\Http\Controllers\SociController;
 use App\Http\Controllers\SocioDocumentiController;
 use Illuminate\Support\Facades\Route;
@@ -136,6 +139,49 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::get('/ente/periodi/{periodo}/passaggio', 'passaggio')->name('periodi.passaggio');
             Route::post('/ente/periodi/{periodo}/spunte', 'spunta')->name('periodi.spunta');
             Route::post('/iscrizioni', 'iscrizioni')->name('iscrizioni');
+        });
+
+    // Prima Nota: movimenti, giroconti, giustificativi, anni contabili,
+    // categorie e tag (prima-nota.md, v0.35.0). Presidente e Tesoriere
+    // modificano, il Revisore consulta (controllo nei controller).
+    Route::middleware('permesso:prima_nota')
+        ->prefix('prima-nota')->name('prima-nota.')
+        ->group(function () {
+            Route::controller(AnniContabiliController::class)->prefix('anni')->name('anni.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::put('/{anno}/saldi', 'saldi')->whereNumber('anno')->name('saldi');
+                Route::get('/{anno}/saldi/documento', 'documento')->whereNumber('anno')->name('documento');
+                Route::post('/{anno}/chiudi', 'chiudi')->whereNumber('anno')->name('chiudi');
+                Route::post('/{anno}/riapri', 'riapri')->whereNumber('anno')->name('riapri');
+            });
+
+            Route::controller(CategorieController::class)->group(function () {
+                Route::get('/categorie', 'index')->name('categorie.index');
+                Route::post('/categorie', 'store')->name('categorie.store');
+                Route::put('/categorie/{categoria}', 'update')->name('categorie.update');
+                Route::post('/categorie/{categoria}/sposta', 'sposta')->name('categorie.sposta');
+                Route::post('/categorie/{categoria}/attiva', 'attiva')->name('categorie.attiva');
+                Route::delete('/categorie/{categoria}', 'destroy')->name('categorie.destroy');
+                Route::put('/tag/{tag}', 'updateTag')->name('tag.update');
+                Route::delete('/tag/{tag}', 'destroyTag')->name('tag.destroy');
+            });
+
+            Route::controller(PrimaNotaController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/esporta.csv', 'exportCsv')->name('export-csv');
+                Route::get('/registro.pdf', 'exportPdf')->name('export-pdf');
+                Route::get('/nuovo', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/giroconto', 'createGiroconto')->name('giroconto.create');
+                Route::post('/giroconto', 'storeGiroconto')->name('giroconto.store');
+                Route::get('/{movimento}', 'show')->whereNumber('movimento')->name('show');
+                Route::get('/{movimento}/modifica', 'edit')->whereNumber('movimento')->name('edit');
+                Route::put('/{movimento}', 'update')->whereNumber('movimento')->name('update');
+                Route::delete('/{movimento}', 'destroy')->whereNumber('movimento')->name('destroy');
+                Route::post('/{movimento}/documenti', 'aggiungiDocumenti')->whereNumber('movimento')->name('documenti.store');
+                Route::get('/{movimento}/documenti/{documento}', 'documento')->whereNumber('movimento')->name('documenti.show');
+                Route::delete('/{movimento}/documenti/{documento}', 'eliminaDocumento')->whereNumber('movimento')->name('documenti.destroy');
+            });
         });
 
     // Qui, modulo per modulo, gli altri gruppi con ->middleware('permesso:<sezione>').

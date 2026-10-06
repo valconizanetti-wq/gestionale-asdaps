@@ -1443,3 +1443,78 @@
     }
     .data-table.responsive.audit-tabella td.audit-quando .td-sub { display: inline; font-size: 12px; }
 }
+
+/* --------------------------------------------------------------------------
+   13. PRIMA NOTA (v0.35.0)
+   Movimenti, giroconti, anni contabili, categorie e tag (tavole PN-1…PN-3,
+   PN-8, PN-9 della tela; prima-nota.md).
+   -------------------------------------------------------------------------- */
+@layer components {
+    .importo-entrata { color: var(--color-ok); font-weight: 600; }
+    .importo-uscita { color: var(--color-ko); font-weight: 600; }
+    .importo-neutro { color: var(--color-testo-2); font-weight: 600; }
+    .pn-numero { font-family: var(--font-mono); font-size: 12px; color: var(--color-etichetta); }
+    .pn-desc { font-weight: 600; color: var(--color-notte); text-decoration: none; }
+    a.pn-desc:hover { color: var(--color-primario); }
+    .pn-etichette { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-left: 6px; vertical-align: middle; }
+    .badge-tag {
+        display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 1px 8px;
+        border-radius: var(--radius-pill); border: 1px solid rgb(0 74 173 / 0.35);
+        color: var(--color-primario); background: var(--color-superficie); white-space: nowrap; text-decoration: none;
+    }
+    .pn-filtri .form-select { min-width: 130px; }
+    .pn-totali { font-size: 12px; color: var(--color-etichetta); }
+    .pn-totali strong.entrate { color: var(--color-ok); }
+    .pn-totali strong.uscite { color: var(--color-ko); }
+
+    /* Modulo del movimento: modulo a sinistra, aiuto a destra */
+    .pn-colonne { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+    .pn-colonna { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .pn-aiuto p { font-size: 12.5px; color: var(--color-testo-2); line-height: 1.5; }
+    .pn-aiuto p + p { margin-top: 10px; }
+    .scelta-testo { display: flex; flex-direction: column; gap: 2px; }
+    .scelta-sub { font-size: 12px; font-weight: 400; color: var(--color-etichetta); }
+    .pn-scelte { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .pn-campo-importo .form-input { font-variant-numeric: tabular-nums; }
+
+    /* Giustificativi */
+    .pn-allegati { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pn-allegato {
+        display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 12.5px;
+        background: var(--color-superficie); border: 1px solid var(--color-bordo); border-radius: var(--radius-ctrl);
+    }
+    .pn-allegato a { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+    .pn-allegato form { display: inline; }
+    .pn-file { font-size: 13px; }
+
+    /* Anni contabili: lista di controllo della chiusura */
+    .pn-controlli { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .pn-controllo { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; }
+    .pn-controllo svg { width: 18px; height: 18px; margin-top: 1px; }
+    .pn-controllo.fatto svg { color: var(--color-ok); }
+    .pn-controllo.manca svg { color: var(--color-warn); }
+    .pn-controllo strong { display: block; font-size: 13.5px; color: var(--color-notte); }
+    .pn-controllo span { font-size: 12px; color: var(--color-etichetta); }
+
+    /* Categorie: righe compatte, azioni affiancate */
+    .pn-categorie td { padding-top: 8px; padding-bottom: 8px; }
+    .pn-categorie .td-azioni { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+    .pn-categorie .td-azioni form { display: inline-flex; }
+    .pn-categoria-spenta .pn-desc { color: var(--color-etichetta); }
+    /* Colonna che esiste solo a telefono (es. Importo al posto di Entrata e Uscita) */
+    .data-table .td-solo-mobile { display: none; }
+}
+
+@media (max-width: 1100px) {
+    .pn-colonne { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .pn-scelte { grid-template-columns: 1fr; }
+    .pn-etichette { margin-left: 0; margin-top: 4px; }
+    .data-table.responsive td.td-solo-mobile { display: flex; }
+    .pn-categorie .td-azioni { justify-content: flex-end; }
+}
+@layer components {
+    .pn-su { transform: rotate(180deg); }
+}

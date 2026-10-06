@@ -19,12 +19,14 @@ dell'esercizio — pensato per l'uso mobile sul momento (es. subito dopo
 un acquisto), rimandando la classificazione contabile precisa a un
 momento successivo da desktop.
 
-Origine della funzionalità: individuata analizzando il sistema
-WordPress ("Area Riservata" su `ladanteorvieto.com`) attualmente in uso
-per il Dante — un sistema diverso e precedente rispetto al Gestionale
-APS Laravel (tabelle `conta_*`/`doc_archivio`, non `gl_*`). Non è stato
-portato codice: la logica di business è stata analizzata e ridisegnata
-da zero per lo schema Laravel del derivato ASD.
+Origine della funzionalità: individuata analizzando **`gestionale-acv`**,
+il plugin WordPress con cui la Compagnia (B.A.S.) tiene oggi la contabilità
+(tabelle `conta_*`/`doc_archivio`, non `gl_*`; scansione con OCR.space,
+stessa chiave). Correzione del 06/10/2026: prima era attribuito per errore
+all'«Area Riservata» del Dante. Non è stato portato codice: la logica di
+business è stata analizzata e ridisegnata da zero per lo schema Laravel
+del derivato ASD. Si appoggia alla Prima Nota della v0.35.0
+(`prima-nota.md`); la realizzazione è prevista nella v0.36.0.
 
 Regole di business:
 - Un movimento nasce sempre con una categoria segnaposto ("da
@@ -79,7 +81,7 @@ Regole di business:
    l'importo su categorie diverse. Il flag `quadrato` su
    `gl_prima_nota_scontrini` viene ricalcolato ad ogni variazione.
 4. **Anno chiuso**: se lo scontrino appartiene a un anno chiuso
-   (assenza/presenza di riga in `gl_prima_nota_anni_chiusi`), qualunque
+   (`gl_anni_contabili`, stato `chiuso`), qualunque
    modifica o scollegamento richiede una motivazione, registrata in
    `gl_audit_log`.
 
@@ -132,10 +134,12 @@ Regole di business:
   `categoria_id`, lasciato invariato).
 - **Audit Log** (`gl_audit_log`): riuso diretto per la tracciabilità
   delle modifiche su anno chiuso.
-- **Anni chiusi** (`gl_prima_nota_anni_chiusi`): usato per determinare
-  se un movimento appartiene a un anno chiuso; nessuna modifica
-  necessaria, il supporto a più anni aperti in contemporanea è già
-  nativo per assenza di riga (vedi anche `MANUALE-ASD.md` §6).
+- **Anni contabili** (`gl_anni_contabili`, v0.35.0, al posto di
+  `gl_prima_nota_anni_chiusi`): `AnniContabili::chiuso()` dice se un
+  movimento appartiene a un anno chiuso; la correzione rifà la fotografia
+  dei saldi (`prima-nota.md` §3). La categoria segnaposto è
+  `DA_CLASSIFICARE` («Uscite da classificare», di sistema), che blocca la
+  chiusura dell'anno finché resta usata.
 - **Impostazioni** (`gl_impostazioni`): nuova tabella generica,
   introdotta da questo modulo ma pensata per essere riusata da
   qualunque altra funzionalità futura necessiti di configurazione a
@@ -144,7 +148,8 @@ Regole di business:
 ## 7. Storia ed evoluzione
 
 - Funzionalità richiesta esplicitamente da Paolo per mantenere una
-  capacità già in uso nel sistema WordPress precedente (scansione
+  capacità già in uso in `gestionale-acv`, il plugin WordPress della
+  Compagnia (scansione
   scontrino → movimento Prima Nota).
 - Analisi del codice originale (WordPress, non Laravel) ha permesso di
   estrarre tutta la logica di business (flusso in due passaggi,
@@ -160,3 +165,7 @@ Regole di business:
   `gl_prima_nota_categorie` copriva già la distinzione necessaria — 
   nessuna nuova tabella richiesta, solo due voci di configurazione
   aggiuntive in `gl_impostazioni`.
+- 06/10/2026 (v0.35.0): corretta la provenienza (`gestionale-acv` della
+  Compagnia, non il Dante); `gl_prima_nota_anni_chiusi` sostituita da
+  `gl_anni_contabili`; confermata la stessa chiave OCR.space di
+  `gestionale-acv`. Realizzazione nella v0.36.0, sopra la Prima Nota.

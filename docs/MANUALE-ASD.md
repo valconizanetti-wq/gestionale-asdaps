@@ -478,12 +478,16 @@ di questa sessione: 4 migration, 2 model nuovi, 2 model aggiornati).
 
 ## 6. Modulo Scontrini (registrazione da foto con riconoscimento OCR)
 
-Funzionalità da preservare, individuata analizzando il sistema WordPress
-("Area Riservata" su `ladanteorvieto.com`) attualmente in uso per il
-Dante — **sistema diverso e precedente** rispetto al Gestionale APS
-Laravel (tabelle `conta_*`/`doc_archivio`, non `gl_*`): non è stato
-portato codice, solo la logica di business, ridisegnata da zero per lo
-schema Laravel.
+Funzionalità da preservare, individuata analizzando **`gestionale-acv`**,
+il plugin WordPress con cui la **Compagnia (B.A.S.)** tiene oggi la
+contabilità (tabelle `conta_*`/`doc_archivio`, non `gl_*`). Correzione del
+06/10/2026: in precedenza era attribuito per errore all'«Area Riservata»
+del Dante; il Dante usa il Gestionale APS Laravel, da cui vengono invece
+giroconti, allegati multipli, anticipi e riconciliazione bancaria
+(`prima-nota.md` §1, analisi nel progetto
+`claude/analisi-contabilita-esistente.md`). Non è stato portato codice,
+solo la logica di business, ridisegnata da zero per lo schema Laravel.
+`gestionale-acv` va in pensione dal 01/01/2027 (migrati solo i saldi).
 
 **Schema progettato e consegnato** (archivio `modulo-scontrini-asd.zip`
 di questa sessione: 3 migration, 3 model — 2 nuovi + 1 aggiornato, 1
@@ -512,12 +516,12 @@ seeder).
   movimenti possono condividere lo stesso scontrino.
   `giustificativo_path`/`giustificativo_nome` restano invariati per i
   movimenti inseriti a mano, senza passare dal flusso scontrino.
-- **Anni sociali aperti in contemporanea**: nessuna modifica necessaria
-  — `gl_prima_nota_anni_chiusi` contiene solo gli anni chiusi, quindi il
-  supporto a più anni aperti insieme (tipicamente l'anno precedente,
-  finché il consuntivo non è approvato, e quello in corso) è già nativo
-  per assenza di riga, senza bisogno di un concetto esplicito di "anno
-  sociale" come nel sistema originale.
+- **Anni sociali aperti in contemporanea**: dalla v0.35.0
+  `gl_prima_nota_anni_chiusi` è sostituita da `gl_anni_contabili` (una riga
+  per anno dal primo movimento, stato aperto/chiuso, saldi di apertura del
+  primo anno, fotografia dei saldi alla chiusura, approvazione del
+  rendiconto; `prima-nota.md`). Più anni aperti insieme restano possibili;
+  si chiudono in ordine.
 - **Audit trail su anno chiuso**: riuso diretto di `gl_audit_log`
   esistente (nessuna modifica al suo schema) — `entita_tipo`/`entita_id`
   per il movimento, `dettaglio` per la motivazione obbligatoria,
@@ -1120,6 +1124,17 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     senza scorrimento, finestre che stanno nello schermo, controllo della
     firma digitale sull'attestazione). **v0.34.2**: esportazioni spente
     senza righe, oggetto dell'attestazione già compilato.
+    **v0.35.0** (06/10/2026): **Prima Nota** (`prima-nota.md`), da
+    `gestionale-acv` della Compagnia e dal Gestionale APS: movimenti di
+    cassa e banca con giustificativi, giroconti, fornitori e tag «trova o
+    crea», le 33 categorie di `gestionale-acv` (con «uso» e natura da
+    verificare), anni contabili (`gl_anni_contabili` al posto di
+    `gl_prima_nota_anni_chiusi`) con saldi di apertura del primo anno,
+    chiusura dopo l'approvazione del rendiconto e correzioni motivate,
+    esportazioni CSV e PDF. `gestionale-acv` va in pensione dal
+    01/01/2027 (migrati solo i saldi). Prossime: v0.36.0 scontrini dal
+    telefono con OCR, v0.37.0 anticipi e note di rimborso; poi
+    riconciliazione bancaria e chiusura mensile della cassa.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

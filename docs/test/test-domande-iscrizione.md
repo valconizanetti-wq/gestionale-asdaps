@@ -1,10 +1,10 @@
-# Test domande di iscrizione e voto CD (collaudo v0.30.3, aggiornata alla v0.34.2)
+# Test domande di iscrizione e voto CD (collaudo v0.30.3, aggiornata alla v0.35.0)
 
 Lista di collaudo manuale su arco.valconi.it. Collaudo della v0.30.3
 concluso il 30/09/2026: blocchi A–F superati, pulizia fatta. Collaudo della
 v0.32.0 (blocco G, A11–A13) del 05/10/2026: superato, con la sola richiesta
 sulla disposizione dei dati fissi (G3), fatta nella v0.32.1 (installata).
-Dalla v0.33.0 blocco H (link personale per l'informativa). Copia viva,
+Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota). Copia viva,
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.
@@ -134,6 +134,31 @@ Dettaglio in `docs/specifiche/audit-log.md` §9. Da Presidente, poi da un utente
 - I9 Verifica mensile senza aspettare: `php artisan audit:verifica-integrita` → «Catena integra».
 - I10 Anomalia simulata (solo sul collaudo, poi si azzera): `UPDATE gl_audit_log SET dettaglio = CONCAT(dettaglio, ' x') WHERE id = (SELECT MIN(id) FROM (SELECT id FROM gl_audit_log) t);` e di nuovo il comando: esce con errore, email «Audit Log: anomalia nella catena di integrità» al Presidente (e al Revisore), fascia rossa nell'elenco, «Genera il certificato» non c'è, la verifica elenca la riga con «Contenuto: l'impronta non si ricalcola».
 - I11 Pulizia del collaudo I10: la catena resta rotta (è il suo scopo); va azzerata con il resto dei dati di prova prima dell'apertura (`TRUNCATE gl_audit_log; DELETE FROM gl_audit_log_integrity; DELETE FROM gl_impostazioni WHERE chiave = 'audit_ultima_verifica';` e i PDF in `storage/app/private/audit/`).
+
+## J. Prima Nota (v0.35.0)
+Dettaglio in `docs/specifiche/prima-nota.md`, tavole PN-1…PN-9. Da Presidente (o Tesoriere), poi da Revisore se c'è. **Solo movimenti di prova**: tutto il blocco va azzerato con J12 prima di scrivere i saldi veri del 2027.
+- J1 Menu «Prima Nota»: Presidente e Tesoriere vedono «Nuovo movimento» e «Giroconto»; il Revisore vede tutto (anche esportazioni e giustificativi) ma nessun pulsante di modifica, con la fascia «sola lettura»; il segretario, se non ha la sezione, riceve 403 su `/prima-nota`.
+- J2 Categorie e tag (`/prima-nota/categorie`): 33 categorie, 23 attive; «Uscite da classificare» con «Di sistema» e senza pulsanti; «Disavanzo/Attivo anno precedente» con «Solo bilancio»; «Gare, manifestazioni e iniziative» (entrata) e «Contributi da Esercenti…» con natura «Da verificare». Nuova categoria di prova in uscita: va in fondo, freccia su la sposta, matita cambia nome e natura, «Disattiva»/«Attiva», cestino la elimina (c'è solo se mai usata). Lo stesso nome di una categoria esistente nello stesso tipo dà errore.
+- J3 Anni contabili (`/prima-nota/anni`): se ci sono movimenti 2026 delle domande di prova, il 2026 è il primo anno e chiede i saldi di apertura (vedi J12). Scrivere saldi di prova (es. cassa «150,00», banca «2.340,50», provenienza «Prova collaudo»): il riquadro li mostra.
+- J4 Nuovo movimento (uscita, cassa): importo «1.450» → salvato 1.450,00 €; importo «12,5» → 12,50 €; importo «1,450» → errore «ambiguo»; categoria solo tra le uscite attive (cambiando tipo in «Entrata» la tendina cambia); fornitore nuovo scritto a mano, tag «Tettoia», un giustificativo JPG o PDF dal telefono (foto). Salvato: scheda del movimento con giustificativo che si apre, fornitore e tag. «Salva e inserisci un altro» riapre il modulo vuoto con tipo, conto e data rimasti.
+- J5 Errori: senza categoria o con descrizione vuota il movimento non si salva e **non** resta il fornitore nuovo (nessun «fantasma» nel suggerimento del campo); file .txt rifiutato.
+- J6 Giroconto da cassa a banca: nell'elenco una riga «Cassa → Banca» senza segno; i saldi di cassa e banca cambiano, entrate e uscite no; con il filtro «Cassa» si vede la riga in uscita. Modifica dell'importo: cambiano entrambe le righe. Eliminazione: spariscono entrambe.
+- J7 Elenco a 1440 e 375 px: 5 indicatori (cassa, banca, entrate, uscite, anticipi), filtri anno/conto/tipo/categoria/tag/cerca, totali del filtro in fondo; su telefono una scheda per movimento con «Importo» col segno (+ verde, − rosso), nessuna riga vuota. Il tag «Tettoia» in Categorie e tag mostra movimenti, totale e anno; il clic filtra l'elenco.
+- J8 Esportazioni: CSV (apre in Excel con importi all'italiana; una descrizione di prova che comincia con «=» resta testo) e registro PDF A4 orizzontale con gli stessi filtri; nell'Audit Log due righe «Prima Nota esportata».
+- J9 Audit Log: le righe dei movimenti, del giroconto, della categoria e del tag di prova ci sono, con i valori prima e dopo nelle modifiche; l'eliminazione di un movimento è «Alto».
+- J10 Domanda di iscrizione accettata con quota versata (blocco C): nella Prima Nota un'entrata in categoria «Quote associative», non eliminabile da qui («collegato alla quota»).
+- J11 Chiusura (solo come prova di blocco): nel 2026 la lista di controllo segna «L'anno è finito» in rosso e il pulsante di chiusura è spento. La chiusura vera, con le correzioni motivate e la riapertura dal Presidente, è coperta dai test automatici (`PrimaNotaTest`); si collauda dal 2028 sul 2027.
+- J12 Azzeramento della Prima Nota di prova (prima dell'apertura del 2027 e dopo ogni giro):
+```sql
+DELETE FROM gl_prima_nota_documenti;
+UPDATE gl_prima_nota SET giroconto_id = NULL;
+DELETE FROM gl_prima_nota;
+DELETE FROM gl_anni_contabili;
+DELETE FROM gl_tag;
+DELETE FROM gl_soggetti WHERE created_at >= '2026-10-06';  -- solo i fornitori nati nel collaudo
+ALTER TABLE gl_prima_nota AUTO_INCREMENT = 1;
+```
+Poi `rm -rf storage/app/private/prima-nota`; la categoria di prova di J2 si elimina dalla sua pagina (se è rimasta). Solo dopo: in `/prima-nota/anni` il primo anno sarà il 2027 e lì si scrivono i saldi di cassa e banca al 31/12/2026 di `gestionale-acv`, con il rendiconto approvato come documento.
 
 ## CD di prova (SQL)
 Controllo dei soci:

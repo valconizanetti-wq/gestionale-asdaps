@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Mail\SocioIscritto;
 use App\Models\Domanda;
 use App\Models\PrimaNota;
-use App\Models\PrimaNotaAnnoChiuso;
 use App\Models\PrimaNotaCategoria;
 use App\Models\Rinnovo;
 use App\Models\Socio;
@@ -37,7 +36,7 @@ class IscrizioneSocio
         if ($domanda->is_test) {
             throw new \RuntimeException('Una domanda di prova non si iscrive nel libro soci.');
         }
-        if (PrimaNotaAnnoChiuso::where('anno', $versataIl->year)->exists()) {
+        if (app(AnniContabili::class)->chiuso($versataIl->year)) {
             throw new \RuntimeException("L'anno {$versataIl->year} della Prima Nota è chiuso: la quota non si può registrare con questa data.");
         }
 
@@ -104,6 +103,9 @@ class IscrizioneSocio
                     : 'Prima quota, da domanda di adesione.',
                 'registrato_da' => $utente->id,
             ])->save();
+
+            // L'anno contabile ha una riga dal primo movimento (prima-nota.md §3).
+            app(AnniContabili::class)->assicura($versataIl->year);
 
             $movimento = new PrimaNota();
             $movimento->forceFill([

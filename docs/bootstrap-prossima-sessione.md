@@ -1,4 +1,4 @@
-# Bootstrap — Gestionale ASD, dopo la v0.34.0 (Audit Log, 06/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.35.0 (Prima Nota, 06/10/2026)
 
 ## Contesto
 Come in `bootstrap-voto-cd.md` (progetto, ambienti, regole di lavoro,
@@ -80,14 +80,76 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   nel riquadro di Impostazioni › Ente: fatto nella **v0.32.1**, da
   installare e ricontrollare (G3).
 
-## Prossimo obiettivo
-1. (Fatto il 05/10/2026: v0.32.1 installata, `docs/statuto` sistemata.)
-   IBAN non ancora disponibile: resta il segnaposto.
-2. **v0.33.0 consegnata (05/10/2026)**: link personale per l'informativa
-   privacy e consenso a foto e video (`privacy-link.md`, tavole
-   `Privacy-1…5`). Da installare (2 migration, `npm run build`) e
-   collaudare: blocco H della lista di collaudo. Poi riportarlo nel core e
-   nel Gestionale APS (elenco unico: `da-riportare-gestionale-aps.md`).
+## Prossimo obiettivo (punto della situazione, 06/10/2026, sera)
+- **In produzione** (deploy di Paolo, 06/10/2026): v0.34.2, con v0.33.0
+  (link privacy) e v0.34.0–v0.34.2 (Audit Log). Collaudo del blocco I
+  chiuso. IBAN non ancora disponibile: resta il segnaposto.
+- **v0.35.0 consegnata** (Prima Nota, sotto): da installare
+  (`LEGGIMI-v0.35.0.txt`: 3 migration, seeder delle categorie,
+  `npm run build`) e collaudare con il blocco J della lista di collaudo.
+- Poi, nell'ordine concordato: **v0.36.0 Scontrini** dal telefono con OCR
+  (tavole PN-4 e PN-5; stessa chiave OCR.space di `gestionale-acv`, in
+  `.env` o Impostazioni), **v0.37.0 anticipi e note di rimborso** (PN-6,
+  PN-7); poi riconciliazione bancaria e chiusura mensile della cassa
+  (dal Gestionale APS); Rinnovi quota, Verbali, Rendiconto (preventivo
+  2027 qui se pronto in tempo), procedura di azzeramento.
+- Riporto sul Gestionale APS e sul core: `da-riportare-gestionale-aps.md`
+  (con A9–A11 e D4 dalla Prima Nota) e `MANUALE-ASD.md` §7, quando Paolo
+  lo decide.
+
+## Fatto il 06/10/2026: v0.35.0 (Prima Nota)
+Materiale letto: Gestionale APS del Dante e plugin `gestionale-acv` della
+Compagnia (`claude/analisi-contabilita-esistente.md`, `acv-contabilita*.md`,
+`acv-categorie-master.sql`). Tavole PN-1…PN-9 approvate da Paolo
+(`docs/mockup/Tavole-prima-nota.pdf`, tela «Gestionale ASD — Riferimento
+UI»). Scheda: `docs/specifiche/prima-nota.md`.
+- Movimenti di cassa e banca con giustificativi multipli, giroconti,
+  fornitori e tag «trova o crea», esportazioni CSV e PDF, importi letti
+  all'italiana (`App\Support\Importo`).
+- `gl_anni_contabili` al posto di `gl_prima_nota_anni_chiusi`: saldi di
+  apertura scritti a mano **solo per il primo anno** (per la Compagnia il
+  2027, dai saldi al 31/12/2026 di `gestionale-acv`), poi ereditati;
+  chiusura dopo l'approvazione del rendiconto con lista di controllo;
+  correzioni su anno chiuso motivate e registrate; riapertura solo del
+  Presidente.
+- 33 categorie di `gestionale-acv` (`PrimaNotaCategoriaSeeder`, 23 attive)
+  con `uso` (movimenti, solo bilancio, sistema) e natura da verificare;
+  pagina Categorie e tag. Codice `QUOTE` ora presente: l'iscrizione da
+  domanda scrive la quota con la sua categoria.
+- Difetto trovato dai test: un metodo `anno()` nel model bloccava in
+  silenzio l'audit (ora `annoMovimento()`; regola in `prima-nota.md` §4).
+- 61 test su MySQL; tre giri di revisione critica (in `prima-nota.md` §7).
+- Correzioni di documentazione: provenienza degli scontrini
+  (`gestionale-acv`, non il Dante) in `scontrini.md` e MANUALE §6.
+- **Azzeramento**: prima di scrivere i saldi 2027 vanno svuotati i
+  movimenti di prova (anche quelli creati dalle domande di prova),
+  `gl_anni_contabili`, `gl_tag`, i fornitori di prova e
+  `storage/app/private/prima-nota/` (lista di collaudo, J12): altrimenti
+  il 2026 risulta primo anno.
+
+Decisioni di Paolo (06/10/2026), dettaglio in
+`claude/analisi-contabilita-esistente.md`:
+- `gestionale-acv` va in pensione dal 01/01/2027: si migrano **solo i
+  saldi** di cassa e banca al 31/12/2026 (query pronta nell'analisi §6);
+- categorie: **si tengono tutte e 33**; «Disavanzo/Attivo anno
+  precedente» solo in preventivo e rendiconto; «Uscite da classificare»
+  di sistema per gli scontrini;
+- OCR.space: stessa chiave di `conta_impostazioni.ocr_space_api_key`,
+  in `.env` o Impostazioni, mai nel codice;
+- consuntivo 2026 chiuso in `gestionale-acv`; preventivo 2027 nel
+  Gestionale ASD se pronto in tempo;
+- **si tiene tutto**: anticipi con nota di rimborso, riconciliazione
+  bancaria, chiusura mensile della cassa (dall'APS) e tag (`gl_tag`,
+  separato da Progetti).
+
+Regole di lavoro che restano: tavole sulla tela prima del codice (PDF
+delle tavole nuove se la tela è troppo grande); niente `style=` nelle
+viste; verifica a 1440 e 375 px; tre giri di revisione critica prima di
+ogni consegna, dichiarandone i risultati; ZIP con la struttura del
+progetto e LEGGIMI; documentazione sempre aggiornata (scheda, ui.md,
+MANUALE, lista di collaudo, bootstrap); ogni analisi o decisione
+documentata; le modifiche da riportare al Gestionale APS in
+`da-riportare-gestionale-aps.md`.
 
 ## Collaudo (29–30/09/2026)
 - v0.30.3 consegnata (ZIP cumulativo con la v0.30.2; dettaglio in
@@ -166,12 +228,12 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   "Apri il verbale" nella scheda); mancano approvazione, numerazione, firma,
   PDF ed elenco dei verbali. Finché non c'è, i verbali restano in bozza.
 - Statuto: al momento dell'adozione decidere se pubblicarlo come 1.0
-  (prima versione pubblica) o 1.1. Lo statuto pubblicato prevede già
-  l'assenso del minore dai 14 anni (art. 6.3), che il modulo non chiede
-  ancora (prossimo obiettivo, punto 1).
+  (prima versione pubblica) o 1.1. L'assenso del minore dai 14 anni
+  (art. 6.3) è nel modulo di domanda dalla v0.31.0.
 - Azzeramento finale prima dell'apertura al pubblico (Paolo, 29/09/2026:
   oggi è tutto in prova): domande, voti, email, verbali, soci, rinnovi e
-  movimenti di prova, registro di audit; modalità test spenta. Procedura
+  movimenti di prova (con anni contabili, tag, fornitori e giustificativi:
+  J12), registro di audit; modalità test spenta. Procedura
   da scrivere quando ci si arriva. Fino ad allora informativa e statuto si
   correggono sul posto con il numero di versione dell'avvio (1.0), senza
   versioni intermedie (`domande-iscrizione.md` §7, v0.30.3).

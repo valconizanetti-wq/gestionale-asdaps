@@ -17,6 +17,10 @@ aggiornato ad ogni sessione di lavoro sul derivato.
   intera è seedato (§6.13). **Decisione architetturale importante**:
   Gestione gare **non** è un modulo di `gestionale-asd` — sarà un'app
   Laravel indipendente, nome provvisorio **ArcoGare** (vedi §4.3).
+  **Forma giuridica attuale** (chiarito da Paolo): la Compagnia esiste già
+  come B.A.S. (C.F. 90022610555) e diventerà ASD mantenendo lo stesso
+  codice fiscale; la "costituzione 1/1/2028" citata nelle schede va letta
+  come passaggio ad ASD, non come nascita di un nuovo ente.
   **Identità visiva e fondamenta UI definite** (v0.17.0, scheda
   `ui.md`): palette dal logo, token Tailwind 4, classi condivise, font e
   Alpine in locale. **Primo strato web** (v0.19.0, scheda `auth.md`):
@@ -474,12 +478,16 @@ di questa sessione: 4 migration, 2 model nuovi, 2 model aggiornati).
 
 ## 6. Modulo Scontrini (registrazione da foto con riconoscimento OCR)
 
-Funzionalità da preservare, individuata analizzando il sistema WordPress
-("Area Riservata" su `ladanteorvieto.com`) attualmente in uso per il
-Dante — **sistema diverso e precedente** rispetto al Gestionale APS
-Laravel (tabelle `conta_*`/`doc_archivio`, non `gl_*`): non è stato
-portato codice, solo la logica di business, ridisegnata da zero per lo
-schema Laravel.
+Funzionalità da preservare, individuata analizzando **`gestionale-acv`**,
+il plugin WordPress con cui la **Compagnia (B.A.S.)** tiene oggi la
+contabilità (tabelle `conta_*`/`doc_archivio`, non `gl_*`). Correzione del
+06/10/2026: in precedenza era attribuito per errore all'«Area Riservata»
+del Dante; il Dante usa il Gestionale APS Laravel, da cui vengono invece
+giroconti, allegati multipli, anticipi e riconciliazione bancaria
+(`prima-nota.md` §1, analisi nel progetto
+`claude/analisi-contabilita-esistente.md`). Non è stato portato codice,
+solo la logica di business, ridisegnata da zero per lo schema Laravel.
+`gestionale-acv` va in pensione dal 01/01/2027 (migrati solo i saldi).
 
 **Schema progettato e consegnato** (archivio `modulo-scontrini-asd.zip`
 di questa sessione: 3 migration, 3 model — 2 nuovi + 1 aggiornato, 1
@@ -508,12 +516,12 @@ seeder).
   movimenti possono condividere lo stesso scontrino.
   `giustificativo_path`/`giustificativo_nome` restano invariati per i
   movimenti inseriti a mano, senza passare dal flusso scontrino.
-- **Anni sociali aperti in contemporanea**: nessuna modifica necessaria
-  — `gl_prima_nota_anni_chiusi` contiene solo gli anni chiusi, quindi il
-  supporto a più anni aperti insieme (tipicamente l'anno precedente,
-  finché il consuntivo non è approvato, e quello in corso) è già nativo
-  per assenza di riga, senza bisogno di un concetto esplicito di "anno
-  sociale" come nel sistema originale.
+- **Anni sociali aperti in contemporanea**: dalla v0.35.0
+  `gl_prima_nota_anni_chiusi` è sostituita da `gl_anni_contabili` (una riga
+  per anno dal primo movimento, stato aperto/chiuso, saldi di apertura del
+  primo anno, fotografia dei saldi alla chiusura, approvazione del
+  rendiconto; `prima-nota.md`). Più anni aperti insieme restano possibili;
+  si chiudono in ordine.
 - **Audit trail su anno chiuso**: riuso diretto di `gl_audit_log`
   esistente (nessuna modifica al suo schema) — `entita_tipo`/`entita_id`
   per il movimento, `dettaglio` per la motivazione obbligatoria,
@@ -890,6 +898,10 @@ tesoriere, revisore).
 
 ## 7. Correzioni da riportare su `MANUALE-CORE.md`
 
+Le modifiche da riportare sul **Gestionale APS** sono tutte in un
+documento a parte, con una casella da spuntare per ciascuna:
+`docs/da-riportare-gestionale-aps.md`. Qui restano quelle per il core.
+
 - La data di entrata in vigore dell'esenzione IVA per quote associative e
   corrispettivi specifici è il **1° gennaio 2026**, non il 2025 — questa
   correzione vale per qualunque derivato APS/ASD, non solo per questo, e
@@ -914,9 +926,21 @@ tesoriere, revisore).
 - **Il core non scrive nell'audit log**: ha model e tabelle, ma non
   observer né servizi (`app/Services`, `app/Observers` non portati dal
   Gestionale APS). Qui ripresi e corretti (scheda `audit-log.md` §8): da
-  riportare nel core, perché indipendenti dal tipo di associazione. Da
-  segnalare anche al Gestionale APS le correzioni sul dettaglio con dati
-  personali dentro l'hash e sulla notifica HIGH con i valori in chiaro.
+  riportare nel core, perché indipendenti dal tipo di associazione.
+- **Consenso privacy senza rifare la domanda di iscrizione**: nel core
+  e nel Gestionale APS manca una pagina per raccogliere (o rinnovare) il
+  consenso di un socio già iscritto. Qui è realizzata nella v0.33.0
+  (`privacy-link.md`, link personale via email, con foto e video): da
+  riportare nel core (per il Gestionale APS: `da-riportare-gestionale-aps.md`).
+- **`gl_audit_log.created_at` in TIMESTAMP** (v0.34.0): la catena
+  dipende dal fuso orario di MySQL; qui portata a DATETIME (migration
+  `2026_10_06_000093`, `audit-log.md` §9). Da correggere anche nel core,
+  prima che un derivato vada in produzione.
+- **`AssociazioneSeeder` del core**: dati segnaposto di un'APS
+  (`runts_sezione = 'APS'`, forma giuridica APS) e soprattutto
+  `updateOrCreate`, che a ogni `db:seed` sovrascriverebbe i dati reali
+  dell'associazione. Qui corretto con `firstOrCreate` e i dati noti della
+  Compagnia; da correggere anche nel core.
 - **Default di `gl_soci.anno_iscrizione`**: la migration del core usa
   `->default(date('Y'))`, valutato una volta sola quando la migration
   gira, quindi il default resta fisso a quell'anno. Qui corretto con un
@@ -938,6 +962,10 @@ tesoriere, revisore).
    Il gestionale interverrà solo a valle, archiviando il documento finale
    firmato nel modulo Archivio (`gl_archivio_documenti`, collegato a
    `gl_associazione`).
+   **Rivisto il 27/09/2026** (punto 16): lo statuto è stato redatto in
+   sessione prima di proseguire con il modulo Domande, perché diverse
+   regole del gestionale ne dipendono. Notaio o commercialista restano per
+   la revisione finale e l'adozione.
 3. ~~Progettare nel dettaglio lo schema di `gl_tesseramenti` e
    `gl_certificati_medici`~~ — **fatto**, vedi §4.1: schema completo
    (9 migration, 6 model, 3 seeder) consegnato e integrato in
@@ -1017,7 +1045,137 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     matrice di rischio, verifica della catena), scheda `audit-log.md` §8.
     **v0.22.0**: documenti per l'iscrizione e consenso privacy (in
     presenza o cartaceo); certificato medico previsto ma spento
-    (impostazione `certificato_medico_richiesto`). Sezione Soci completa:
+    (impostazione `certificato_medico_richiesto`).
+    **v0.23.0**: libro soci in PDF (DomPDF), colonna Documenti in elenco,
+    esportazioni registrate nell'audit log. Sezione Soci completa:
     prossimo passo il primo deploy in produzione.
+    **v0.25.0**: anteprima dei documenti in una nuova scheda.
+15. ~~Primo deploy~~ — **fatto** (27/09/2026, scheda `deploy.md`): ambiente
+    di collaudo su `arco.valconi.it` (SupportHost, account `uiynixlg`),
+    in attesa di dominio e provider definitivi. Solo dati di prova.
+    Emersi e risolti durante il rilascio: gestore PHP del cPanel
+    nell'`.htaccess`, due PHP distinti per sito e Terminale (sito portato
+    su `alt-php83`), estensioni `fileinfo` e `intl` mancanti nel PHP del
+    sito.
+14. **Consenso privacy online** (deciso, da realizzare con il modulo
+    Domande): canale principale del consenso. Per i nuovi soci arriva con la
+    domanda di iscrizione online; per i soci senza domanda, con un link
+    personale via email. Prerequisiti: SMTP configurato e testo
+    dell'informativa della Compagnia (dettagli in `soci.md`).
     Dopo il collaudo: primo deploy in produzione (deciso: alla sezione
     Soci completa).
+    **v0.26.0** (27/09/2026): analisi della domanda online sui moduli CSEN
+    e bozza dell'informativa privacy (`informativa-privacy-v1.0.md`);
+    decisioni nella scheda `domande-iscrizione.md`.
+    **v0.27.0** (28/09/2026): modulo pubblico della domanda online in due
+    passi (dati, controlla e invia), conferma via email, ricevuta PDF,
+    avviso alla segreteria. Da fare: consultazione dei consiglieri alla
+    conferma, comando giornaliero (esito a 5 giorni, sollecito, decadenza,
+    cancellazioni), area riservata delle domande, link personale per il
+    consenso dei soci già iscritti. Prima di aprire le iscrizioni vere:
+    segnaposto dell'informativa completati, statuto pubblicato in
+    `resources/content/statuto/1.0.md`, dominio e provider definitivi con
+    DPA.
+    **v0.30.0** (29/09/2026): voto del CD e area riservata delle domande
+    (`domande-iscrizione.md` §3). Processo semplificato su decisione di
+    Paolo: domanda valida con l'invio (niente conferma via email), voto
+    dei consiglieri dal link personale, esito a 5 giorni (accolta d'ufficio
+    senza quorum, maggioranza dei voti espressi, parità al Presidente),
+    chiusura anticipata solo quando hanno votato tutti (il Presidente
+    interviene solo sulla parità e sul diniego),
+    diniego scritto dal Presidente, email di esito ai consiglieri, bozza
+    di verbale, comando orario `domande:scadenze` (serve il cron),
+    iscrizione nel libro soci con rinnovo e Prima Nota, promozione di
+    ottobre–dicembre, email nello stile del sito. Da fare: adottare le
+    modifiche allo statuto (`statuto/statuto-modifiche-v1.1.md`), link personale
+    per il consenso privacy dei soci senza domanda online.
+    **v0.30.3** (30/09/2026): collaudo A–F concluso.
+    **v0.30.4** (04/10/2026): il testo pubblicato dello statuto (pagina
+    `/statuto`, numerato 1.0 fino all'apertura) è ora la bozza 1.1
+    completa, con le modifiche della v0.30.0 e l'art. 6.6 a 5 giorni
+    (versamento disposto); bozza 1.1 aggiornata. Prossimi: assenso del
+    minore dai 14 anni nel modulo (art. 6.3), link per il consenso privacy.
+    **v0.30.5** (04/10/2026): gestionale in ora italiana (`config/app.php`
+    aveva `'UTC'` fisso e ignorava `APP_TIMEZONE`).
+    **v0.31.0** (04/10/2026): assenso del minore dai 14 anni al
+    tesseramento (art. 16 D.Lgs. 36/2021, statuto art. 6.3) nel modulo,
+    con ricevuta, scheda e verbale; riferimento normativo sempre in
+    piccolo. Analisi: la soglia di legge è 14 (non 12); la privacy non
+    richiede un consenso del minore (art. 2-quinquies solo per i servizi
+    online). Da fare: assenso anche ai rinnovi; link per il consenso
+    privacy dei soci senza domanda.
+    **05/10/2026**: avvio con la B.A.S. dal 01/01/2027, A.S.D. dal
+    01/01/2028; passaggio come profilo dell'ente per periodi
+    (`profilo-ente.md`); la B.A.S. adotta lo statuto rivisto (testo B.A.S.
+    in `statuto/statuto-bas-bozza.md`), pubblicato come 1.0 (v0.31.1); è
+    l'unico testo dello statuto da mantenere (documenti in `docs/statuto/`).
+    **v0.33.0** (05/10/2026): link personale per l'informativa privacy
+    (`privacy-link.md`): invio dalla scheda e in blocco dall'elenco Soci,
+    al genitore per i minori, monouso e senza scadenza, valido anche per le
+    nuove versioni dell'informativa; consenso a foto e video nella scheda
+    del socio (copiato dalla domanda, revoca registrata dalla segreteria).
+    **v0.34.0** (06/10/2026): sezione Audit Log ripresa dal Gestionale
+    APS (`audit-log.md` §9): elenco con filtri e valori prima/dopo,
+    esportazioni, verifica della catena, certificato annuale, attestazioni
+    tecniche, verifica automatica mensile con avviso al Presidente; colonna
+    `created_at` del registro in DATETIME (indipendente dal fuso di MySQL).
+    **v0.34.1** (06/10/2026): correzioni dal collaudo (numero di riga,
+    righe per pagina, una riga aperta alla volta, storico dei certificati
+    senza scorrimento, finestre che stanno nello schermo, controllo della
+    firma digitale sull'attestazione). **v0.34.2**: esportazioni spente
+    senza righe, oggetto dell'attestazione già compilato.
+    **v0.35.0** (06/10/2026): **Prima Nota** (`prima-nota.md`), da
+    `gestionale-acv` della Compagnia e dal Gestionale APS: movimenti di
+    cassa e banca con giustificativi, giroconti, fornitori e tag «trova o
+    crea», le 33 categorie di `gestionale-acv` (con «uso» e natura da
+    verificare), anni contabili (`gl_anni_contabili` al posto di
+    `gl_prima_nota_anni_chiusi`) con saldi di apertura del primo anno,
+    chiusura dopo l'approvazione del rendiconto e correzioni motivate,
+    esportazioni CSV e PDF. `gestionale-acv` va in pensione dal
+    01/01/2027 (migrati solo i saldi). Prossime: v0.36.0 scontrini dal
+    telefono con OCR, v0.37.0 anticipi e note di rimborso; poi
+    riconciliazione bancaria e chiusura mensile della cassa.
+16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
+    "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
+    Docs, esportabile in Word per il notaio), con le note di revisione
+    rispetto allo statuto 2021. Lo statuto 2021 non è più il riferimento:
+    il gestionale si adegua alla v1.0. Denominazione "Compagnia Arcieri
+    Castel Viscardo A.S.D.", sede al Campo di tiro "Franco Cortignani",
+    località Macchietto, Viceno, Castel Viscardo (TR).
+    Scelte di Paolo:
+    - soci fondatori, ordinari e giovani (i minorenni);
+    - niente deleghe in assemblea;
+    - consiglio direttivo di 3–5 membri per 4 anni;
+    - organo di controllo facoltativo, su decisione dell'assemblea;
+    - quota entro il 31 gennaio e decadenza tre mesi dopo (30 aprile);
+    - ammissione anche online, con decisione del CD entro 5 giorni dalla
+      conferma e accoglimento d'ufficio se non vota la maggioranza o se i
+      voti sono pari senza il voto del Presidente; diniego comunicato entro
+      10 giorni, appello entro 30, quota entro 5;
+    - CD anche in videoconferenza e per consultazione telematica con link
+      personale;
+    - assemblea anche a distanza, elettiva compresa; scrutinio segreto
+      sempre per le elezioni, anche con strumenti telematici;
+    - arbitrato rituale, terzo arbitro nominato dal Presidente del
+      Tribunale di Terni.
+
+    Resta da chiarire con commercialista o notaio se l'atto è una
+    costituzione o la trasformazione della B.A.S. esistente. Restano da
+    fare anche le verifiche esterne: requisiti CSEN, testo vigente del
+    D.Lgs. 36/2021 (artt. 7–11), registrazione all'Agenzia delle Entrate.
+
+    **Effetti sul gestionale, ancora da applicare:**
+    - categoria "giovane" = minorenne, e qualifica di socio fondatore
+      (`soci.md`);
+    - scadenza della quota al 31 gennaio e decadenza al 30 aprile
+      (Rinnovi quota);
+    - regole della consultazione telematica: quorum, parità del
+      Presidente, chiusura anticipata, richiesta di riunione da un terzo,
+      accoglimento d'ufficio a 5 giorni (Domande) — **applicate in v0.30.0**,
+      con le modifiche decise il 29/09/2026 (domanda valida con l'invio,
+      parità senza il Presidente decisa da lui, chiusura anticipata solo
+      con tutti i voti): testo per la v1.1 in
+      `statuto/statuto-modifiche-v1.1.md`; la richiesta di riunione da un terzo
+      dei consiglieri non è ancora nel gestionale;
+    - voto segreto telematico con chi vota e cosa vota separati, e
+      registro delle presenze (Assemblee).

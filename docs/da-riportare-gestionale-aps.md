@@ -2,7 +2,7 @@
 
 Elenco unico delle correzioni e delle funzioni nate nel Gestionale ASD che
 vanno riportate sul Gestionale APS (Società Dante Alighieri — Comitato di
-Orvieto). Aggiornato al 06/10/2026, dopo la v0.34.1.
+Orvieto). Aggiornato al 06/10/2026, con la v0.35.0 (Prima Nota).
 
 **Come si usa.** Ogni voce dice cosa succede nel Gestionale APS, cosa si è
 fatto qui e dove guardare. I difetti sono stati trovati leggendo il codice
@@ -108,6 +108,38 @@ protezione dei dati personali, poi le funzioni.
     disconnesso subito, dal middleware `attivo`, se lo si disattiva
     mentre è collegato.
   - *Dove*: `AuthController`, middleware `attivo`; `auth.md` §3.
+
+- [ ] **A9. Esportazioni CSV senza protezione dalle formule.**
+  - *Nel Gestionale APS*: le esportazioni CSV della Prima Nota (e degli
+    altri elenchi) scrivono i testi così come sono: una descrizione o un
+    nome che comincia con `=`, `+`, `-` o `@` viene eseguito da Excel come
+    formula all'apertura del file (CSV injection).
+  - *Qui*: i testi che cominciano con quei caratteri ricevono un `'`
+    davanti; gli importi restano numeri.
+  - *Dove*: `PrimaNotaController::exportCsv()`; `prima-nota.md` §7 (giro 1).
+    *(anche nel core)* Da applicare anche agli altri CSV.
+
+- [ ] **A10. Download dei giustificativi con nomi di file accentati.**
+  - *Nel Gestionale APS*: il nome del file va nell'intestazione
+    `Content-Disposition` così com'è; con lettere accentate o caratteri
+    speciali (es. «Fattura Libreria Università.pdf») il download può
+    fallire o arrivare con un nome sbagliato. Manca anche
+    `X-Content-Type-Options: nosniff`.
+  - *Qui*: `HeaderUtils::makeDisposition()` con il nome originale e un
+    ripiego ASCII (RFC 6266), `nosniff`, controllo che il documento
+    appartenga al movimento dell'indirizzo.
+  - *Dove*: `PrimaNotaController::documento()`; `prima-nota.md` §4.
+
+- [ ] **A11. Audit che fallisce in silenzio con un metodo `anno()` nel
+  model.**
+  - *Nel Gestionale APS*: l'`AuditObserver` legge `$model->anno`; se un
+    model osservato ha un **metodo** `anno()` (non una colonna), Laravel lo
+    tratta come relazione, l'eccezione viene presa dall'observer e finisce
+    solo nel log: nessuna riga nell'Audit Log, senza alcun avviso. Da
+    controllare i model del Gestionale APS (in particolare `PrimaNota`).
+  - *Qui*: trovato dai test della v0.35.0; il metodo si chiama
+    `PrimaNota::annoMovimento()`. Regola annotata nella scheda.
+  - *Dove*: `prima-nota.md` §4. *(anche nel core)*
 
 ## B. Dati personali (GDPR)
 
@@ -220,6 +252,16 @@ non riportare".
   `AuditConsultazione::evento()`.
 - [ ] **D3. Esportazioni dell'Audit Log registrate** come `AUDIT_ESPORTATO`
   (MEDIUM). *Dove*: `AuditLogController::registraEsportazione()`.
+- [ ] **D4. Anni contabili con saldi e chiusura controllata** (v0.35.0).
+  Al posto della sola tabella degli anni chiusi: una riga per anno con
+  saldi di apertura del primo anno, saldi di chiusura fotografati, data e
+  riferimento dell'approvazione del rendiconto, lista di controllo prima
+  della chiusura (anno finito, anno prima chiuso, niente da classificare,
+  niente anticipi aperti), riapertura solo del Presidente con motivazione,
+  correzioni motivate che aggiornano i saldi. Anche la lettura degli
+  importi all'italiana («1.450» = 1450) in un campo di testo invece di
+  `type="number"`. *Dove*: `prima-nota.md`; `AnniContabili`,
+  `App\Support\Importo`.
 
 ## E. PDF ed email
 
@@ -240,3 +282,4 @@ non riportare".
 - 06/10/2026: documento creato raccogliendo le voci sparse in
   `MANUALE-ASD.md` §7, `audit-log.md` §8–§9, `domande-iscrizione.md`,
   `privacy-link.md` e `auth.md`.
+- 06/10/2026 (v0.35.0): aggiunte A9–A11 e D4 dalla Prima Nota.

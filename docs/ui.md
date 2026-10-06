@@ -448,3 +448,16 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   `scelte` e `scelta` per «Righe per pagina» (`per_pagina`, gli altri
   parametri restano). Audit Log: `audit-numero`, riga compatta su
   telefono (freccia in alto a destra).
+- v0.35.0 (06/10/2026): sezione 13 di `app.css` "Prima Nota" (tavole
+  `PN-1…PN-9`, approvate da Paolo): importi `importo-entrata` (verde, con
+  «+»), `importo-uscita`, `importo-neutro` (giroconti); `pn-numero` (cifre
+  tabellari), `pn-desc`, `pn-etichette`, `badge-tag`; modulo a due colonne
+  `pn-colonne`/`pn-colonna` con riquadro d'aiuto `pn-aiuto` (una colonna
+  sotto i 1100 px); scelte con sottotitolo `scelta-testo`/`scelta-sub`,
+  `pn-scelte`; giustificativi `pn-allegati`/`pn-allegato`, `pn-file`;
+  lista di controllo della chiusura `pn-controlli`/`pn-controllo`;
+  categorie `pn-categorie`, `pn-categoria-spenta`, freccia `pn-su` (la
+  freccia «giù» ruotata). Tabelle responsive: `.td-solo-mobile` (cella
+  visibile solo su telefono, es. la riga «Importo» col segno al posto di
+  Entrata/Uscita/Stato) accanto a `.td-solo-desktop`. Registro PDF A4
+  orizzontale `pdf/prima-nota`. Verificato a 1440 e 375 px.
