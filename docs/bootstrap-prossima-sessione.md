@@ -1,4 +1,4 @@
-# Bootstrap — Gestionale ASD, dopo la v0.35.1 (Prima Nota, 06/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.36.0 (Rinnovi quota e Promemoria, 07/10/2026)
 
 ## Contesto
 Come in `bootstrap-voto-cd.md` (progetto, ambienti, regole di lavoro,
@@ -80,29 +80,49 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   nel riquadro di Impostazioni › Ente: fatto nella **v0.32.1**, da
   installare e ricontrollare (G3).
 
-## Prossimo obiettivo (punto della situazione, 06/10/2026, sera)
-- **In produzione** (deploy di Paolo, 06/10/2026): v0.34.2, con v0.33.0
-  (link privacy) e v0.34.0–v0.34.2 (Audit Log). Collaudo del blocco I
-  chiuso. IBAN non ancora disponibile: resta il segnaposto.
+## Prossimo obiettivo (punto della situazione, 07/10/2026)
+- **In produzione** (deploy di Paolo, 06/10/2026): v0.35.1, con Prima Nota,
+  Audit Log e link privacy. IBAN non ancora disponibile: resta il
+  segnaposto.
 - **v0.35.0 consegnata** (Prima Nota, sotto) e collaudata da Paolo il
   06/10/2026 (blocco J): le correzioni sono nella **v0.35.1** (sotto),
-  **installata sul server da Paolo il 06/10/2026**; da ricontrollare le
-  voci «v0.35.1» del blocco J.
+  **installata sul server da Paolo il 06/10/2026** e ricontrollata (voci
+  «v0.35.1» del blocco J: nessun problema).
 - **Domanda di Paolo (J10)**: la quota di un socio inserito a mano non ha
   dove registrarsi; oggi la registra solo la domanda online accolta
   (scheda della domanda, «quota versata»: socio, rinnovo e movimento
   insieme). Serve il modulo **Rinnovi quota** (ricevuta numerata +
-  movimento), da usare dal 01/01/2027: proposto di anticiparlo prima della
-  v0.36.0 (scontrini). Da decidere con Paolo.
-- Poi, nell'ordine concordato: **v0.36.0 Scontrini** dal telefono con OCR
-  (tavole PN-4 e PN-5; stessa chiave OCR.space di `gestionale-acv`, in
-  `.env` o Impostazioni), **v0.37.0 anticipi e note di rimborso** (PN-6,
-  PN-7); poi riconciliazione bancaria e chiusura mensile della cassa
-  (dal Gestionale APS); Rinnovi quota, Verbali, Rendiconto (preventivo
-  2027 qui se pronto in tempo), procedura di azzeramento.
-- Riporto sul Gestionale APS e sul core: `da-riportare-gestionale-aps.md`
-  (con A9–A11 e D4 dalla Prima Nota) e `MANUALE-ASD.md` §7, quando Paolo
-  lo decide.
+  movimento), da usare dal 01/01/2027. **Deciso da Paolo (06/10/2026): si
+  fa Rinnovi quota adesso, prima degli scontrini** (che slittano). Fatto
+  nella v0.36.0.
+- **v0.36.0 consegnata** (Rinnovi quota e Promemoria, sotto): da installare
+  (`LEGGIMI-v0.36.0.txt`: 2 migration, 3 seeder, `npm run build`) e
+  collaudare con il blocco K. Poi: scontrini con OCR, anticipi e note di
+  rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
+  Rendiconto, procedura di azzeramento.
+- Da chiedere al commercialista: dicitura IVA della ricevuta, bollo sopra
+  77,47 €, quota del socio giovane come «iscrizione annuale» per la
+  detrazione sportiva (dal 2028).
+
+## Fatto il 07/10/2026: v0.36.0 (Rinnovi quota e Promemoria)
+Analisi `docs/analisi-rinnovi-quota.md` (anche nel progetto), tavole
+RQ-1…RQ-6, PR-1, PR-2 approvate. Schede `rinnovi-quota.md`, `promemoria.md`.
+- Quote con ricevuta numerata per anno di pagamento (anche la prima quota
+  dalla domanda online, allegata all'email di benvenuto), movimento in
+  Prima Nota, ricevuta PDF al socio o al genitore, annullamento motivato,
+  situazione dell'anno (31/01, voto sospeso, decaduti dal 1° maggio solo
+  come elenco), quote nella scheda del socio e annullamento anche
+  dall'elenco (il Tesoriere non vede la scheda).
+- Detrazione per lo sport dei ragazzi solo con l'ente iscritto al RASD alla
+  data del pagamento: la B.A.S. non lo è (Paolo, 06/10/2026).
+- **Contabilità dal 2027** (impostazione `contabilita_anno_avvio`): una
+  quota incassata prima (es. la 2027 versata a dicembre 2026) ha ricevuta
+  ma niente movimento, che resta in `gestionale-acv`.
+- Promemoria come servizio generale (funzione «Quote non versate» con tre
+  promemoria pronti: 15/12, 1/2, 1/4), comando `promemoria:invia` ogni 15
+  minuti con lo stesso cron.
+- Correzione del MANUALE §2.3: esenzione IVA rinviata al 2036.
+- 75 test; tre giri di revisione in `rinnovi-quota.md` §7.
 
 ## Fatto il 06/10/2026: v0.35.1 (collaudo J della Prima Nota)
 - J2 errore nella finestra della categoria (e del tag) senza chiuderla
@@ -257,7 +277,8 @@ documentata; le modifiche da riportare al Gestionale APS in
 - Azzeramento finale prima dell'apertura al pubblico (Paolo, 29/09/2026:
   oggi è tutto in prova): domande, voti, email, verbali, soci, rinnovi e
   movimenti di prova (con anni contabili, tag, fornitori e giustificativi:
-  J12), registro di audit; modalità test spenta. Procedura
+  J12), rinnovi, ricevute e invii dei promemoria (K11), registro di audit;
+  modalità test spenta. Procedura
   da scrivere quando ci si arriva. Fino ad allora informativa e statuto si
   correggono sul posto con il numero di versione dell'avvio (1.0), senza
   versioni intermedie (`domande-iscrizione.md` §7, v0.30.3).
@@ -272,7 +293,6 @@ documentata; le modifiche da riportare al Gestionale APS in
   già decisa" (`domande-iscrizione.md` §7, v0.30.3): dimissioni al CD per
   email (statuto art. 9), dati della domanda conservati.
 - Pagina Impostazioni (quote, promozione, versioni dei testi).
-- Quota di un socio inserito a mano (J10): modulo Rinnovi quota.
 - Modulo Verbali: serve anche per scegliere il verbale di chiusura
   dell'anno contabile (prima chiusura: il 2027, nel 2028).
 - Campo del documento dei saldi di apertura (Anni contabili): è ancora il

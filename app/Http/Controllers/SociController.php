@@ -184,6 +184,7 @@ class SociController extends Controller
             // raggiungibili dalla scheda del socio (v0.30.3).
             'domandaOrigine',
             'privacyLinkAperto',
+            'rinnovi.annullataDa:id,name',
         ]);
 
         return view('soci.show', [

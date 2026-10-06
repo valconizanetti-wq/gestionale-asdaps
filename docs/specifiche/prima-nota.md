@@ -1,7 +1,7 @@
 # Prima Nota — movimenti, giroconti, anni contabili, categorie e tag
 
-**Stato:** in uso (v0.35.1, 06/10/2026: correzioni dal collaudo J). Scontrini dal telefono nella
-v0.36.0, anticipi e note di rimborso nella v0.37.0.
+**Stato:** in uso (v0.35.1, 06/10/2026: correzioni dal collaudo J). Scontrini dal telefono e
+anticipi con note di rimborso in versioni successive (Rinnovi quota è passato davanti: v0.36.0).
 **Introdotto in:** v0.35.0 (2026-10-06)
 **File coinvolti:**
 - Migration: `2026_10_06_000094_create_gl_anni_contabili_table`
@@ -36,7 +36,7 @@ Da dove viene:
   trasversali, regola della motivazione sull'anno chiuso, lettura degli
   importi all'italiana, conti `cassa`/`banca`;
 - **Gestionale APS** (Dante): giroconto come coppia di righe, allegati
-  multipli, esportazioni CSV e PDF, audit delle esportazioni; poi (v0.37.0)
+  multipli, esportazioni CSV e PDF, audit delle esportazioni; poi (versioni successive)
   anticipi e note di rimborso, chiusura mensile della cassa e
   riconciliazione bancaria.
 
@@ -218,14 +218,17 @@ Revisore consulta tutto (anche esportazioni e giustificativi).
 
 ## 6. Interazioni con altri moduli
 
+- **Rinnovi quota** (v0.36.0, `rinnovi-quota.md`): movimento della quota
+  con documento «ricevuta N/AAAA», tolto annullando la ricevuta; nessun
+  movimento prima di `contabilita_anno_avvio` (2027).
 - **Domande/Iscrizione** (`IscrizioneSocio`): controlla l'anno chiuso con
   `AnniContabili::chiuso`, crea la riga dell'anno e usa la categoria `QUOTE`
   (prima mancava: il movimento restava senza categoria).
 - **Audit Log**: eventi `PRIMANOTA_*`, `ANNOCONTABILE_*`, `TAG_*`,
   `PRIMA_NOTA_ESPORTATA`, `PRIMA_NOTA_CORREZIONE_ANNO_CHIUSO`,
   `SALDI_APERTURA_MODIFICATI`, `ANNO_CONTABILE_RIAPERTO`.
-- **Scontrini** (v0.36.0): categoria `DA_CLASSIFICARE`, `scontrino_id`;
-  **Anticipi** (v0.37.0): `sospeso`, `rimborsato_il`, già esclusi dai saldi.
+- **Scontrini** (da fare): categoria `DA_CLASSIFICARE`, `scontrino_id`;
+  **Anticipi** (da fare): `sospeso`, `rimborsato_il`, già esclusi dai saldi.
 - **Bilancio/Rendiconto** (da fare): voci per categoria; tag sulle voci del
   preventivo; approvazione collegata al verbale.
 - **Azzeramento prima dell'apertura**: svuotare anche `gl_prima_nota`,

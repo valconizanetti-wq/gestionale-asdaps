@@ -55,6 +55,8 @@ class ImpostazioneSeeder extends Seeder
             'Quota annuale del socio ordinario, in euro, tesseramento CSEN e assicurazione base compresi (statuto art. 5.4, decisa dal CD).');
         $seManca('quota_giovane', 30, 'integer',
             'Quota annuale del socio giovane (minorenne), in euro, tesseramento CSEN e assicurazione base compresi (statuto art. 5.4, decisa dal CD).');
+        $seManca('contabilita_anno_avvio', 2027, 'integer',
+            "Primo anno della contabilità nel gestionale (Prima Nota e quote): le quote incassate prima restano nel vecchio gestionale, così l'anno prima non diventa per errore il primo anno contabile (rinnovi-quota.md §4).");
         $seManca('iscrizioni_aperte', false, 'boolean',
             "Se spenta, il modulo pubblico /iscrizione mostra «Iscrizioni online non ancora aperte»; chi è collegato all'area riservata può provarlo e le domande nascono di prova (profilo-ente.md).");
         $seManca('domande_modalita_test', false, 'boolean',

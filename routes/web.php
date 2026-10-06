@@ -7,6 +7,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DomandeController;
 use App\Http\Controllers\ImpostazioniEnteController;
 use App\Http\Controllers\PrimaNotaController;
+use App\Http\Controllers\PromemoriaController;
+use App\Http\Controllers\RinnoviController;
 use App\Http\Controllers\SociController;
 use App\Http\Controllers\SocioDocumentiController;
 use Illuminate\Support\Facades\Route;
@@ -139,6 +141,37 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::get('/ente/periodi/{periodo}/passaggio', 'passaggio')->name('periodi.passaggio');
             Route::post('/ente/periodi/{periodo}/spunte', 'spunta')->name('periodi.spunta');
             Route::post('/iscrizioni', 'iscrizioni')->name('iscrizioni');
+        });
+
+    // Rinnovi quota (rinnovi-quota.md, v0.36.0): Presidente e Tesoriere
+    // registrano e annullano, il Revisore consulta (controllo nel controller).
+    Route::middleware('permesso:rinnovi_quota')
+        ->prefix('rinnovi')->name('rinnovi.')
+        ->controller(RinnoviController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/esporta-csv', 'exportCsv')->name('export-csv');
+            Route::get('/registra', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{rinnovo}/ricevuta', 'ricevuta')->whereNumber('rinnovo')->name('ricevuta');
+            Route::post('/{rinnovo}/invia', 'invia')->whereNumber('rinnovo')->name('invia');
+            Route::post('/{rinnovo}/annulla', 'annulla')->whereNumber('rinnovo')->name('annulla');
+        });
+
+    // Promemoria: email automatiche pianificate per tutte le funzioni
+    // (promemoria.md, v0.36.0). Chi modifica un promemoria dipende dalla
+    // sezione della sua funzione (controllo nel controller).
+    Route::middleware('permesso:promemoria')
+        ->prefix('promemoria')->name('promemoria.')
+        ->controller(PromemoriaController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/nuovo', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{promemoria}', 'edit')->whereNumber('promemoria')->name('edit');
+            Route::put('/{promemoria}', 'update')->whereNumber('promemoria')->name('update');
+            Route::delete('/{promemoria}', 'destroy')->whereNumber('promemoria')->name('destroy');
+            Route::post('/{promemoria}/prova', 'prova')->whereNumber('promemoria')->name('prova');
         });
 
     // Prima Nota: movimenti, giroconti, giustificativi, anni contabili,

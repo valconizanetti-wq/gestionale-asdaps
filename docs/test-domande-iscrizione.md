@@ -1,10 +1,10 @@
-# Test domande di iscrizione e voto CD (collaudo v0.30.3, aggiornata alla v0.35.1)
+# Test domande di iscrizione e voto CD (collaudo v0.30.3, aggiornata alla v0.36.0)
 
 Lista di collaudo manuale su arco.valconi.it. Collaudo della v0.30.3
 concluso il 30/09/2026: blocchi A–F superati, pulizia fatta. Collaudo della
 v0.32.0 (blocco G, A11–A13) del 05/10/2026: superato, con la sola richiesta
 sulla disposizione dei dati fissi (G3), fatta nella v0.32.1 (installata).
-Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota). Copia viva,
+Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria). Copia viva,
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.
@@ -165,6 +165,28 @@ DELETE FROM gl_soggetti WHERE created_at >= '2026-10-06';  -- solo i fornitori n
 ALTER TABLE gl_prima_nota AUTO_INCREMENT = 1;
 ```
 Poi `rm -rf storage/app/private/prima-nota storage/app/private/tmp/prima-nota`; la categoria di prova di J2 si elimina dalla sua pagina (se è rimasta). Solo dopo: in `/prima-nota/anni` il primo anno sarà il 2027 e lì si scrivono i saldi di cassa e banca al 31/12/2026 di `gestionale-acv`, con il rendiconto approvato come documento.
+
+## K. Rinnovi quota e Promemoria (v0.36.0)
+Dettaglio in `docs/specifiche/rinnovi-quota.md` e `promemoria.md`, tavole RQ-1…RQ-6, PR-1, PR-2. Da Presidente o Tesoriere, poi da Revisore se c'è. Prima: due o tre soci di prova attivi, uno adulto con email, uno minorenne di 14–17 anni con genitore ed email del genitore, uno senza email. **Dati di prova**: si azzerano con K11. Le quote si registrano con data di quest'anno (2026): la Prima Nota di prova del 2026 c'è già (J), quindi entrano anche in Prima Nota. Dopo l'azzeramento (J12, K11) e fino al 31/12/2026 una quota si registra con la ricevuta ma senza movimento (contabilità dal 2027: impostazione `contabilita_anno_avvio`).
+- K1 Menu: «Rinnovi quota» (Presidente, Tesoriere, Revisore) e «Promemoria» (anche il Segretario, che la vede vuota). Il Revisore non vede «Registra quota» né i pulsanti di invio e annullamento.
+- K2 Elenco `/rinnovi` a 1440 e 375 px: anno sociale 2026; avviso rosso «Da dichiarare decaduti» per chi non ha versato (siamo dopo il 30 aprile); indicatori; filtri situazione, categoria, cerca; CSV. Anno 2027: tutti «Da versare entro il 31/01». Clic sulla riga: scheda del socio, riquadro «Quote associative».
+- K3 Registra quota per il socio adulto: scelto il socio la pagina si ricarica con anno, importo 70,00, numero della prossima ricevuta (es. 1/2026); bonifico, «Invia la ricevuta» spuntato. Salvato: messaggio con il numero e «inviata a …»; email con il PDF in allegato; in Prima Nota un'entrata «Quota associativa 2026 – …» in Banca, categoria «Quote associative», documento «ricevuta 1/2026». Una seconda quota 2026 dello stesso socio è rifiutata. Data 15/12/2025 (prima del primo anno contabile): ricevuta sì, movimento no, con la nota «movimento nel vecchio gestionale».
+- K4 Registra per il minorenne: casella dell'assenso obbligatoria; «Versata da» e codice fiscale del genitore precompilati e obbligatori; avviso «Detrazione per lo sport dei ragazzi: non disponibile» (B.A.S. non iscritta al RASD); email al genitore. Importo cambiato a 25,00 senza note: errore; con una nota: accettato.
+- K5 Ricevuta PDF: carta intestata B.A.S., «Quota associativa — anno sociale 2026», n. e data, sede legale e C.F. dell'ente, socio con C.F., per il giovane data e luogo di nascita, «Tiro con l'arco», versata da con C.F., importo in cifre e in lettere (30,00 → «trenta/00»), modalità, validità, dicitura IVA, «Il Tesoriere» con il nome se il CD di prova ha un Tesoriere in carica. Nessun riquadro della detrazione.
+- K6 Contanti: il movimento va in Cassa. Socio senza email: «Invia» spento, il messaggio dice di consegnarla.
+- K7 Annullamento dalla scheda del socio e dall'elenco: motivazione sotto 15 caratteri → errore nella finestra, che resta aperta; con motivazione: ricevuta «Annullata» con il motivo, PDF con il timbro «ANNULLATA», movimento sparito dalla Prima Nota, socio di nuovo «da versare»; nell'Audit Log «Rinnovo: modifica» con rischio Alto. Nuova registrazione: numero successivo, l'annullato resta nell'elenco.
+- K8 Domanda online accolta (blocco C) con quota versata: l'email «Iscrizione completata» ha la ricevuta in allegato e il numero nel riquadro; il rinnovo compare nella scheda del socio con lo stesso numero di serie.
+- K9 Promemoria `/promemoria`: funzione «Quote non versate» con tre promemoria (15 dicembre, 1° febbraio, 1° aprile), prossimo invio. Apri «Sollecito: voto sospeso»: destinatari al prossimo invio, anteprima con i segnaposti sostituiti (al genitore per il minore), «Invia una prova a me» (oggetto con «[Prova]»). Giorno 31 con febbraio: errore. Il Revisore vede «Sola lettura».
+- K10 Invio senza aspettare la data: creare un promemoria di prova con giorno e mese di oggi e ora già passata (oggi), poi `php artisan promemoria:invia --prova` (dice quanti) e `php artisan promemoria:invia`: le email partono (al genitore per il minore); chi non ha email compare in «Da avvisare a mano»; un secondo lancio non manda nulla. Il promemoria di prova poi si spegne (già inviato: non si elimina).
+- K11 Azzeramento prima dell'apertura (insieme a J12, prima dei saldi 2027):
+```sql
+DELETE FROM gl_promemoria_invii;
+UPDATE gl_prima_nota SET rinnovo_id = NULL;
+DELETE FROM gl_rinnovi;
+UPDATE gl_soci SET quota_scadenza = NULL;
+ALTER TABLE gl_rinnovi AUTO_INCREMENT = 1;
+```
+Poi `rm -rf storage/app/private/ricevute`. I promemoria di prova si eliminano dalla loro pagina dopo aver svuotato `gl_promemoria_invii`; i tre pronti restano (o si ricreano con `php artisan db:seed --class=PromemoriaSeeder --force` se la funzione non ne ha più).
 
 ## CD di prova (SQL)
 Controllo dei soci:

@@ -419,6 +419,9 @@ class VotoCdTest extends TestCase
     public function test_iscrizione_nel_libro_soci_con_prima_nota_e_promozione(): void
     {
         $this->travelTo(now()->setDate(2026, 10, 12)->setTime(10, 0));
+        // Contabilità avviata nel 2026: la quota entra in Prima Nota (prima
+        // dell'avvio solo rinnovo e ricevuta, RinnoviQuotaTest).
+        \App\Models\Impostazione::set('contabilita_anno_avvio', 2026, 'integer');
         $d = $this->domanda(['stato' => 'approvata', 'esito_il' => now()->subDay(), 'quota_importo' => 70, 'quota_anno' => 2027,
             'quota_promo' => true, 'quota_scadenza' => now()->addDays(29), 'consenso_foto_video' => true]);
 

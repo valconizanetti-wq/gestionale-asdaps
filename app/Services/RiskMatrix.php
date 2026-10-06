@@ -56,6 +56,16 @@ class RiskMatrix
             return 'MEDIUM';
         }
 
+        // Rinnovi quota (v0.36.0): registrazione rilevante, annullamento della
+        // ricevuta critico (rinnovi-quota.md §3). Promemoria: testi e date
+        // delle email ai soci (promemoria.md).
+        if ($modello === 'Rinnovo') {
+            return $operazione === 'updated' && array_key_exists('annullata_il', $dirty) ? 'HIGH' : 'MEDIUM';
+        }
+        if ($modello === 'Promemoria') {
+            return $operazione === 'created' ? 'LOW' : 'MEDIUM';
+        }
+
         if ($operazione === 'updated') {
             // Chiusura e riapertura dell'anno contabile (v0.35.0, prima-nota.md §3)
             if ($modello === 'AnnoContabile') {

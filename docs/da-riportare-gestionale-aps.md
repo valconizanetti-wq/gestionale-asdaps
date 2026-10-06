@@ -2,7 +2,7 @@
 
 Elenco unico delle correzioni e delle funzioni nate nel Gestionale ASD che
 vanno riportate sul Gestionale APS (Società Dante Alighieri — Comitato di
-Orvieto). Aggiornato al 06/10/2026, con la v0.35.0 (Prima Nota).
+Orvieto). Aggiornato al 07/10/2026, con la v0.36.0 (Rinnovi quota e Promemoria).
 
 **Come si usa.** Ogni voce dice cosa succede nel Gestionale APS, cosa si è
 fatto qui e dove guardare. I difetti sono stati trovati leggendo il codice
@@ -141,6 +141,30 @@ protezione dei dati personali, poi le funzioni.
     `PrimaNota::annoMovimento()`. Regola annotata nella scheda.
   - *Dove*: `prima-nota.md` §4. *(anche nel core)*
 
+- [ ] **A12. Ricevute delle quote: numerazione senza lock e correzioni senza traccia.**
+  - *Nel Gestionale APS*: `SociController::registraQuota` calcola il numero
+    della ricevuta fuori da transazione e lock (due registrazioni insieme:
+    doppione o errore 500); rinnovo e Prima Nota non sono nella stessa
+    transazione; `RicevuteController::aggiorna` corregge numero, data e
+    importo sovrascrivendo, senza audit e **senza aggiornare la Prima Nota**;
+    `updateNumeroRicevuta` accetta vuoti e doppioni e non controlla che il
+    rinnovo sia del socio; non esiste l'annullamento.
+  - *Qui*: numero assegnato nella transazione con lock e vincolo unico;
+    rinnovo, movimento e scadenza insieme; nessuna modifica: annullamento
+    motivato (audit alto, timbro sulla ricevuta, movimento tolto) e nuova
+    registrazione.
+  - *Dove*: `rinnovi-quota.md` §4; `RinnoviQuota`.
+
+- [ ] **A13. Ricevute: indirizzo di ritorno non controllato e numero dentro il JavaScript.**
+  - *Nel Gestionale APS*: `RicevuteController::aggiorna` fa
+    `redirect($request->input('_redirect'))` (redirect verso qualunque sito);
+    il numero della ricevuta, testo libero, finisce dentro `onclick` e
+    `x-data` (XSS memorizzato); `download()` con il solo permesso di lettura
+    assegna numeri e scrive file (GET con effetti).
+  - *Qui*: numeri generati dal gestionale e mostrati solo come testo;
+    redirect solo verso rotte interne; download senza effetti.
+  - *Dove*: `RinnoviController`.
+
 ## B. Dati personali (GDPR)
 
 - [ ] **B1. Dati personali dentro la parte immutabile dell'audit.**
@@ -262,6 +286,23 @@ non riportare".
   importi all'italiana («1.450» = 1450) in un campo di testo invece di
   `type="number"`. *Dove*: `prima-nota.md`; `AnniContabili`,
   `App\Support\Importo`.
+- [ ] **D6. Ricevute delle quote corrette** (v0.36.0). Nel Gestionale APS:
+  importo in lettere sbagliato (12,50 → «tredici», 31 → «trentauno»),
+  dicitura «esenzione IVA ai sensi dell'art. 4» (l'art. 4 è il fuori campo;
+  il passaggio all'esenzione è rinviato al 2036), ricevuta mai al genitore
+  per i minori, indirizzo e codice fiscale scritti a mano nell'email,
+  modalità «Assegno» e «Altro» nel modulo ma rifiutate dalla validazione.
+  Qui: `ImportoInLettere`, dicitura «non soggetta a IVA (art. 4) e non
+  imponibile (art. 148 TUIR)» da confermare con il commercialista, invio al
+  genitore, dati dell'ente dal profilo. *Dove*: `rinnovi-quota.md` §3–§4.
+- [ ] **D7. Solleciti come promemoria pianificati** (v0.36.0). Nel Gestionale
+  APS `soci:sollecito-rinnovo` è pianificato con `yearlyOn(1, 4)` e
+  `yearlyOn(1, 5)`, cioè il **4 e il 5 gennaio** (non aprile e maggio come
+  dicono i commenti), senza registro né controllo dei doppioni, mai al
+  genitore, con nomi ed email nel log del cron; se `quota_scadenza` è vuota
+  scrive a tutti. Qui: servizio generale dei promemoria con date e testi
+  modificabili, anteprima, prova, storico, una volta per anno. *Dove*:
+  `promemoria.md`.
 - [ ] **D5. Una riga di audit per operazione** (v0.35.1). Qui un
   giroconto creato, modificato o eliminato lasciava una riga per ciascuna
   delle due righe di Prima Nota (identiche a vista), e l'eliminazione di
@@ -294,3 +335,4 @@ non riportare".
   `privacy-link.md` e `auth.md`.
 - 06/10/2026 (v0.35.0): aggiunte A9–A11 e D4 dalla Prima Nota.
 - 06/10/2026 (v0.35.1): aggiunta D5 dal collaudo J.
+- 07/10/2026 (v0.36.0): aggiunte A12, A13, D6, D7 da Rinnovi quota e Promemoria.

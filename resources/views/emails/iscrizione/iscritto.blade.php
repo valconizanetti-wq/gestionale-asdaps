@@ -12,6 +12,10 @@ abbiamo ricevuto la quota associativa: {{ $perMinore ? $socio->nome . ($socio->s
 **Categoria**<br>{{ $socio->tipo === 'minorenne' ? 'Socio giovane' : 'Socio ordinario' }}
 
 **Quota valida fino al**<br>{{ $socio->quota_scadenza?->format('d/m/Y') }}
+@if (! empty($ricevuta))
+
+**Ricevuta**<br>n. {{ $ricevuta }}, in allegato
+@endif
 </x-mail::panel>
 
 Il rinnovo si versa ogni anno entro il 31 gennaio (statuto, art. 8). Per qualsiasi dubbio rispondi a questa email.

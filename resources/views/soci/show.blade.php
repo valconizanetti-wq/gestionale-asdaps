@@ -150,6 +150,11 @@
         @endif
     </div>
 
+    {{-- Quote associative (rinnovi-quota.md, v0.36.0) --}}
+    @if (auth()->user()->puoAccedere('rinnovi_quota'))
+        @include('rinnovi._quote-socio')
+    @endif
+
     {{-- Documenti per l'iscrizione: stato di ciascun requisito --}}
     @php $mancanti = collect($requisiti)->where('stato', false)->count(); @endphp
     <x-card titolo="Documenti per l'iscrizione" senza-padding>

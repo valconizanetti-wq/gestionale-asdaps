@@ -25,6 +25,7 @@ class SezioneSeeder extends Seeder
             ['codice' => 'tesseramento', 'label' => 'Tesseramento sportivo', 'ordine' => 110],
             ['codice' => 'compliance_rasd', 'label' => 'Compliance RASD', 'ordine' => 120],
             ['codice' => 'comunicazioni', 'label' => 'Comunicazioni', 'ordine' => 130],
+            ['codice' => 'promemoria', 'label' => 'Promemoria', 'ordine' => 132],
             ['codice' => 'archivio', 'label' => 'Archivio documenti', 'ordine' => 135],
             ['codice' => 'gdpr', 'label' => 'GDPR', 'ordine' => 140],
             ['codice' => 'scadenzario', 'label' => 'Scadenzario', 'ordine' => 150],
@@ -64,6 +65,15 @@ class SezioneSeeder extends Seeder
             $this->assegna('tesoriere', $codice);
             $this->assegna('revisore', $codice, soloLettura: true);
         }
+
+        // Promemoria (v0.36.0, promemoria.md): la pagina la vedono i ruoli che
+        // hanno almeno una funzione con promemoria; chi modifica il singolo
+        // promemoria lo decide la sezione della sua funzione (es. le quote:
+        // rinnovi_quota). Revisore in sola lettura.
+        foreach (['presidente', 'tesoriere', 'segretario'] as $ruolo) {
+            $this->assegna($ruolo, 'promemoria');
+        }
+        $this->assegna('revisore', 'promemoria', soloLettura: true);
 
         // Audit Log: presidente accesso pieno (inclusa la futura
         // archiviazione su gl_audit_archivi), revisore in sola lettura —

@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Mail\SocioIscritto;
 use App\Models\Domanda;
-use App\Models\PrimaNota;
-use App\Models\PrimaNotaCategoria;
 use App\Models\Rinnovo;
 use App\Models\Socio;
 use App\Models\User;
@@ -19,10 +17,11 @@ use Illuminate\Support\Facades\DB;
  * - crea il socio copiando anagrafica, residenza, contatti, tutore (per un
  *   minore) e privacy (metodo online, data e IP della domanda, versione
  *   dell'informativa);
- * - registra la quota: rinnovo dell'anno sociale coperto e movimento di
- *   Prima Nota (entrata, categoria "Quote associative"), collegati;
+ * - registra la quota con RinnoviQuota (v0.36.0): rinnovo dell'anno sociale
+ *   coperto con ricevuta numerata e movimento di Prima Nota, collegati;
  * - collega la domanda al socio.
- * Poi, fuori dalla transazione, l'email di conferma al nuovo socio.
+ * Poi, fuori dalla transazione, l'email di conferma al nuovo socio con la
+ * ricevuta della prima quota in allegato.
  */
 class IscrizioneSocio
 {
@@ -91,35 +90,20 @@ class IscrizioneSocio
                 'note' => "Iscritto da domanda online n. {$bloccata->id}.",
             ])->save();
 
-            $rinnovo = new Rinnovo();
-            $rinnovo->forceFill([
-                'socio_id' => $socio->id,
+            // Prima quota con ricevuta numerata, come i rinnovi (v0.36.0,
+            // rinnovi-quota.md: una sola serie per anno di pagamento).
+            app(RinnoviQuota::class)->registra($socio, [
                 'anno' => $anno,
                 'importo' => $importo,
                 'data_pagamento' => $versataIl->toDateString(),
-                'metodo_pagamento' => $metodo,
+                'metodo' => $metodo,
+                'versato_da_nome' => $minore ? $bloccata->genitore_nome : null,
+                'versato_da_cf' => $minore ? $bloccata->genitore_codice_fiscale : null,
+                'assenso' => $minore && $bloccata->assenso_minore_il !== null,
                 'note' => $promo && $anno > $versataIl->year
                     ? "Prima quota, promozione ottobre–dicembre: vale dal {$versataIl->format('d/m/Y')} al 31/12/{$anno}."
                     : 'Prima quota, da domanda di adesione.',
-                'registrato_da' => $utente->id,
-            ])->save();
-
-            // L'anno contabile ha una riga dal primo movimento (prima-nota.md §3).
-            app(AnniContabili::class)->assicura($versataIl->year);
-
-            $movimento = new PrimaNota();
-            $movimento->forceFill([
-                'data' => $versataIl->toDateString(),
-                'tipo' => 'entrata',
-                'conto' => $metodo === 'contante' ? 'cassa' : 'banca',
-                'importo' => $importo,
-                'descrizione' => "Quota associativa {$anno} – {$socio->cognome} {$socio->nome}",
-                'categoria_id' => PrimaNotaCategoria::where('codice', 'QUOTE')->value('id'),
-                'socio_id' => $socio->id,
-                'rinnovo_id' => $rinnovo->id,
-                'soggetto' => $minore ? $bloccata->genitore_nome : trim($socio->nome . ' ' . $socio->cognome),
-                'registrato_da' => $utente->id,
-            ])->save();
+            ], $utente);
 
             $bloccata->forceFill([
                 'socio_id' => $socio->id,
@@ -132,7 +116,19 @@ class IscrizioneSocio
         });
 
         $domanda->refresh();
-        InvioEmail::invia(new SocioIscritto($domanda, $socio), $domanda->emailDestinatario(), $domanda->nomeDestinatario(), 'socio_iscritto', $domanda);
+        $socio->refresh();
+        // Ricevuta della prima quota allegata all'email di benvenuto.
+        $rinnovo = Rinnovo::valido()->where('socio_id', $socio->id)->latest('id')->first();
+        $pdf = null;
+        try {
+            $pdf = $rinnovo ? app(RicevuteQuota::class)->genera($rinnovo) : null;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Ricevuta della prima quota non generata (socio {$socio->id}): " . $e->getMessage());
+        }
+        $ok = InvioEmail::invia(new SocioIscritto($domanda, $socio, $rinnovo, $pdf), $domanda->emailDestinatario(), $domanda->nomeDestinatario(), 'socio_iscritto', $domanda);
+        if ($rinnovo && $pdf !== null) {
+            Rinnovo::withoutEvents(fn () => $rinnovo->forceFill($ok ? ['ricevuta_stato' => 'inviata', 'ricevuta_inviata_il' => now()] : ['ricevuta_stato' => 'errore'])->save());
+        }
 
         return $socio;
     }

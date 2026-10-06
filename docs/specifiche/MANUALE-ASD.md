@@ -151,11 +151,13 @@ Normativa: D.Lgs. 36/2021 art. 29, corretto da D.Lgs. 163/2022 e D.Lgs.
 
 ### 2.3 IVA
 
-- **Correzione rispetto al bootstrap iniziale**: il passaggio da
-  operazioni escluse IVA (art. 4 DPR 633/72) a operazioni **esenti IVA**
-  (art. 10/36-bis) per quote associative e corrispettivi specifici verso i
-  tesserati è slittato più volte ed è scattato dal **1° gennaio 2026**
-  (non dal 2025 come indicato inizialmente).
+- **Correzione del 06/10/2026** (verifica per la ricevuta delle quote,
+  `rinnovi-quota.md` §4): il passaggio da operazioni escluse IVA (art. 4
+  DPR 633/72) a operazioni esenti (art. 10) per gli enti associativi,
+  dato qui in vigore dal 1° gennaio 2026, è stato **rinviato al 1° gennaio
+  2036** (provvedimento pubblicato in Gazzetta Ufficiale il 12/12/2025).
+  Le quote associative restano fuori campo IVA e non imponibili (art. 148,
+  c. 1, TUIR). Dicitura sulla ricevuta da far confermare al commercialista.
 - Regime **L. 398/1991**: confermato, l'associazione opterà per questo
   regime fin dalla costituzione (1/1/2028) — partirà quindi già sotto il
   regime IVA di esenzione in vigore dal 1/1/2026, senza transizioni da
@@ -1132,15 +1134,26 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     `gl_prima_nota_anni_chiusi`) con saldi di apertura del primo anno,
     chiusura dopo l'approvazione del rendiconto e correzioni motivate,
     esportazioni CSV e PDF. `gestionale-acv` va in pensione dal
-    01/01/2027 (migrati solo i saldi). Prossime: v0.36.0 scontrini dal
-    telefono con OCR, v0.37.0 anticipi e note di rimborso; poi
-    riconciliazione bancaria e chiusura mensile della cassa.
+    01/01/2027 (migrati solo i saldi). Da fare: scontrini dal telefono con
+    OCR, anticipi e note di rimborso (slittati dopo Rinnovi quota, decisione
+    del 06/10/2026); poi riconciliazione bancaria e chiusura mensile della
+    cassa.
     **v0.35.1** (06/10/2026): correzioni dal collaudo della Prima Nota
     (blocco J): errori nelle finestre senza chiuderle, giustificativi che
     restano dopo un errore, campo dei file come la tavola, nomi dei file
     codificati, anteprime con finestra, riga intera cliccabile, una riga di
     audit per operazione con hash per intero, verbale di chiusura scelto
     dall'elenco.
+    **v0.36.0** (07/10/2026): **Rinnovi quota** (`rinnovi-quota.md`) e
+    **Promemoria** (`promemoria.md`). Quote con ricevuta numerata per anno
+    di pagamento (anche la prima quota dalla domanda online), movimento in
+    Prima Nota, ricevuta PDF al socio o al genitore, annullamento motivato,
+    situazione dell'anno (31 gennaio, voto sospeso, decadenza dal 1° maggio
+    come elenco), detrazione per lo sport dei ragazzi solo con l'A.S.D.
+    iscritta al RASD. Promemoria come servizio generale per tutte le
+    funzioni: date, testi e destinatari, invio automatico senza doppioni,
+    al genitore per i minori. Scontrini e anticipi slittano alle versioni
+    dopo.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

@@ -26,7 +26,7 @@ stessa chiave). Correzione del 06/10/2026: prima era attribuito per errore
 all'«Area Riservata» del Dante. Non è stato portato codice: la logica di
 business è stata analizzata e ridisegnata da zero per lo schema Laravel
 del derivato ASD. Si appoggia alla Prima Nota della v0.35.0
-(`prima-nota.md`); la realizzazione è prevista nella v0.36.0.
+(`prima-nota.md`); la realizzazione segue Rinnovi quota (v0.36.0), versione da definire.
 
 Regole di business:
 - Un movimento nasce sempre con una categoria segnaposto ("da
@@ -168,4 +168,4 @@ Regole di business:
 - 06/10/2026 (v0.35.0): corretta la provenienza (`gestionale-acv` della
   Compagnia, non il Dante); `gl_prima_nota_anni_chiusi` sostituita da
   `gl_anni_contabili`; confermata la stessa chiave OCR.space di
-  `gestionale-acv`. Realizzazione nella v0.36.0, sopra la Prima Nota.
+  `gestionale-acv`. Realizzazione sopra la Prima Nota, dopo Rinnovi quota (decisione del 06/10/2026).

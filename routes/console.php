@@ -17,3 +17,7 @@ Schedule::command('domande:scadenze')->hourly()->withoutOverlapping();
 // Audit Log: verifica dell'intera catena il 1° di ogni mese alle 05:00
 // (audit-log.md §9). Con anomalie avvisa Presidente e Revisori.
 Schedule::command('audit:verifica-integrita')->monthlyOn(1, '05:00')->withoutOverlapping();
+
+// Promemoria (promemoria.md, v0.36.0): ogni 15 minuti si inviano quelli
+// arrivati alla loro data e ora (recupero nei 7 giorni dopo).
+Schedule::command('promemoria:invia')->everyFifteenMinutes()->withoutOverlapping();

@@ -473,3 +473,15 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   cliccabili: `tr.riga-link` con `data-href` (gestite in `app.js`, link e
   pulsanti nella riga invariati). `pn-verso` (giroconto su una riga),
   `audit-hash-intero`. Icona `documento`. Verificato a 1440 e 375 px.
+- v0.36.0 (07/10/2026): sezione 14 di `app.css` "Rinnovi quota e
+  Promemoria" (tavole RQ-1…RQ-6, PR-1, PR-2, approvate da Paolo). Classe
+  generale `.spunta` (casella con titolo e sottotitolo, sostituisce le
+  caselle scritte a mano). Rinnovi: `rq-numero` (numero di ricevuta),
+  `rq-tabella` (azioni affiancate), `rq-annullata`, `rq-norma`,
+  `rq-prossimo`, `rq-quote`, riquadro `rq-promemoria`. Promemoria:
+  `pr-descrizione`, `pr-fieldset` (sola lettura del modulo con
+  `fieldset disabled`), `pr-valore`, `pr-scelta-spenta`, `pr-segnaposti` e
+  `pr-chip`, `pr-anteprima`, `pr-storico`. Su telefono le intestazioni dei
+  riquadri (`section-header`) vanno a capo quando hanno più azioni.
+  Ricevuta PDF `pdf/ricevuta-quota` sulla carta intestata, che ora accetta
+  una sezione `stili`. Icona: nessuna nuova. Verificato a 1440 e 375 px.

@@ -83,6 +83,7 @@ table.colonne { width: 100%; border-collapse: collapse; }
 td.colonna { width: 50%; vertical-align: top; padding: 0; }
 td.colonna-destra { padding-left: 5mm; }
 td.colonna table.dati td.etichetta { width: 26mm; padding-right: 2mm; white-space: nowrap; }
+@yield('stili')
 .nota table { width: 100%; border-collapse: collapse; }
 .nota td { padding: 0.3mm 0; vertical-align: top; }
 .nota td.etichetta { width: 42mm; }

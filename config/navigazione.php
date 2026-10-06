@@ -42,6 +42,7 @@ return [
             ['label' => 'Assemblee',           'sezione' => 'assemblee',     'rotta' => 'assemblee.index'],
             ['label' => 'Verbali',             'sezione' => 'verbali',       'rotta' => 'verbali.index'],
             ['label' => 'Comunicazioni',       'sezione' => 'comunicazioni', 'rotta' => 'comunicazioni.index'],
+            ['label' => 'Promemoria',          'sezione' => 'promemoria',    'rotta' => 'promemoria.index'],
             ['label' => 'Archivio documenti',  'sezione' => 'archivio',      'rotta' => 'archivio.index'],
         ],
     ],
