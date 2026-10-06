@@ -85,9 +85,9 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   (link privacy) e v0.34.0–v0.34.2 (Audit Log). Collaudo del blocco I
   chiuso. IBAN non ancora disponibile: resta il segnaposto.
 - **v0.35.0 consegnata** (Prima Nota, sotto) e collaudata da Paolo il
-  06/10/2026 (blocco J): le correzioni sono nella **v0.35.1** (sotto), da
-  installare (`LEGGIMI-v0.35.1.txt`: 1 migration, `npm run build`) e
-  ricontrollare (le voci «v0.35.1» del blocco J).
+  06/10/2026 (blocco J): le correzioni sono nella **v0.35.1** (sotto),
+  **installata sul server da Paolo il 06/10/2026**; da ricontrollare le
+  voci «v0.35.1» del blocco J.
 - **Domanda di Paolo (J10)**: la quota di un socio inserito a mano non ha
   dove registrarsi; oggi la registra solo la domanda online accolta
   (scheda della domanda, «quota versata»: socio, rinnovo e movimento
