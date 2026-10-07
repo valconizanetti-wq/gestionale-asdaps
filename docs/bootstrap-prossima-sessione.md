@@ -1,10 +1,10 @@
-# Bootstrap — Gestionale ASD, dopo la v0.37.1 (Tessere CSEN e correzioni K, 07/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.37.2 (Tessere CSEN e correzioni dal collaudo, 07/10/2026)
 
 ## Prossima sessione
-1. **Installazione della v0.37.1** (ZIP cumulativo con la v0.37.0;
-   `LEGGIMI-v0.37.1.txt`: 1 migration, 3 seeder, `npm run build`), poi
+1. **Installazione della v0.37.2** (ZIP cumulativo con la v0.37.0 e la v0.37.1;
+   `LEGGIMI-v0.37.2.txt`: 1 migration, 3 seeder, `npm run build`), poi
    **fine del collaudo K** (K3, K7–K9 e le nuove K12, K13) e **collaudo L**.
-   Correzioni in una v0.37.2 prima del resto, se servono.
+   Correzioni in una v0.37.3 prima del resto, se servono.
 2. **v0.38.0** (era la v0.37.1): Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
    Polizza RC in Impostazioni › Ente (SC-2, SC-3), promemoria «N giorni
    prima» (PR-3: «Scadenze dell'associazione», «Tessere in scadenza»).
@@ -24,7 +24,18 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (90 test verdi).
+mariadb-server`, database `asd_test`) e `php artisan test` (91 test verdi).
+
+## Fatto il 07/10/2026: v0.37.2 (collaudo, pomeriggio)
+- Errore 500 sul server dopo l'installazione: «Route [tesseramento.index]
+  not defined» = rotte in cache vecchie (o `routes/web.php` non copiato):
+  `php artisan optimize:clear`. Sul server `APP_DEBUG` è attivo: rimetterlo a
+  `false` prima dell'apertura.
+- L7: «L'emissione può essere al massimo tra 60 giorni» per un socio con la
+  tessera valida a lungo: ora la finestra lo spiega prima e il pulsante
+  resta spento (`tessere.md` §7).
+- Su telefono menu a destra dopo «Esci», barra laterale da destra (`ui.md`).
+- 91 test.
 
 ## Fatto il 07/10/2026: v0.37.1 (correzioni dal collaudo K)
 - K3 conto (Cassa/Banca) accanto alla modalità della quota, nella scheda e

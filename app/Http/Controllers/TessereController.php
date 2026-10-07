@@ -34,6 +34,9 @@ class TessereController extends Controller
         'portale' => 'Da inserire sul portale CSEN',
     ];
 
+    /** Una tessera può partire al massimo tra 60 giorni (rinnovo anticipato). */
+    public const GIORNI_AVANTI = 60;
+
     /** File del CSV in attesa di conferma: in sessione il percorso, il file in tmp/. */
     private const SESSIONE_CARICO = 'tessere_carico';
 
@@ -109,7 +112,7 @@ class TessereController extends Controller
             'socio_id' => ['required', 'integer', Rule::exists('gl_soci', 'id')->where('stato', 'attivo')->where('pseudonimizzato', false)],
             'tipo_id' => ['required', 'integer', Rule::exists('gl_tessere_tipi', 'id')],
             'numero' => ['required', 'string', 'max:30'],
-            'data_rilascio' => ['required', 'date_format:Y-m-d', 'after_or_equal:' . today()->subYear()->toDateString(), 'before_or_equal:' . today()->addDays(60)->toDateString()],
+            'data_rilascio' => ['required', 'date_format:Y-m-d', 'after_or_equal:' . today()->subYear()->toDateString(), 'before_or_equal:' . today()->addDays(self::GIORNI_AVANTI)->toDateString()],
             'portale' => ['nullable', 'boolean'],
             'conferma' => ['nullable', 'boolean'],
             'note' => ['nullable', 'string', 'max:500'],
@@ -119,7 +122,9 @@ class TessereController extends Controller
             'tipo_id.required' => 'Scegli il tipo di tessera.',
             'numero.required' => 'Scrivi il numero della tessera.',
             'data_rilascio.after_or_equal' => 'L\'emissione non può essere di più di un anno fa: per le tessere già emesse usa «Carica tessere già emesse».',
-            'data_rilascio.before_or_equal' => 'L\'emissione può essere al massimo tra 60 giorni.',
+            'data_rilascio.before_or_equal' => 'La tessera può partire al massimo tra ' . self::GIORNI_AVANTI . ' giorni, entro il '
+                . today()->addDays(self::GIORNI_AVANTI)->format('d/m/Y') . '. Se il socio ha già una tessera valida, il rinnovo si registra quando mancano meno di '
+                . self::GIORNI_AVANTI . ' giorni alla scadenza.',
         ], ['data_rilascio' => 'data di emissione']);
 
         try {
@@ -467,6 +472,12 @@ class TessereController extends Controller
                 'data' => $data->toDateString(),
                 'dataAiuto' => $ultima?->scadenza && $ultima->scadenza->gte(today()) ? 'Il giorno dopo la scadenza della precedente.' : 'Oggi.',
                 'quota' => ['titolo' => $q['titolo'], 'testo' => $q['testo'], 'variante' => $q['variante'], 'conferma' => $q['conferma']],
+                // Tessera ancora valida a lungo (collaudo L7): il rinnovo partirebbe
+                // oltre i 60 giorni ammessi, si registra più avanti
+                'presto' => $data->gt(today()->addDays(self::GIORNI_AVANTI))
+                    ? "{$s->nome} ha la tessera {$ultima?->numero_tessera_csen} valida fino al {$ultima?->scadenza?->format('d/m/Y')}: il rinnovo partirà il "
+                        . $data->format('d/m/Y') . ' e si può registrare dal ' . $data->copy()->subDays(self::GIORNI_AVANTI)->format('d/m/Y') . '.'
+                    : null,
             ];
         }
 

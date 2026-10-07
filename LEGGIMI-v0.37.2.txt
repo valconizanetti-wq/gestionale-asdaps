@@ -1,7 +1,8 @@
-Gestionale ASD - v0.37.1 (07/10/2026)
-Tessere CSEN (v0.37.0) e correzioni dal collaudo K (v0.37.1)
+Gestionale ASD - v0.37.2 (07/10/2026)
+Tessere CSEN (v0.37.0) e correzioni dal collaudo (v0.37.1, v0.37.2)
 
-ZIP CUMULATIVO: contiene la v0.37.0 e la v0.37.1. Da applicare sopra la v0.36.0.
+ZIP CUMULATIVO: contiene la v0.37.0, la v0.37.1 e la v0.37.2. Da applicare sopra la v0.36.0
+(se la v0.37.1 e' gia' installata basta sovrascrivere i file e rifare npm run build e le cache).
 1 migration, 3 seeder, CSS e JavaScript (npm run build).
 Scheda: docs/specifiche/tessere.md. Analisi: docs/analisi-tessere-scadenze.md (par. 4: decisioni).
 Tavole: docs/mockup/Tavole-tessere-scadenze.pdf (TS-1...TS-5).
@@ -35,6 +36,14 @@ COSA CAMBIA
   - Descrizione al passaggio del mouse su tutti i pulsanti con la sola icona.
   - Righe delle tabelle con i pulsanti: il bordo sotto la riga ora arriva fino in fondo.
 
+  v0.37.2 (collaudo, pomeriggio):
+  - L7: socio con la tessera ancora valida a lungo: la finestra spiega da quando si potra'
+    registrare il rinnovo (oltre 60 giorni non si emette) e il pulsante resta spento.
+  - Su telefono il pulsante del menu e' a destra, dopo "Esci"; il menu entra da destra.
+  - Errore 500 "Route [tesseramento.index] not defined": rotte in cache vecchie.
+    Dopo aver copiato i file: php artisan optimize:clear (poi le cache, deploy.md par. 5).
+    APP_DEBUG del server: rimetterlo a false prima dell'apertura.
+
 FILE
   app/Http/Controllers/TessereController.php, Concerns/Giustificativi.php (nuovi);
     PrimaNotaController.php (giustificativi spostati nel tratto), RinnoviController.php, SociController.php,
@@ -44,7 +53,7 @@ FILE
   database/migrations/2026_10_07_000100_create_gl_tessere_tables.php (nuova)
   database/seeders/TesseraTipoSeeder.php (nuovo); SezioneSeeder.php, PrimaNotaCategoriaSeeder.php, DatabaseSeeder.php
   resources/views/tessere/* (nuove); soci/index, soci/show, rinnovi/index, rinnovi/_quote-socio,
-    domande/show, promemoria/index, components/modale
+    domande/show, promemoria/index, components/modale, layouts/app
   resources/css/app.css, resources/js/app.js; routes/web.php, routes/console.php
   tests/Feature/TessereTest.php, CollaudoKTest.php (nuovi)
   docs: specifiche/tessere.md (nuova), tesseramento-sportivo.md, permessi.md, MANUALE-ASD.md (tutte e
@@ -53,13 +62,13 @@ FILE
     specifiche/soci.md, rinnovi-quota.md, promemoria.md, da-riportare-gestionale-aps.md (D8, D9)
 
 LOCALE
-  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.36.0.txt (e LEGGIMI-v0.37.0.txt se c'e').
+  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.36.0.txt (e LEGGIMI-v0.37.0.txt, LEGGIMI-v0.37.1.txt se ci sono).
   2. php artisan migrate
      php artisan db:seed --class=SezioneSeeder
      php artisan db:seed --class=PrimaNotaCategoriaSeeder
      php artisan db:seed --class=TesseraTipoSeeder
-  3. php artisan test   -> 90 superati
-  4. git add -A && git commit -m "v0.37.1: Tessere CSEN e correzioni dal collaudo K"
+  3. php artisan test   -> 91 superati
+  4. git add -A && git commit -m "v0.37.2: Tessere CSEN e correzioni dal collaudo"
   5. npm run build ; git archive -o deploy.zip HEAD ; build.zip da public\build
 
 SERVER

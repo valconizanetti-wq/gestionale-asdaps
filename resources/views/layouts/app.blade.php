@@ -34,9 +34,6 @@
 
 <header class="topbar">
     <div class="topbar-brand">
-        <button type="button" class="topbar-hamburger" aria-label="Apri il menu" @click="menu = !menu">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
         <a href="{{ route('dashboard') }}" class="topbar-logo" aria-label="Vai alla dashboard">
             <img src="{{ asset('images/logo-arcieri.png') }}" alt="">
         </a>
@@ -57,6 +54,10 @@
             @csrf
             <button type="submit" class="topbar-logout">Esci</button>
         </form>
+        {{-- Su telefono il menu si apre da destra, dopo «Esci» (collaudo, 07/10/2026) --}}
+        <button type="button" class="topbar-hamburger" aria-label="Apri il menu" :aria-expanded="menu.toString()" @click="menu = !menu">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
     </div>
 </header>
 

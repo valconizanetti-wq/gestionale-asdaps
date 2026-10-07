@@ -70,6 +70,11 @@
                 </div>
             </div>
 
+            {{-- Tessera ancora valida a lungo: il rinnovo si registra più avanti (collaudo L7) --}}
+            <template x-if="dati?.presto">
+                <x-avviso tipo="info" titolo="Rinnovo non ancora possibile."><span x-text="dati.presto"></span></x-avviso>
+            </template>
+
             {{-- Dopo l'errore «Rinnova lo stesso» il riquadro della data proposta non vale: resta il messaggio in alto --}}
             <template x-if="dati && ! forza">
                 <div class="ts-quota" x-bind:class="'ts-quota-' + dati.quota.variante">
@@ -90,7 +95,7 @@
         </form>
         <x-slot:piede>
             <button type="button" class="btn btn-ghost" x-on:click="aperta = false">Annulla</button>
-            <button type="submit" form="form-emetti-tessera" class="btn btn-primary" x-text="numero ? 'Emetti la tessera ' + numero : 'Emetti'">Emetti</button>
+            <button type="submit" form="form-emetti-tessera" class="btn btn-primary" x-bind:disabled="!! dati?.presto && data === dati.data" x-text="numero ? 'Emetti la tessera ' + numero : 'Emetti'">Emetti</button>
         </x-slot:piede>
     </x-modale>
 </div>

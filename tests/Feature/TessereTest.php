@@ -374,4 +374,21 @@ class TessereTest extends TestCase
         $this->emetti($g, ['numero' => '1024421', 'data_rilascio' => '2027-01-20'])->assertSessionHas('success');
         $this->assertFalse(Tesseramento::where('socio_id', $g->id)->firstOrFail()->senza_quota);
     }
+
+    public function test_rinnovo_troppo_presto_spiegato(): void
+    {
+        $this->pacchetto();
+        $s = $this->socio(['nome' => 'Andrea']);
+        $t = new Tesseramento();
+        $t->forceFill(['socio_id' => $s->id, 'stagione_sportiva' => 2027, 'numero_tessera_csen' => '0953', 'progressivo' => 953,
+            'data_rilascio' => '2027-01-09', 'scadenza' => '2028-01-08', 'tipo_id' => $this->silver->id, 'origine' => 'caricata'])->save();
+
+        // Nella finestra: spiegazione e date, prima di provare
+        $this->actingAs($this->tesoriere)->get(route('tesseramento.index'))->assertOk()
+            ->assertViewHas('candidati', fn ($c) => str_contains($c[$s->id]['presto'], 'valida fino al 08/01/2028')
+                && str_contains($c[$s->id]['presto'], 'si può registrare dal 10/11/2027'));
+        // Inviata lo stesso: messaggio comprensibile
+        $this->emetti($s, ['data_rilascio' => '2028-01-09'])->assertSessionHasErrors('data_rilascio', null, 'emissione');
+        $this->assertStringContainsString('il rinnovo si registra quando mancano meno di 60 giorni', session('errors')->getBag('emissione')->first('data_rilascio'));
+    }
 }

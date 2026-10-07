@@ -219,3 +219,10 @@ tessere presenti si saltano.
 
      Interfaccia a 1440 e 375 px senza scorrimento orizzontale, nessun
      `style=`.
+- **v0.37.2** (07/10/2026, collaudo L7): scegliendo nella finestra un socio
+  con la tessera ancora valida a lungo, il rinnovo partirebbe oltre i 60
+  giorni ammessi e il server rispondeva solo «L'emissione può essere al
+  massimo tra 60 giorni». Ora la finestra lo dice prima («Rinnovo non ancora
+  possibile»: tessera, scadenza, data del rinnovo e da quando si registra) e
+  il pulsante resta spento finché la data è quella proposta; il messaggio
+  del server spiega la regola. Costante `TessereController::GIORNI_AVANTI`.

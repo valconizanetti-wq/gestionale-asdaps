@@ -504,3 +504,7 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   l'`aria-label`. Celle `td-azioni` di `rq-tabella`, `ts-tabella`,
   `pn-categorie` non più `display: flex` su computer (toglieva il bordo della
   riga): pulsanti affiancati con `vertical-align` e margine.
+- v0.37.2 (07/10/2026, collaudo): su telefono il pulsante del menu
+  (`topbar-hamburger`) sta a destra, dopo «Esci», e la barra laterale entra
+  da destra (`.sidebar` con `right: 0` e `translateX(100%)`, bordo a
+  sinistra); `aria-expanded` sul pulsante.
