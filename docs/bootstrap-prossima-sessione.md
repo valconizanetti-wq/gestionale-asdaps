@@ -106,7 +106,7 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   prezzo secondo il tipo; affiliazione con scadenza; polizza RC Unipol
   tramite CSEN in scadenza a luglio. Analisi
   `docs/analisi-tessere-scadenze.md` (anche nel progetto); tavole TS-1…TS-5,
-  SC-1, PR-3 sulla tela e in `docs/mockup/Tavole-tessere-scadenze.pdf`,
+  SC-1…SC-3 (affiliazione e polizza in Impostazioni › Ente), PR-3 sulla tela e in `docs/mockup/Tavole-tessere-scadenze.pdf`,
   **in attesa di approvazione** e di: mese di scadenza dell'affiliazione,
   tipi e prezzi delle tessere, caricamento delle tessere già emesse. Poi
   v0.37.0.

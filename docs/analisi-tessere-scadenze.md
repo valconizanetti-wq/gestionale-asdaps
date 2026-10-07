@@ -2,7 +2,7 @@
 
 Analisi prima del codice (prossima versione, v0.37.0). Tavole sulla tela
 «Gestionale ASD — Riferimento UI», sezione «Tessere CSEN e scadenze
-dell'associazione» (TS-1…TS-5, SC-1, PR-3); PDF in
+dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
 `docs/mockup/Tavole-tessere-scadenze.pdf`.
 
 ## 1. Cosa ha detto Paolo (07/10/2026)
@@ -60,6 +60,22 @@ dell'associazione» (TS-1…TS-5, SC-1, PR-3); PDF in
      scadenza all'anno dopo;
    - la scadenza dell'affiliazione si scrive anche nella scheda
      Associazione (`rete_affiliazione_scadenza`).
+   - **Dove si vede l'EPS** (domanda di Paolo, 07/10/2026): oggi solo il
+     nome, nel profilo dell'ente per periodi («Ente di affiliazione»); i
+     campi `rete_affiliazione_*` di `gl_associazione` non hanno pagina.
+     Approvato da Paolo: in Impostazioni › Ente una riga nuova
+     «Affiliazione e assicurazione» con due riquadri (tavole SC-2, SC-3):
+     - **Affiliazione all'EPS**: ente (dal periodo), codice di
+       affiliazione, comitato/referente e contatto, scadenza, ultimo
+       rinnovo con link al movimento, stato (valida, in scadenza, scaduta);
+     - **Polizza RC**: compagnia (Unipol tramite CSEN), numero, copertura,
+       scadenza, ultimo rinnovo, stato (campi nuovi in `gl_associazione`);
+     - la scadenza **non si scrive lì**: la tiene lo Scadenzario, e
+       «Rinnovata» aggiorna anche il riquadro (un solo dato);
+     - modifica solo del Presidente; Tesoriere e Segretario vedono;
+     - affiliazione scaduta: avviso rosso nel riquadro, in Dashboard e
+       nello Scadenzario (niente tessere nuove o rinnovate, RASD a
+       rischio).
 7. **Promemoria**, due funzioni nuove, entrambe «N giorni prima» e con
    Presidente e Tesoriere come destinatari (interni, non soci):
    - «Scadenze dell'associazione»;
