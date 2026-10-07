@@ -162,7 +162,7 @@
                                 <td data-label="Quota €" class="td-num">{{ Importo::it($r?->importo ?? RinnoviQuota::importo($cat)) }}</td>
                                 <td data-label="Situazione"><x-badge :variante="$sitVar">{{ $sitTesto }}</x-badge></td>
                                 <td data-label="Versata" @class(['td-solo-desktop' => ! $r])>
-                                    @if ($r){{ $r->data_pagamento->format('d/m/Y') }} <span class="td-sub">{{ $r->metodoLabel() }}</span>@else — @endif
+                                    @if ($r){{ $r->data_pagamento->format('d/m/Y') }} <span class="td-sub">{{ $r->metodoLabel() }} · {{ \App\Models\PrimaNota::CONTI[Rinnovo::contoPer($r->metodo_pagamento)] }}</span>@else — @endif
                                 </td>
                                 <td data-label="Ricevuta" @class(['td-solo-desktop' => ! $r])>
                                     @if ($r)

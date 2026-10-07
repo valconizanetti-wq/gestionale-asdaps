@@ -47,7 +47,7 @@
                         <tr @class(['rq-annullata' => $r->isAnnullato()])>
                             <td class="td-primario"><strong>{{ $r->anno }}</strong></td>
                             <td data-label="Quota €" class="td-num">{{ Importo::it($r->importo) }}</td>
-                            <td data-label="Versata">{{ $r->data_pagamento->format('d/m/Y') }} <span class="td-sub">{{ $r->metodoLabel() }}{{ $r->versato_da_nome ? ' · da ' . $r->versato_da_nome : '' }}</span></td>
+                            <td data-label="Versata">{{ $r->data_pagamento->format('d/m/Y') }} <span class="td-sub">{{ $r->metodoLabel() }} · {{ \App\Models\PrimaNota::CONTI[\App\Models\Rinnovo::contoPer($r->metodo_pagamento)] }}{{ $r->versato_da_nome ? ' · da ' . $r->versato_da_nome : '' }}</span></td>
                             <td data-label="Situazione">
                                 @if ($r->isAnnullato())
                                     <x-badge variante="neutral">Annullata</x-badge>

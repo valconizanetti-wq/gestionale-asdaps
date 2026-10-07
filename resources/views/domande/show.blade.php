@@ -128,6 +128,13 @@
                 <x-dato label="IBAN comunicato" :valore="$iban ?: \App\Services\Quota::IBAN_SEGNAPOSTO" codice />
                 <x-dato label="Causale" :valore="\App\Services\Quota::causale($domanda)" />
             </dl>
+            @if ($puoModificare && $domanda->is_test)
+                {{-- Collaudo K8: il riquadro mancava senza spiegazione --}}
+                <x-avviso tipo="info" titolo="Domanda di prova: non si iscrive nel libro soci.">
+                    È stata mandata da collegati, con le iscrizioni chiuse: serve a provare il modulo e il voto, non crea soci né quote.
+                    Per provare l'iscrizione con la quota, apri le iscrizioni (Impostazioni › Ente) e manda una domanda da una finestra anonima.
+                </x-avviso>
+            @endif
             @if ($puoModificare && ! $domanda->is_test)
                 <form method="POST" action="{{ route('domande.iscrivi', $domanda) }}" class="form-pagina quota-iscrivi"
                       x-data="{ data: @js(old('quota_versata_il', today()->toDateString())), inviato: false }" x-on:submit="inviato = true">

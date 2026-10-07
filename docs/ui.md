@@ -497,4 +497,10 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   scope di chi contiene la finestra). Badge della tessera (valida, scade tra
   N giorni, scaduta, senza tessera) uguale in soci, scheda, rinnovi e
   pagina Tessere. Verificato a 1440 e 375 px.
-
+- v0.37.1 (07/10/2026, collaudo K): **descrizione al passaggio del mouse**
+  per ogni link o pulsante con la sola icona: `app.js` copia l'`aria-label`
+  in `title` (al caricamento e al passaggio del mouse, così vale anche per le
+  etichette di Alpine). Regola: un pulsante con la sola icona ha sempre
+  l'`aria-label`. Celle `td-azioni` di `rq-tabella`, `ts-tabella`,
+  `pn-categorie` non più `display: flex` su computer (toglieva il bordo della
+  riga): pulsanti affiancati con `vertical-align` e margine.

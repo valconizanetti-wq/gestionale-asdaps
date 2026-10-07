@@ -1166,7 +1166,12 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     delle tessere già emesse dall'elenco del portale CSEN, badge «Tessera
     scaduta» in soci, scheda e rinnovi, quota netta; Tesoriere sulla sezione
     Tesseramento. Scadenzario, affiliazione, polizza RC e promemoria delle
-    tessere nella v0.37.1.
+    tessere nella v0.38.0.
+    **v0.37.1** (07/10/2026): correzioni dal collaudo K: conto della quota
+    nella scheda e nei rinnovi, «Elimina scheda» con motivazione e blocchi,
+    schede eliminate ripristinabili dal filtro dei soci, avviso sulle
+    domande di prova, ordine dei promemoria, descrizione al passaggio del
+    mouse per i pulsanti con la sola icona.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

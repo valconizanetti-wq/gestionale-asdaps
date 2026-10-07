@@ -52,10 +52,10 @@ class TessereTest extends TestCase
             PrimaNotaCategoriaSeeder::class, ProfiloEnteSeeder::class, QualificaSeeder::class, TesseraTipoSeeder::class]);
         Mail::fake();
         Storage::fake('local');
-        $this->presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true]);
-        $this->tesoriere = User::factory()->create(['ruolo' => 'tesoriere', 'attivo' => true]);
-        $this->revisore = User::factory()->create(['ruolo' => 'revisore', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['ruolo' => 'segretario', 'attivo' => true]);
+        $this->presidente = User::factory()->create(['name' => 'Utente Presidente', 'ruolo' => 'presidente', 'attivo' => true]);
+        $this->tesoriere = User::factory()->create(['name' => 'Utente Tesoriere', 'ruolo' => 'tesoriere', 'attivo' => true]);
+        $this->revisore = User::factory()->create(['name' => 'Utente Revisore', 'ruolo' => 'revisore', 'attivo' => true]);
+        $this->segretario = User::factory()->create(['name' => 'Utente Segretario', 'ruolo' => 'segretario', 'attivo' => true]);
         $this->silver = TesseraTipo::where('nome', 'Silver Base')->firstOrFail();
     }
 

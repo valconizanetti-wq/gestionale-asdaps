@@ -27,8 +27,11 @@ class PromemoriaController extends Controller
 
         return view('promemoria.index', [
             'funzioni' => $funzioni,
-            'promemoria' => Promemoria::whereIn('funzione', $funzioni->keys())->orderBy('funzione')
-                ->orderByRaw('COALESCE(mese, 13), COALESCE(giorno, 32)')->get()->groupBy('funzione'),
+            // Nell'ordine dell'anno sociale (collaudo K9): prima quelli che
+            // riguardano l'anno dopo (l'invito del 15 dicembre), poi per data
+            'promemoria' => Promemoria::whereIn('funzione', $funzioni->keys())->orderBy('funzione')->get()
+                ->sortBy(fn ($p) => sprintf('%d-%02d-%02d', $p->parametro('anno_sociale') === 'successivo' ? 0 : 1, $p->mese ?? 13, $p->giorno ?? 32))
+                ->groupBy('funzione'),
             'utente' => $utente,
         ]);
     }

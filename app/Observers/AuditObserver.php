@@ -128,8 +128,12 @@ class AuditObserver
         }
     }
 
-    /** Email al Presidente: solo riferimenti, nessun dato personale (GDPR). */
-    private function notificaHigh(string $modello, string $operazione, int $logId): void
+    /**
+     * Email al Presidente: solo riferimenti, nessun dato personale (GDPR).
+     * Pubblica: la usa anche chi scrive l'audit a mano senza eventi del
+     * model (es. eliminazione della scheda del socio, v0.37.1).
+     */
+    public function notificaHigh(string $modello, string $operazione, int $logId): void
     {
         try {
             $presidente = DB::table('gl_users')->where('ruolo', 'presidente')->where('attivo', true)->first();

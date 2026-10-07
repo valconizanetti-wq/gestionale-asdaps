@@ -1,17 +1,17 @@
-# Bootstrap — Gestionale ASD, dopo la v0.37.0 (Tessere CSEN, 07/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.37.1 (Tessere CSEN e correzioni K, 07/10/2026)
 
 ## Prossima sessione
-1. **Installazione e collaudo della v0.37.0** (blocco L della lista di
-   collaudo; `LEGGIMI-v0.37.0.txt`: 1 migration, 3 seeder, `npm run build`).
-   Paolo porta l'esito voce per voce; correzioni in una v0.37.1-a prima del
-   resto, se servono.
-2. **v0.37.1**: Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
+1. **Installazione della v0.37.1** (ZIP cumulativo con la v0.37.0;
+   `LEGGIMI-v0.37.1.txt`: 1 migration, 3 seeder, `npm run build`), poi
+   **fine del collaudo K** (K3, K7–K9 e le nuove K12, K13) e **collaudo L**.
+   Correzioni in una v0.37.2 prima del resto, se servono.
+2. **v0.38.0** (era la v0.37.1): Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
    Polizza RC in Impostazioni › Ente (SC-2, SC-3), promemoria «N giorni
    prima» (PR-3: «Scadenze dell'associazione», «Tessere in scadenza»).
    Tavole già approvate.
 
 Prima di scrivere codice servono da Paolo:
-- **mese di scadenza dell'affiliazione CSEN** (per la v0.37.1);
+- **mese di scadenza dell'affiliazione CSEN** (per la v0.38.0);
 - risposta sui **pacchetti misti**: nell'elenco CSEN una Gold Base
   (27B2229058) sta nell'intervallo delle Silver. Se il CSEN vende pacchetti
   con tipi diversi, il tipo va sulla tessera e non sul pacchetto
@@ -24,10 +24,34 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (86 test verdi).
+mariadb-server`, database `asd_test`) e `php artisan test` (90 test verdi).
+
+## Fatto il 07/10/2026: v0.37.1 (correzioni dal collaudo K)
+- K3 conto (Cassa/Banca) accanto alla modalità della quota, nella scheda e
+  nei Rinnovi quota.
+- K7 «Elimina scheda»: motivazione obbligatoria (Audit Log, nei valori, con
+  l'email al Presidente), rifiutata per un socio con quote valide, movimenti
+  o tessere. Ripristino: Soci › Filtri › Stato «Schede eliminate» (solo
+  Presidente), con ricerca per codice fiscale; niente CSV né PDF di quelle.
+- K8 la domanda di Paolo era di prova: non si iscrive (scelta del 29/09);
+  ora un avviso lo dice nel riquadro della quota, e K8 spiega come provarla.
+- K9 promemoria nell'ordine dell'anno sociale, nome come link, freccia.
+- Descrizione al passaggio del mouse per tutti i pulsanti con la sola
+  icona (`app.js`, dall'`aria-label`).
+- Bordo delle righe con i pulsanti (celle `td-azioni` non più flex).
+- Test instabile corretto: in `RinnoviQuotaTest` (e nei test nuovi) gli
+  utenti avevano un nome casuale di Faker, che poteva essere «Rossi» e far
+  fallire un `assertDontSee('Rossi')` (successo una volta su quattro giri):
+  ora nomi fissi.
+- 90 test (nuovo `CollaudoKTest`); tre giri di revisione (5 difetti
+  trovati dal revisore e corretti: link alla scheda eliminata, esportazioni
+  con il filtro «Schede eliminate», motivazione nell'hash, transazione ed
+  email, quote senza numero).
 
 ## Fatto il 07/10/2026: v0.37.0 (Tessere CSEN)
-- Collaudo K della v0.36.0: **tutto superato** (Paolo, 07/10/2026). Tavole
+- Collaudo K della v0.36.0: **in corso** («Collaudo k da fare» letto per
+  errore come superato). Prime osservazioni di Paolo corrette nella v0.37.1
+  (sotto). Tavole
   TS-1…TS-5, SC-1…SC-3, PR-3 approvate; tipo **Silver Base a 4 €**.
 - Paolo ha mandato l'elenco delle tessere esportato dal portale CSEN (30
   tessere): diventa la funzione «Carica tessere già emesse» (anteprima,
@@ -145,8 +169,8 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   fa Rinnovi quota adesso, prima degli scontrini** (che slittano). Fatto
   nella v0.36.0.
 - **v0.36.0** (Rinnovi quota e Promemoria, sotto): installata e collaudata
-  (blocco K superato il 07/10/2026). **v0.37.0** (Tessere CSEN, sopra): da
-  installare e collaudare (blocco L). Poi: scontrini con OCR, anticipi e note di
+  (collaudo K in corso). **v0.37.0** (Tessere CSEN) e **v0.37.1** (correzioni
+  dal collaudo K), sopra: da installare insieme e collaudare (K, poi L). Poi: scontrini con OCR, anticipi e note di
   rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
   Rendiconto, procedura di azzeramento.
 - **Tessere CSEN e scadenze** (Paolo, 07/10/2026): 4 € di ogni quota al
@@ -157,7 +181,7 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   `docs/analisi-tessere-scadenze.md` (anche nel progetto); tavole TS-1…TS-5,
   SC-1…SC-3 (affiliazione e polizza in Impostazioni › Ente), PR-3 sulla tela e in `docs/mockup/Tavole-tessere-scadenze.pdf`,
   approvate il 07/10/2026; tessere fatte nella v0.37.0, il resto nella
-  v0.37.1 (manca il mese di scadenza dell'affiliazione).
+  v0.38.0 (manca il mese di scadenza dell'affiliazione).
 - Da chiedere al commercialista: dicitura IVA della ricevuta, bollo sopra
   77,47 €, quota del socio giovane come «iscrizione annuale» per la
   detrazione sportiva (dal 2028).

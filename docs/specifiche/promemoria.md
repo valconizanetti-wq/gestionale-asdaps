@@ -151,3 +151,6 @@ Funzioni: `App\Promemoria\Registro::FUNZIONI`. Ognuna implementa
   destinatari guardava l'anno di oggi invece di quello del prossimo invio
   (per esempio il sollecito di febbraio visto a ottobre): ora usa la data
   del prossimo invio.
+- **v0.37.1** (07/10/2026, collaudo K9): elenco nell'ordine dell'anno
+  sociale (prima i promemoria sull'anno dopo: l'invito del 15 dicembre), nome
+  come link e freccia per aprire il dettaglio (destinatari, anteprima, prova).

@@ -451,11 +451,20 @@
     @endif
 
     @if (auth()->user()->ruolo === 'presidente')
-        <x-modale nome="elimina" titolo="Eliminare la scheda?">
-            <p>La scheda di <strong>{{ $socio->cognome }} {{ $socio->nome }}</strong> sparirà dagli elenchi. Resta recuperabile: reinserendo lo stesso codice fiscale verrà proposto il ripristino.</p>
-            <form method="POST" action="{{ route('soci.destroy', $socio) }}" id="form-elimina">
+        @php $bagElimina = $errors->getBag('elimina'); @endphp
+        <x-modale nome="elimina" titolo="Eliminare la scheda?" :aperta="$bagElimina->any()">
+            <form method="POST" action="{{ route('soci.destroy', $socio) }}" id="form-elimina" class="form-modale">
                 @csrf
                 @method('DELETE')
+                <p class="form-help">Solo per un inserimento sbagliato: la scheda di <strong>{{ $socio->cognome }} {{ $socio->nome }}</strong> sparisce dagli elenchi.
+                    Si ripristina da Soci › Filtri › Stato «Schede eliminate». Non si elimina un socio con quote valide, movimenti o tessere: per chi esce si registra la cessazione.</p>
+                <div @class(['form-field', 'has-error' => $bagElimina->has('motivo')])>
+                    <label class="form-label" for="motivo-elimina">Motivazione<span class="obbligatorio" aria-hidden="true">*</span></label>
+                    <textarea id="motivo-elimina" name="motivo" rows="3" required minlength="15" maxlength="1000" class="form-textarea"
+                              aria-describedby="motivo-elimina-aiuto">{{ $bagElimina->any() ? old('motivo') : '' }}</textarea>
+                    <div class="form-help" id="motivo-elimina-aiuto">Almeno 15 caratteri: resta nell'Audit Log.</div>
+                    @foreach ($bagElimina->get('motivo') as $msg)<div class="form-error">{{ $msg }}</div>@endforeach
+                </div>
             </form>
             <x-slot:piede>
                 <button type="button" class="btn btn-ghost" @click="aperta = false">Annulla</button>

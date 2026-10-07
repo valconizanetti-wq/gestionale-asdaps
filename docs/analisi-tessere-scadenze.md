@@ -96,7 +96,7 @@ dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
   caricano con il loro numero e la data di emissione (scadenza calcolata),
   così i rinnovi partono dalle date giuste.
 
-## 4. Decisioni e risposte (07/10/2026, dopo il collaudo K)
+## 4. Decisioni e risposte (07/10/2026)
 
 - **Tavole approvate** da Paolo: TS-1…TS-5, SC-1…SC-3, PR-3.
 - **Tipi e prezzi**: per il momento solo **Silver Base a 4 €**
@@ -117,6 +117,6 @@ dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
 - **Prima del 2027** la quota non è nel gestionale: nella finestra «Quota
   nel vecchio gestionale», senza «Rinnova lo stesso».
 - **Divisione confermata**: v0.37.0 tessere (fatta, scheda `tessere.md`);
-  v0.37.1 Scadenzario (SC-1), riquadri Affiliazione e Polizza RC (SC-2,
-  SC-3), promemoria «N giorni prima» (PR-3). Per la v0.37.1 resta da sapere
+  v0.38.0 Scadenzario (SC-1), riquadri Affiliazione e Polizza RC (SC-2,
+  SC-3), promemoria «N giorni prima» (PR-3). Per la v0.38.0 resta da sapere
   il **mese di scadenza dell'affiliazione CSEN**.

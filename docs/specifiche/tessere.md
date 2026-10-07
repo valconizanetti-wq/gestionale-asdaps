@@ -2,7 +2,7 @@
 
 **Stato:** in uso (v0.37.0, 07/10/2026).
 **Introdotto in:** v0.37.0 (prima metà dell'analisi `analisi-tessere-scadenze.md`;
-la seconda metà, Scadenzario e promemoria, è la v0.37.1)
+la seconda metà, Scadenzario e promemoria, è la v0.38.0)
 **File coinvolti:**
 - Migration: `2026_10_07_000100_create_gl_tessere_tables`
 - Model: `TesseraTipo`, `TesseraPacchetto` (nuovi), `Tesseramento` (rifatto,
@@ -181,7 +181,7 @@ tessere presenti si saltano.
   CSEN» e quota netta nell'elenco; dopo la quota di un socio senza tessera,
   invito a emetterla.
 - **Soci**: badge e riquadro nella scheda, colonna nell'elenco.
-- **v0.37.1**: Scadenzario con «Rinnovata» (affiliazione e polizza RC),
+- **v0.38.0**: Scadenzario con «Rinnovata» (affiliazione e polizza RC),
   riquadri in Impostazioni › Ente, promemoria «Tessere in scadenza» (PR-3).
 
 ## 7. Storia ed evoluzione

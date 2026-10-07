@@ -2,7 +2,7 @@
 
 Elenco unico delle correzioni e delle funzioni nate nel Gestionale ASD che
 vanno riportate sul Gestionale APS (Società Dante Alighieri — Comitato di
-Orvieto). Aggiornato al 07/10/2026, con la v0.36.0 (Rinnovi quota e Promemoria).
+Orvieto). Aggiornato al 07/10/2026, con la v0.37.1 (correzioni dal collaudo K).
 
 **Come si usa.** Ogni voce dice cosa succede nel Gestionale APS, cosa si è
 fatto qui e dove guardare. I difetti sono stati trovati leggendo il codice
@@ -313,6 +313,19 @@ non riportare".
   se il Gestionale APS ha lo stesso comportamento. *Dove*:
   `prima-nota.md` §4; `AuditObserver`, `PrimaNota::auditContesto()`.
   *(anche nel core)*
+- [ ] **D8. Eliminazione della scheda del socio con motivazione e blocchi**
+  (v0.37.1, collaudo K7). Qui «Elimina scheda» non chiedeva il motivo e
+  lasciava eliminare un socio con quote, movimenti o tessere; il ripristino
+  si trovava solo reinserendo il codice fiscale. Ora: motivazione
+  obbligatoria nei valori dell'audit (non nel dettaglio che entra
+  nell'hash), rifiuto con quote valide, movimenti o tessere, filtro «Schede
+  eliminate» del Presidente con «Ripristina», niente esportazioni di quelle
+  schede. Da verificare nel Gestionale APS. *Dove*: `soci.md` §7,
+  `SociController::destroy`, `bloccaEliminazione`, `filtriEsportazione`.
+  *(anche nel core)*
+- [ ] **D9. Descrizione al passaggio del mouse sui pulsanti con la sola
+  icona** (v0.37.1, richiesta di Paolo). `app.js` copia l'`aria-label` in
+  `title`. *Dove*: `ui.md` (v0.37.1). *(anche nel core)*
 
 ## E. PDF ed email
 
@@ -336,3 +349,4 @@ non riportare".
 - 06/10/2026 (v0.35.0): aggiunte A9–A11 e D4 dalla Prima Nota.
 - 06/10/2026 (v0.35.1): aggiunta D5 dal collaudo J.
 - 07/10/2026 (v0.36.0): aggiunte A12, A13, D6, D7 da Rinnovi quota e Promemoria.
+- 07/10/2026 (v0.37.1): aggiunte D8 e D9 dal collaudo K.

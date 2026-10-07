@@ -7,12 +7,14 @@
 
     <x-page-header titolo="Gestione" evidenza="Soci" sottotitolo="Anagrafica, quote associative e tessere">
         <x-slot:azioni>
-            <a href="{{ route('soci.pdf', request()->query()) }}" class="btn btn-secondary solo-desktop">
-                <x-icona nome="download" width="14" height="14" /> PDF
-            </a>
-            <a href="{{ route('soci.export', request()->query()) }}" class="btn btn-secondary">
-                <x-icona nome="download" width="14" height="14" /> CSV
-            </a>
+            @if ($filtri['stato'] !== 'eliminate')
+                <a href="{{ route('soci.pdf', request()->query()) }}" class="btn btn-secondary solo-desktop">
+                    <x-icona nome="download" width="14" height="14" /> PDF
+                </a>
+                <a href="{{ route('soci.export', request()->query()) }}" class="btn btn-secondary">
+                    <x-icona nome="download" width="14" height="14" /> CSV
+                </a>
+            @endif
             @if ($linkPrivacy && ($linkPrivacy['senza'] + $linkPrivacy['precedente']) > 0)
                 <button type="button" class="btn btn-secondary" @click="$dispatch('apri-modale', 'link-privacy')">
                     Link privacy <span class="conteggio-ko">{{ $linkPrivacy['senza'] + $linkPrivacy['precedente'] }}</span>
@@ -63,6 +65,9 @@
                     <option value="sospeso" @selected($filtri['stato'] === 'sospeso')>Sospesi</option>
                     <option value="cancellato" @selected($filtri['stato'] === 'cancellato')>Cancellati</option>
                     <option value="tutti" @selected($filtri['stato'] === 'tutti')>Tutti</option>
+                    @if (auth()->user()->ruolo === 'presidente')
+                        <option value="eliminate" @selected($filtri['stato'] === 'eliminate')>Schede eliminate</option>
+                    @endif
                 </select>
             </div>
             <div class="form-field">
@@ -127,7 +132,12 @@
                                     <td data-label="Tessera" class="td-solo-desktop"><span class="code">{{ $socio->numero_tessera ?? '—' }}</span></td>
                                 @endif
                                 <td class="td-primario">
-                                    <a href="{{ route('soci.show', $socio) }}" class="td-name">{{ $socio->cognome }} {{ $socio->nome }}</a>
+                                    @if ($socio->trashed())
+                                        <span class="td-name">{{ $socio->cognome }} {{ $socio->nome }}</span>
+                                        <x-badge variante="neutral">Eliminata il {{ $socio->deleted_at->format('d/m/Y') }}</x-badge>
+                                    @else
+                                        <a href="{{ route('soci.show', $socio) }}" class="td-name">{{ $socio->cognome }} {{ $socio->nome }}</a>
+                                    @endif
                                     @if ($socio->stato !== 'attivo')
                                         <x-badge-stato dominio="socio" :valore="$socio->stato" />
                                     @endif
@@ -155,7 +165,11 @@
                                     @if ($mancanti === 0)
                                         <x-badge variante="ok">✓ Completi</x-badge>
                                     @else
-                                        <a href="{{ route('soci.show', $socio) }}" class="badge-link"><x-badge variante="warn">{{ $mancanti }} {{ $mancanti === 1 ? 'mancante' : 'mancanti' }}</x-badge></a>
+                                        @if ($socio->trashed())
+                                            <x-badge variante="warn">{{ $mancanti }} {{ $mancanti === 1 ? 'mancante' : 'mancanti' }}</x-badge>
+                                        @else
+                                            <a href="{{ route('soci.show', $socio) }}" class="badge-link"><x-badge variante="warn">{{ $mancanti }} {{ $mancanti === 1 ? 'mancante' : 'mancanti' }}</x-badge></a>
+                                        @endif
                                     @endif
                                 </td>
                                 <td data-label="Iscritto dal" class="td-solo-desktop">{{ $socio->data_prima_iscrizione?->format('d/m/Y') }}</td>
@@ -166,7 +180,14 @@
                                     @if ($email)
                                         <a href="mailto:{{ $email }}" class="action-btn" aria-label="Scrivi a {{ $socio->nome }} {{ $socio->cognome }}"><x-icona nome="mail" /></a>
                                     @endif
-                                    <a href="{{ route('soci.show', $socio) }}" class="action-btn" aria-label="Apri la scheda di {{ $socio->nome }} {{ $socio->cognome }}"><x-icona nome="avanti" /></a>
+                                    @if ($socio->trashed())
+                                        <form method="POST" action="{{ route('soci.ripristina', $socio->id) }}">
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-sm"><x-icona nome="ripristina" width="14" height="14" /> Ripristina</button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('soci.show', $socio) }}" class="action-btn" aria-label="Apri la scheda di {{ $socio->nome }} {{ $socio->cognome }}"><x-icona nome="avanti" /></a>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

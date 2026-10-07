@@ -76,7 +76,7 @@ class SociController extends Controller
 
     public function export(Request $request): StreamedResponse
     {
-        $filtri = $this->filtri($request);
+        $filtri = $this->filtriEsportazione($request);
         $soci = $this->query($filtri)->orderBy('cognome')->orderBy('nome')->get();
         $oggi = now();
         $this->registraEsportazione('CSV', $soci->count(), $filtri);
@@ -126,7 +126,7 @@ class SociController extends Controller
      */
     public function pdf(Request $request)
     {
-        $filtri = $this->filtri($request);
+        $filtri = $this->filtriEsportazione($request);
         $certificatoRichiesto = (bool) Impostazione::get('certificato_medico_richiesto');
         $soci = $this->query($filtri)
             ->with('documenti:id,socio_id,categoria')
@@ -312,15 +312,45 @@ class SociController extends Controller
         return redirect()->route('soci.show', $socio)->with('success', 'Socio riattivato.');
     }
 
-    /** Eliminazione (soft delete): solo per correggere un inserimento sbagliato, solo Presidente. */
+    /**
+     * Eliminazione (soft delete): solo per correggere un inserimento
+     * sbagliato, solo Presidente, con motivazione (collaudo K7). Non per un
+     * socio con quote valide, movimenti o tessere: per chi esce si registra
+     * la cessazione; una quota sbagliata si annulla prima.
+     */
     public function destroy(Request $request, Socio $socio)
     {
         $this->richiediPresidente($request);
+        $dati = $request->validateWithBag('elimina', [
+            'motivo' => ['required', 'string', 'min:15', 'max:1000'],
+        ], ['motivo.required' => 'Scrivi perché elimini la scheda.', 'motivo.min' => 'La motivazione deve avere almeno 15 caratteri.']);
 
-        $socio->delete();
+        if ($blocchi = $this->bloccaEliminazione($socio)) {
+            return back()->with('error', 'La scheda non si elimina: ' . implode('; ', $blocchi)
+                . '. Per un socio che esce usa «Registra cessazione»; una quota registrata per errore si annulla prima dalla scheda.');
+        }
+
+        // Una riga di audit, nella stessa transazione dell'eliminazione. Nel
+        // dettaglio (che entra nell'hash) niente dati personali: nomi e
+        // motivazione, che potrebbe contenerne, stanno nei valori.
+        $rigaAudit = DB::transaction(function () use ($socio, $dati) {
+            Socio::withoutEvents(fn () => $socio->delete());
+
+            return AuditLogService::scrivi([
+                'evento' => 'SOCIO_DELETED',
+                'operazione' => 'deleted',
+                'entita_tipo' => 'Socio',
+                'entita_id' => $socio->id,
+                'livello_rischio' => 'HIGH',
+                'dettaglio' => "Scheda del socio n. {$socio->id} eliminata (si può ripristinare), con motivazione.",
+                'old_values' => ['cognome' => $socio->cognome, 'nome' => $socio->nome, 'codice_fiscale' => $socio->codice_fiscale],
+                'new_values' => ['motivazione' => $dati['motivo']],
+            ]);
+        });
+        app(\App\Observers\AuditObserver::class)->notificaHigh('Socio', 'deleted', $rigaAudit);
 
         return redirect()->route('soci.index')
-            ->with('success', "Scheda di {$socio->cognome} {$socio->nome} eliminata. Si può ripristinare reinserendo lo stesso codice fiscale.");
+            ->with('success', "Scheda di {$socio->cognome} {$socio->nome} eliminata. Si ripristina da Soci › Filtri › Stato «Schede eliminate».");
     }
 
     public function ripristina(Request $request, int $id)
@@ -331,6 +361,24 @@ class SociController extends Controller
         $socio->restore();
 
         return redirect()->route('soci.show', $socio)->with('success', 'Scheda del socio ripristinata.');
+    }
+
+    /** Motivi per non eliminare la scheda (vuoto: si può). */
+    private function bloccaEliminazione(Socio $socio): array
+    {
+        $blocchi = [];
+        if ($socio->rinnovi()->valido()->exists()) {
+            $ricevute = $socio->rinnovi()->valido()->pluck('numero_ricevuta')->filter();
+            $blocchi[] = 'ha quote registrate' . ($ricevute->isNotEmpty() ? ' (ricevuta ' . $ricevute->implode(', ') . ')' : '');
+        }
+        if ($socio->movimentiPrimaNota()->exists()) {
+            $blocchi[] = 'ha movimenti in Prima Nota';
+        }
+        if ($socio->tesseramenti()->exists()) {
+            $blocchi[] = 'ha tessere CSEN';
+        }
+
+        return $blocchi;
     }
 
     // ----------------------------------------------------------------
@@ -344,8 +392,20 @@ class SociController extends Controller
             'q'     => trim((string) $request->query('q', '')),
             'tipo'  => (string) $request->query('tipo', ''),
             'quota' => (string) $request->query('quota', ''),
-            'stato' => (string) $request->query('stato', 'attivo'),
+            // «Schede eliminate» (soft delete): solo il Presidente, che le ripristina
+            'stato' => ($s = (string) $request->query('stato', 'attivo')) === 'eliminate' && $request->user()?->ruolo !== 'presidente' ? 'attivo' : $s,
         ];
+    }
+
+    /** CSV e libro soci: mai le schede eliminate (inserimenti sbagliati), anche dal filtro del Presidente. */
+    private function filtriEsportazione(Request $request): array
+    {
+        $f = $this->filtri($request);
+        if ($f['stato'] === 'eliminate') {
+            $f['stato'] = 'attivo';
+        }
+
+        return $f;
     }
 
     private function query(array $filtri): Builder
@@ -353,7 +413,8 @@ class SociController extends Controller
         $oggi = now()->toDateString();
 
         return Socio::query()
-            ->when($filtri['stato'] !== 'tutti', fn ($q) => $q->where('stato', $filtri['stato']))
+            ->when($filtri['stato'] === 'eliminate', fn ($q) => $q->onlyTrashed())
+            ->when(! in_array($filtri['stato'], ['tutti', 'eliminate'], true), fn ($q) => $q->where('stato', $filtri['stato']))
             ->when(array_key_exists($filtri['tipo'], self::TIPI), fn ($q) => $q->where('tipo', $filtri['tipo']))
             ->when($filtri['quota'] === 'versata', fn ($q) => $q->whereDate('quota_scadenza', '>=', $oggi))
             ->when($filtri['quota'] === 'da_versare', fn ($q) => $q->where(fn ($w) => $w

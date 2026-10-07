@@ -254,3 +254,9 @@ scheda del socio si vede solo con l'accesso a Rinnovi quota.
   3. **Interfaccia** (1440 e 375 px, nessun `style=`): sul telefono
      l'intestazione «Quote associative» usciva dallo schermo (ora va a
      capo); promemoria del riquadro messi nell'ordine dell'anno sociale.
+- **v0.37.1** (07/10/2026, collaudo K3): accanto alla modalità del
+  versamento il conto in cui entra («Bonifico · Banca», «Contanti · Cassa»),
+  nella scheda del socio e nell'elenco. K8: una domanda di prova (mandata da
+  collegati con le iscrizioni chiuse) non si iscrive nel libro soci: il
+  riquadro «Quota e iscrizione» ora lo spiega invece di nascondere il
+  modulo senza dirlo. Colonna «Tessera CSEN» e quota netta (v0.37.0).

@@ -1551,7 +1551,8 @@
 
     /* Categorie: righe compatte, azioni affiancate */
     .pn-categorie td { padding-top: 8px; padding-bottom: 8px; }
-    .pn-categorie .td-azioni { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+    /* Niente display:flex sulla cella: toglierebbe il bordo della riga (collaudo K) */
+    .pn-categorie .td-azioni > * { vertical-align: middle; margin-left: 4px; }
     .pn-categorie .td-azioni form { display: inline-flex; }
     .pn-categoria-spenta .pn-desc { color: var(--color-etichetta); }
     /* Colonna che esiste solo a telefono (es. Importo al posto di Entrata e Uscita) */
@@ -1592,7 +1593,7 @@
     .spunta.has-error input { outline: 2px solid var(--color-rosso); outline-offset: 1px; }
 
     .rq-numero { font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-decoration: none; }
-    .rq-tabella .td-azioni { display: flex; gap: 4px; justify-content: flex-end; align-items: center; white-space: nowrap; }
+    .rq-tabella .td-azioni > * { vertical-align: middle; margin-left: 4px; }
     .rq-tabella .td-azioni form { display: inline-flex; }
     .rq-annullata td { background: var(--color-superficie-2); }
     .rq-annullata .rq-numero { text-decoration: line-through; color: var(--color-etichetta); }
@@ -1640,7 +1641,7 @@
    -------------------------------------------------------------------------- */
 @layer components {
     .ts-numero { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--color-notte); white-space: nowrap; }
-    .ts-tabella .td-azioni { display: flex; gap: 4px; justify-content: flex-end; align-items: center; white-space: nowrap; }
+    .ts-tabella .td-azioni > * { vertical-align: middle; margin-left: 4px; }
     .ts-tabella .td-azioni form, .ts-tabella td form { display: inline-flex; }
     .ts-emesse { display: block; font-size: 12.5px; }
     .ts-barra { display: block; width: 72px; height: 5px; margin-top: 4px; border: 0; border-radius: 3px; overflow: hidden;

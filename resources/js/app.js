@@ -162,3 +162,16 @@ function apriRiga(evento) {
 }
 document.addEventListener('click', apriRiga);
 document.addEventListener('auxclick', apriRiga);
+
+// Pulsanti con la sola icona: la descrizione (aria-label) compare anche al
+// passaggio del mouse, come «title» (collaudo K). Vale per tutto il
+// gestionale, anche per le etichette che Alpine cambia: si aggiorna al
+// passaggio del mouse.
+function titoloIcona(el) {
+    const etichetta = el?.getAttribute('aria-label');
+    if (etichetta && !el.textContent.trim() && el.getAttribute('title') !== etichetta) {
+        el.setAttribute('title', etichetta);
+    }
+}
+document.addEventListener('mouseover', (e) => titoloIcona(e.target.closest?.('a[aria-label], button[aria-label]')));
+document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('a[aria-label], button[aria-label]').forEach(titoloIcona));

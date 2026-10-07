@@ -38,18 +38,21 @@
                                 <th scope="col">Ultimo invio</th>
                                 <th scope="col">Prossimo invio</th>
                                 <th scope="col">Stato</th>
+                                <th scope="col"><span class="sr-only">Azioni</span></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($elenco as $p)
                                 @php $prossimo = $p->attivo ? Invii::prossimo($p) : null; @endphp
                                 <tr class="riga-link" data-href="{{ route('promemoria.edit', $p) }}">
-                                    <td class="td-primario"><a href="{{ route('promemoria.edit', $p) }}" class="pn-desc">{{ $p->nome }}</a>
+                                    <td class="td-primario"><a href="{{ route('promemoria.edit', $p) }}" class="td-name">{{ $p->nome }}</a>
                                         <span class="td-sub">{{ $p->oggetto }}</span></td>
                                     <td data-label="Quando">{{ $p->quandoTesto() }}</td>
                                     <td data-label="Ultimo invio">{{ $p->ultimoInvioTesto() }}</td>
                                     <td data-label="Prossimo invio">{{ $prossimo ? $prossimo->format('d/m/Y H:i') : '—' }}</td>
                                     <td data-label="Stato"><x-badge :variante="$p->attivo ? 'ok' : 'neutral'">{{ $p->attivo ? 'Attivo' : 'Spento' }}</x-badge></td>
+                                    {{-- Collaudo K9: dettaglio (destinatari, anteprima, prova) da qui o con un clic sulla riga --}}
+                                    <td class="td-azioni"><a href="{{ route('promemoria.edit', $p) }}" class="action-btn" aria-label="Apri «{{ $p->nome }}»: destinatari, anteprima e prova"><x-icona nome="avanti" /></a></td>
                                 </tr>
                             @endforeach
                         </tbody>

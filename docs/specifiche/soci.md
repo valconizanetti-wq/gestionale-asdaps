@@ -311,3 +311,14 @@ Paolo:
   di nuovo"; nuova riga "Foto e video" (facoltativa, non conta tra i
   mancanti) con "Registra la revoca". Nell'elenco, pulsante "Link privacy"
   con il numero dei soci da raggiungere e finestra dell'invio in blocco.
+- **v0.37.1** (07/10/2026, collaudo K7): «Elimina scheda» chiede la
+  motivazione (almeno 15 caratteri) e non procede se il socio ha quote
+  valide, movimenti in Prima Nota o tessere CSEN (per chi esce: cessazione;
+  una quota sbagliata si annulla prima). Una sola riga di audit
+  `SOCIO_DELETED` (rischio alto, email al Presidente): nel dettaglio, che
+  entra nell'hash, nessun dato personale; nomi, codice fiscale e motivazione
+  nei valori. **Schede eliminate**: in Soci › Filtri › Stato, solo per il
+  Presidente, con ricerca anche per codice fiscale e «Ripristina» (prima
+  l'unico modo era reinserire il codice fiscale in «Nuovo socio»); CSV e
+  libro soci non escono mai con quel filtro. Colonna «Tessera CSEN» con il
+  badge della tessera (v0.37.0).
