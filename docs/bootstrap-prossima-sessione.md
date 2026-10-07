@@ -1,5 +1,32 @@
 # Bootstrap — Gestionale ASD, dopo la v0.36.0 (Rinnovi quota e Promemoria, 07/10/2026)
 
+## Prossima sessione (decisa da Paolo il 07/10/2026)
+La sessione del 06–07/10 è stata chiusa perché troppo lunga. Quella nuova
+fa due cose, in quest'ordine:
+1. **Collaudo della v0.36.0** (blocco K della lista di collaudo): Paolo
+   porta l'esito voce per voce (ok, oppure il problema con schermata).
+   Correzioni eventuali in una v0.36.1, prima del resto.
+2. **v0.37.0, solo tessere CSEN** (prima metà dell'analisi
+   `analisi-tessere-scadenze.md`, tavole TS-1…TS-5): pacchetti con uscita
+   in Prima Nota, emissione e rinnovo a un anno, carico delle tessere già
+   emesse, badge «Tessera scaduta», permessi del Tesoriere. **v0.37.1**
+   dopo: Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
+   Polizza RC in Impostazioni › Ente (SC-2, SC-3), promemoria «N giorni
+   prima» (PR-3). Divisione decisa per contenere il consumo.
+
+Prima di scrivere codice servono da Paolo:
+- ok sulle tavole TS-1…TS-5, SC-1…SC-3, PR-3;
+- tipi di tessera CSEN e prezzi (listino 2027);
+- elenco delle tessere già emesse (socio, numero, tipo, data di
+  emissione), se si caricano;
+- mese di scadenza dell'affiliazione CSEN (serve per la v0.37.1).
+
+Codice di partenza: `gestionale-asd-sorgenti-<commit>.zip` (repository
+con la storia git, senza `vendor`, `node_modules` ed `.env`), da
+scompattare in `/home/claude/gestionale-asd` e verificare con
+`git log -1` (il commit è nel nome del file); poi `composer install`, `npm ci`, MariaDB
+(`service mariadb start`) e `php artisan test` (75 test verdi).
+
 ## Contesto
 Come in `bootstrap-voto-cd.md` (progetto, ambienti, regole di lavoro,
 deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
