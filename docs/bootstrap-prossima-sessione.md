@@ -21,11 +21,13 @@ Prima di scrivere codice servono da Paolo:
   emissione), se si caricano;
 - mese di scadenza dell'affiliazione CSEN (serve per la v0.37.1).
 
-Codice di partenza: `gestionale-asd-sorgenti-<commit>.zip` (repository
-con la storia git, senza `vendor`, `node_modules` ed `.env`), da
-scompattare in `/home/claude/gestionale-asd` e verificare con
-`git log -1` (il commit è nel nome del file); poi `composer install`, `npm ci`, MariaDB
-(`service mariadb start`) e `php artisan test` (75 test verdi).
+Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
+git, storia compresa, in un file solo; il commit è nel nome). Si
+ricostruisce con `git clone gestionale-asd-<commit>.bundle
+/home/claude/gestionale-asd` e si verifica con `git log -1`; poi
+`cp .env.example .env`, `composer install`, `npm ci`, `php artisan
+key:generate`, MariaDB (`service mariadb start`) e `php artisan test`
+(75 test verdi).
 
 ## Contesto
 Come in `bootstrap-voto-cd.md` (progetto, ambienti, regole di lavoro,
