@@ -226,3 +226,4 @@ tessere presenti si saltano.
   possibile»: tessera, scadenza, data del rinnovo e da quando si registra) e
   il pulsante resta spento finché la data è quella proposta; il messaggio
   del server spiega la regola. Costante `TessereController::GIORNI_AVANTI`.
+- 07/10/2026: collaudo L superato da Paolo sul server, con la v0.37.2.

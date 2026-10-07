@@ -4,7 +4,7 @@ Lista di collaudo manuale su arco.valconi.it. Collaudo della v0.30.3
 concluso il 30/09/2026: blocchi A–F superati, pulizia fatta. Collaudo della
 v0.32.0 (blocco G, A11–A13) del 05/10/2026: superato, con la sola richiesta
 sulla disposizione dei dati fissi (G3), fatta nella v0.32.1 (installata).
-Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: collaudo in corso, prime osservazioni del 07/10/2026 corrette nella v0.37.1), dalla v0.37.0 blocco L (Tessere CSEN). Copia viva,
+Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: collaudo in corso, prime osservazioni del 07/10/2026 corrette nella v0.37.1), dalla v0.37.0 blocco L (Tessere CSEN: superato il 07/10/2026, con la v0.37.2 installata). Copia viva,
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.

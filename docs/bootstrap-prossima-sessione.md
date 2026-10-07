@@ -26,6 +26,12 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
 mariadb-server`, database `asd_test`) e `php artisan test` (91 test verdi).
 
+## Stato alle 15:00 del 07/10/2026
+- **v0.37.2 installata sul server** (Paolo), compresa la v0.37.0.
+- **Collaudo L superato** (Paolo, 07/10/2026).
+- Collaudo K: da confermare con Paolo se K3, K7–K9, K12–K14 sono stati
+  rifatti dopo la v0.37.1–0.37.2.
+
 ## Fatto il 07/10/2026: v0.37.2 (collaudo, pomeriggio)
 - Errore 500 sul server dopo l'installazione: «Route [tesseramento.index]
   not defined» = rotte in cache vecchie (o `routes/web.php` non copiato):
