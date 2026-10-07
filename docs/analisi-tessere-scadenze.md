@@ -120,3 +120,29 @@ dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
   v0.38.0 Scadenzario (SC-1), riquadri Affiliazione e Polizza RC (SC-2,
   SC-3), promemoria «N giorni prima» (PR-3). Per la v0.38.0 resta da sapere
   il **mese di scadenza dell'affiliazione CSEN**.
+
+## 5. Risposte di Paolo (07/10/2026, 15:19)
+
+- **Affiliazione CSEN: scade il 31/12** di ogni anno (anno solare). Nello
+  Scadenzario della v0.38.0: «Affiliazione CSEN», 31/12, ricorrente, preavviso
+  30 giorni; la polizza RC resta a luglio.
+- **Tessere: solo Silver Base.** Niente pacchetti misti da gestire: un tipo per
+  pacchetto va bene. La Gold Base arrivata dal CSV resta come tipo della
+  tessera caricata (storico), senza prezzo; si può togliere la spunta «In uso».
+- **Novità: tesserino tecnico sportivo degli istruttori.** Va gestito,
+  insieme a chi sono tecnici e istruttori. Base esistente: `gl_tecnici`
+  (socio della Compagnia o nominativo esterno), qualifica `tecnico` in
+  `gl_qualifiche`, `tecnico_riferimento_id` sulla tessera; nell'elenco CSEN la
+  colonna ISTRUTTORE (es. «Paolo Zanetti») oggi finisce nelle note della
+  tessera. Analisi da fare, con le domande per Paolo:
+  1. che cos'è il tesserino (qualifica CSEN di Istruttore/Tecnico, livello,
+     disciplina), con numero, data di rilascio e **scadenza** (annuale?);
+  2. per rinnovarlo servono aggiornamenti o crediti formativi? Costo e chi
+     paga (uscita in Prima Nota della Compagnia o del tecnico)?
+  3. gli istruttori sono sempre soci, o ci sono esterni?
+  4. cosa deve fare il gestionale: elenco dei tecnici con qualifica e
+     tesserino, scadenze con promemoria (come le tessere), documento
+     allegato, abbinamento con i soci seguiti (colonna ISTRUTTORE del CSEN)?
+  5. serve anche per il RASD (tecnici dichiarati) dal 2028?
+  Proposta: farlo nella v0.38.0 insieme allo Scadenzario (stessa logica di
+  scadenze e promemoria «N giorni prima»), dopo tavole approvate.

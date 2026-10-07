@@ -11,13 +11,15 @@
    prima» (PR-3: «Scadenze dell'associazione», «Tessere in scadenza»).
    Tavole già approvate.
 
-Prima di scrivere codice servono da Paolo:
-- **mese di scadenza dell'affiliazione CSEN** (per la v0.38.0);
-- risposta sui **pacchetti misti**: nell'elenco CSEN una Gold Base
-  (27B2229058) sta nell'intervallo delle Silver. Se il CSEN vende pacchetti
-  con tipi diversi, il tipo va sulla tessera e non sul pacchetto
-  (`tessere.md` §1);
-- prezzo della Gold Base (si scrive dalla pagina Tessere).
+Risposte di Paolo (07/10/2026, 15:19; `analisi-tessere-scadenze.md` §5):
+- affiliazione CSEN **scade il 31/12**;
+- tessere: **solo Silver Base** (domanda sui pacchetti misti chiusa);
+- **nuovo**: gestire il **tesserino tecnico sportivo degli istruttori** e i
+  tecnici/istruttori. Prima del codice: analisi (domande in §5) e tavole.
+
+Prima di scrivere codice servono ancora da Paolo:
+- risposte alle domande sui tecnici (`analisi-tessere-scadenze.md` §5);
+- (chiuso: solo Silver Base, niente pacchetti misti né prezzo della Gold).
 
 Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
 git, storia compresa, in un file solo; il commit è nel nome). Si
