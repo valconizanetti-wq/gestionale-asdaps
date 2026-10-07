@@ -1,7 +1,8 @@
 # Bootstrap — Gestionale ASD, dopo la v0.37.2 (Tessere CSEN e correzioni dal collaudo, 07/10/2026)
 
 ## Prossima sessione
-1. **Installazione della v0.37.2** (ZIP cumulativo con la v0.37.0 e la v0.37.1;
+1. ~~Installazione della v0.37.2 e collaudi K e L~~ (fatti il 07/10/2026).
+   Riferimento storico: ZIP cumulativo con la v0.37.0 e la v0.37.1;
    `LEGGIMI-v0.37.2.txt`: 1 migration, 3 seeder, `npm run build`), poi
    **fine del collaudo K** (K3, K7–K9 e le nuove K12, K13) e **collaudo L**.
    Correzioni in una v0.37.3 prima del resto, se servono.
@@ -29,8 +30,10 @@ mariadb-server`, database `asd_test`) e `php artisan test` (91 test verdi).
 ## Stato alle 15:00 del 07/10/2026
 - **v0.37.2 installata sul server** (Paolo), compresa la v0.37.0.
 - **Collaudo L superato** (Paolo, 07/10/2026).
-- Collaudo K: da confermare con Paolo se K3, K7–K9, K12–K14 sono stati
-  rifatti dopo la v0.37.1–0.37.2.
+- **Collaudo K superato** (Paolo, 07/10/2026, dopo le correzioni della
+  v0.37.1 e v0.37.2).
+- Prossimo: v0.38.0 (sopra); restano l'azzeramento (J12, K11, L12) e
+  `APP_DEBUG=false` prima dell'apertura.
 
 ## Fatto il 07/10/2026: v0.37.2 (collaudo, pomeriggio)
 - Errore 500 sul server dopo l'installazione: «Route [tesseramento.index]
@@ -66,9 +69,8 @@ mariadb-server`, database `asd_test`) e `php artisan test` (91 test verdi).
   email, quote senza numero).
 
 ## Fatto il 07/10/2026: v0.37.0 (Tessere CSEN)
-- Collaudo K della v0.36.0: **in corso** («Collaudo k da fare» letto per
-  errore come superato). Prime osservazioni di Paolo corrette nella v0.37.1
-  (sotto). Tavole
+- Collaudo K della v0.36.0: osservazioni di Paolo corrette nella v0.37.1 e
+  v0.37.2; **superato il 07/10/2026**. Tavole
   TS-1…TS-5, SC-1…SC-3, PR-3 approvate; tipo **Silver Base a 4 €**.
 - Paolo ha mandato l'elenco delle tessere esportato dal portale CSEN (30
   tessere): diventa la funzione «Carica tessere già emesse» (anteprima,
