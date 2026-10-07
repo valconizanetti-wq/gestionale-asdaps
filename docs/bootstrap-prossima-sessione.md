@@ -100,6 +100,16 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   collaudare con il blocco K. Poi: scontrini con OCR, anticipi e note di
   rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
   Rendiconto, procedura di azzeramento.
+- **Tessere CSEN e scadenze** (Paolo, 07/10/2026): 4 € di ogni quota al
+  CSEN, tessere comprate a pacchetti con numeri stampati e assegnate a
+  tutti i soci, valide un anno dall'emissione (non dall'anno solare),
+  prezzo secondo il tipo; affiliazione con scadenza; polizza RC Unipol
+  tramite CSEN in scadenza a luglio. Analisi
+  `docs/analisi-tessere-scadenze.md` (anche nel progetto); tavole TS-1…TS-5,
+  SC-1, PR-3 sulla tela e in `docs/mockup/Tavole-tessere-scadenze.pdf`,
+  **in attesa di approvazione** e di: mese di scadenza dell'affiliazione,
+  tipi e prezzi delle tessere, caricamento delle tessere già emesse. Poi
+  v0.37.0.
 - Da chiedere al commercialista: dicitura IVA della ricevuta, bollo sopra
   77,47 €, quota del socio giovane come «iscrizione annuale» per la
   detrazione sportiva (dal 2028).
