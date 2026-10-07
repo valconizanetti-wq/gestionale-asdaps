@@ -43,7 +43,6 @@ class SociController extends Controller
         $certificatoRichiesto = (bool) Impostazione::get('certificato_medico_richiesto');
 
         $soci = $this->query($filtri)
-            ->withExists(['tesseramenti as tesserato' => fn ($q) => $q->where('stato', 'attivo')])
             ->with('documenti:id,socio_id,categoria')
             ->when($certificatoRichiesto, fn ($q) => $q->withExists([
                 'certificatiMedici as certificato_valido' => fn ($c) => Socio::queryCertificatoValido($c),
@@ -69,7 +68,10 @@ class SociController extends Controller
         // Invio in blocco del link privacy (privacy-link.md §3): solo per chi modifica.
         $linkPrivacy = $request->user()->puoModificare('soci') ? app(\App\Services\LinkPrivacy::class)->riepilogo() : null;
 
-        return view('soci.index', compact('soci', 'filtri', 'kpi', 'mostraTessera', 'certificatoRichiesto', 'linkPrivacy'));
+        // Tessera CSEN di ogni socio della pagina (badge come nella tavola TS-4)
+        $tessere = \App\Services\Tessere::perSoci($soci->pluck('id'));
+
+        return view('soci.index', compact('soci', 'filtri', 'kpi', 'mostraTessera', 'certificatoRichiesto', 'linkPrivacy', 'tessere'));
     }
 
     public function export(Request $request): StreamedResponse
@@ -177,7 +179,7 @@ class SociController extends Controller
     public function show(Socio $socio)
     {
         $socio->load([
-            'tesseramenti' => fn ($q) => $q->orderByDesc('stagione_sportiva'),
+            'tesseramenti' => fn ($q) => $q->with(['tipo', 'pacchetto'])->orderByDesc('data_rilascio')->orderByDesc('id'),
             'caricheCd' => fn ($q) => $q->where('in_carica', true),
             'documenti' => fn ($q) => $q->orderByDesc('created_at'),
             // Domanda online da cui è nato il socio: ricevuta e scheda
@@ -193,6 +195,8 @@ class SociController extends Controller
             'tipi' => self::TIPI,
             'requisiti' => $socio->requisitiIscrizione((bool) Impostazione::get('certificato_medico_richiesto')),
             'categorie' => config('soci.categorie_documenti'),
+            // Tessera CSEN (tavola TS-4): situazione di oggi
+            'tessera' => \App\Services\Tessere::situazione($socio->tesseramenti),
         ]);
     }
 

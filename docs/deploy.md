@@ -327,6 +327,11 @@ non vengono toccati.
   backup e nella copia di `storage/app/private` alla migrazione. La
   colonna `gl_audit_log.created_at` è DATETIME: la catena non dipende dal
   fuso di MySQL del nuovo server.
+- **Tessere CSEN (v0.37.0)**: lo stesso cron lancia `tessere:pulisci` ogni
+  giorno alle 03:30 (cancella i CSV del portale CSEN rimasti in anteprima
+  in `storage/app/private/tmp/tessere`). La migration 000100 si ferma
+  prima di toccare le tabelle se in `gl_tesseramenti` ci sono numeri vuoti
+  o ripetuti: correggerli e rilanciare.
 - **Test automatici**: girano su MySQL, non su SQLite (le migration usano
   istruzioni MySQL). Dalla v0.33.0 `phpunit.xml` punta già a MySQL e al
   database `asd_test` (host, utente e password dal `.env`): basta creare
@@ -343,6 +348,8 @@ non vengono toccati.
 
 ## 7. Storia ed evoluzione
 
+- v0.37.0 (07/10/2026): comando giornaliero `tessere:pulisci`; controllo
+  dei numeri di tessera nella migration (§6).
 - v0.30.5 (04/10/2026): fuso dell'app in ora italiana (§6, "Fuso
   orario").
 - v0.30.4 (04/10/2026): regola per l'uscita del cron (§6): sempre

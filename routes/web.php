@@ -11,6 +11,7 @@ use App\Http\Controllers\PromemoriaController;
 use App\Http\Controllers\RinnoviController;
 use App\Http\Controllers\SociController;
 use App\Http\Controllers\SocioDocumentiController;
+use App\Http\Controllers\TessereController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -156,6 +157,30 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::get('/{rinnovo}/ricevuta', 'ricevuta')->whereNumber('rinnovo')->name('ricevuta');
             Route::post('/{rinnovo}/invia', 'invia')->whereNumber('rinnovo')->name('invia');
             Route::post('/{rinnovo}/annulla', 'annulla')->whereNumber('rinnovo')->name('annulla');
+        });
+
+    // Tessere CSEN: pacchetti, emissione e rinnovo, carico dell'elenco del
+    // CSEN (analisi-tessere-scadenze.md, v0.37.0). Presidente, Segretario e
+    // Tesoriere modificano, il Revisore consulta (controllo nel controller).
+    Route::middleware('permesso:tesseramento')
+        ->prefix('tessere')->name('tesseramento.')
+        ->controller(TessereController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('/carica', 'carica')->name('carica');
+            Route::post('/carica', 'caricaFile')->name('carica.file');
+            Route::post('/carica/conferma', 'caricaConferma')->name('carica.conferma');
+            Route::post('/carica/annulla', 'caricaAnnulla')->name('carica.annulla');
+            Route::get('/pacchetti/nuovo', 'createPacchetto')->name('pacchetti.create');
+            Route::post('/pacchetti', 'storePacchetto')->name('pacchetti.store');
+            Route::get('/pacchetti/{pacchetto}/modifica', 'editPacchetto')->whereNumber('pacchetto')->name('pacchetti.edit');
+            Route::put('/pacchetti/{pacchetto}', 'updatePacchetto')->whereNumber('pacchetto')->name('pacchetti.update');
+            Route::delete('/pacchetti/{pacchetto}', 'destroyPacchetto')->whereNumber('pacchetto')->name('pacchetti.destroy');
+            Route::post('/tipi', 'storeTipo')->name('tipi.store');
+            Route::put('/tipi/{tipo}', 'updateTipo')->whereNumber('tipo')->name('tipi.update');
+            Route::post('/{tessera}/portale', 'portale')->whereNumber('tessera')->name('portale');
+            Route::delete('/{tessera}', 'destroy')->whereNumber('tessera')->name('destroy');
         });
 
     // Promemoria: email automatiche pianificate per tutte le funzioni

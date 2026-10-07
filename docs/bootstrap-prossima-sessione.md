@@ -1,33 +1,53 @@
-# Bootstrap — Gestionale ASD, dopo la v0.36.0 (Rinnovi quota e Promemoria, 07/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.37.0 (Tessere CSEN, 07/10/2026)
 
-## Prossima sessione (decisa da Paolo il 07/10/2026)
-La sessione del 06–07/10 è stata chiusa perché troppo lunga. Quella nuova
-fa due cose, in quest'ordine:
-1. **Collaudo della v0.36.0** (blocco K della lista di collaudo): Paolo
-   porta l'esito voce per voce (ok, oppure il problema con schermata).
-   Correzioni eventuali in una v0.36.1, prima del resto.
-2. **v0.37.0, solo tessere CSEN** (prima metà dell'analisi
-   `analisi-tessere-scadenze.md`, tavole TS-1…TS-5): pacchetti con uscita
-   in Prima Nota, emissione e rinnovo a un anno, carico delle tessere già
-   emesse, badge «Tessera scaduta», permessi del Tesoriere. **v0.37.1**
-   dopo: Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
+## Prossima sessione
+1. **Installazione e collaudo della v0.37.0** (blocco L della lista di
+   collaudo; `LEGGIMI-v0.37.0.txt`: 1 migration, 3 seeder, `npm run build`).
+   Paolo porta l'esito voce per voce; correzioni in una v0.37.1-a prima del
+   resto, se servono.
+2. **v0.37.1**: Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
    Polizza RC in Impostazioni › Ente (SC-2, SC-3), promemoria «N giorni
-   prima» (PR-3). Divisione decisa per contenere il consumo.
+   prima» (PR-3: «Scadenze dell'associazione», «Tessere in scadenza»).
+   Tavole già approvate.
 
 Prima di scrivere codice servono da Paolo:
-- ok sulle tavole TS-1…TS-5, SC-1…SC-3, PR-3;
-- tipi di tessera CSEN e prezzi (listino 2027);
-- elenco delle tessere già emesse (socio, numero, tipo, data di
-  emissione), se si caricano;
-- mese di scadenza dell'affiliazione CSEN (serve per la v0.37.1).
+- **mese di scadenza dell'affiliazione CSEN** (per la v0.37.1);
+- risposta sui **pacchetti misti**: nell'elenco CSEN una Gold Base
+  (27B2229058) sta nell'intervallo delle Silver. Se il CSEN vende pacchetti
+  con tipi diversi, il tipo va sulla tessera e non sul pacchetto
+  (`tessere.md` §1);
+- prezzo della Gold Base (si scrive dalla pagina Tessere).
 
 Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
 git, storia compresa, in un file solo; il commit è nel nome). Si
 ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
-key:generate`, MariaDB (`service mariadb start`) e `php artisan test`
-(75 test verdi).
+key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
+mariadb-server`, database `asd_test`) e `php artisan test` (86 test verdi).
+
+## Fatto il 07/10/2026: v0.37.0 (Tessere CSEN)
+- Collaudo K della v0.36.0: **tutto superato** (Paolo, 07/10/2026). Tavole
+  TS-1…TS-5, SC-1…SC-3, PR-3 approvate; tipo **Silver Base a 4 €**.
+- Paolo ha mandato l'elenco delle tessere esportato dal portale CSEN (30
+  tessere): diventa la funzione «Carica tessere già emesse» (anteprima,
+  abbinamento per codice fiscale, conferma; il file si cancella). Dati
+  personali: non nel codice né nel progetto.
+- Fatto: tipi di tessera; pacchetti con numeri stampati (prefisso di
+  stagione + progressivo), uscita in Prima Nota «Tesseramento Soci EPS» con
+  giustificativi; emissione e rinnovo a un anno dall'emissione con numero
+  proposto e «Rinnova lo stesso» per chi è in ritardo con la quota (dal
+  2027; prima «quota nel vecchio gestionale»); badge «Tessera scaduta» in
+  soci, scheda e rinnovi; quota netta; invito a emettere la tessera dopo la
+  quota; Tesoriere sulla sezione Tesseramento, Revisore in lettura; comando
+  giornaliero `tessere:pulisci`.
+- Scheda `docs/specifiche/tessere.md` (§7: tre giri di revisione, 10 + 4
+  difetti corretti); `analisi-tessere-scadenze.md` §4 (decisioni);
+  `permessi.md`, `tesseramento-sportivo.md` §7, MANUALE, `ui.md`,
+  `deploy.md` §6; lista di collaudo blocco L.
+- Tratto `Concerns\Giustificativi` estratto da `PrimaNotaController` (stesso
+  comportamento, test della Prima Nota verdi).
+- Azzeramento prima dell'apertura: anche tessere e pacchetti di prova (L12).
 
 ## Contesto
 Come in `bootstrap-voto-cd.md` (progetto, ambienti, regole di lavoro,
@@ -124,9 +144,9 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   movimento), da usare dal 01/01/2027. **Deciso da Paolo (06/10/2026): si
   fa Rinnovi quota adesso, prima degli scontrini** (che slittano). Fatto
   nella v0.36.0.
-- **v0.36.0 consegnata** (Rinnovi quota e Promemoria, sotto): da installare
-  (`LEGGIMI-v0.36.0.txt`: 2 migration, 3 seeder, `npm run build`) e
-  collaudare con il blocco K. Poi: scontrini con OCR, anticipi e note di
+- **v0.36.0** (Rinnovi quota e Promemoria, sotto): installata e collaudata
+  (blocco K superato il 07/10/2026). **v0.37.0** (Tessere CSEN, sopra): da
+  installare e collaudare (blocco L). Poi: scontrini con OCR, anticipi e note di
   rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
   Rendiconto, procedura di azzeramento.
 - **Tessere CSEN e scadenze** (Paolo, 07/10/2026): 4 € di ogni quota al
@@ -136,9 +156,8 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   tramite CSEN in scadenza a luglio. Analisi
   `docs/analisi-tessere-scadenze.md` (anche nel progetto); tavole TS-1…TS-5,
   SC-1…SC-3 (affiliazione e polizza in Impostazioni › Ente), PR-3 sulla tela e in `docs/mockup/Tavole-tessere-scadenze.pdf`,
-  **in attesa di approvazione** e di: mese di scadenza dell'affiliazione,
-  tipi e prezzi delle tessere, caricamento delle tessere già emesse. Poi
-  v0.37.0.
+  approvate il 07/10/2026; tessere fatte nella v0.37.0, il resto nella
+  v0.37.1 (manca il mese di scadenza dell'affiliazione).
 - Da chiedere al commercialista: dicitura IVA della ricevuta, bollo sopra
   77,47 €, quota del socio giovane come «iscrizione annuale» per la
   detrazione sportiva (dal 2028).
@@ -316,7 +335,8 @@ documentata; le modifiche da riportare al Gestionale APS in
 - Azzeramento finale prima dell'apertura al pubblico (Paolo, 29/09/2026:
   oggi è tutto in prova): domande, voti, email, verbali, soci, rinnovi e
   movimenti di prova (con anni contabili, tag, fornitori e giustificativi:
-  J12), rinnovi, ricevute e invii dei promemoria (K11), registro di audit;
+  J12), rinnovi, ricevute e invii dei promemoria (K11), tessere e pacchetti
+  (L12), registro di audit;
   modalità test spenta. Procedura
   da scrivere quando ci si arriva. Fino ad allora informativa e statuto si
   correggono sul posto con il numero di versione dell'avvio (1.0), senza

@@ -57,6 +57,8 @@ class DatabaseSeeder extends Seeder
             // Categorie di Prima Nota riprese da gestionale-acv (v0.35.0, prima-nota.md)
             PrimaNotaCategoriaSeeder::class,
             PromemoriaSeeder::class,
+            // Tipi di tessera CSEN (v0.37.0)
+            TesseraTipoSeeder::class,
         ]);
     }
 }

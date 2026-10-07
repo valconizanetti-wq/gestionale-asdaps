@@ -107,7 +107,7 @@
                             <th scope="col">Cognome e nome</th>
                             <th scope="col">Tipo</th>
                             <th scope="col">Codice fiscale</th>
-                            <th scope="col">Tesseram. CSEN</th>
+                            <th scope="col">Tessera CSEN</th>
                             <th scope="col">Quota</th>
                             <th scope="col">Documenti</th>
                             <th scope="col">Iscritto dal</th>
@@ -139,12 +139,9 @@
                                     @endif
                                 </td>
                                 <td data-label="Codice fiscale" class="td-solo-desktop"><span class="code">{{ $socio->codice_fiscale }}</span></td>
-                                <td data-label="CSEN">
-                                    @if ($socio->tesserato)
-                                        <x-badge variante="info">Tesserato</x-badge>
-                                    @else
-                                        <x-badge variante="warn">Da tesserare</x-badge>
-                                    @endif
+                                <td data-label="Tessera CSEN">
+                                    @php $ts = $tessere[$socio->id]; @endphp
+                                    <x-badge :variante="$ts['variante']">{{ $ts['testo'] }}</x-badge>
                                 </td>
                                 <td data-label="Quota">
                                     @if ($quotaValida)

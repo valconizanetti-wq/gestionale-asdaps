@@ -21,3 +21,18 @@ Schedule::command('audit:verifica-integrita')->monthlyOn(1, '05:00')->withoutOve
 // Promemoria (promemoria.md, v0.36.0): ogni 15 minuti si inviano quelli
 // arrivati alla loro data e ora (recupero nei 7 giorni dopo).
 Schedule::command('promemoria:invia')->everyFifteenMinutes()->withoutOverlapping();
+
+// Tessere CSEN (v0.37.0): l'elenco caricato dal portale CSEN contiene dati
+// personali; un'anteprima abbandonata si cancella dopo un giorno.
+Artisan::command('tessere:pulisci', function () {
+    $disco = \Illuminate\Support\Facades\Storage::disk('local');
+    $tolti = 0;
+    foreach ($disco->files('tmp/tessere') as $f) {
+        if ($disco->lastModified($f) < now()->subDay()->timestamp) {
+            $disco->delete($f);
+            $tolti++;
+        }
+    }
+    $this->info("File tolti: {$tolti}");
+})->purpose('Cancella i CSV del CSEN rimasti in anteprima da più di un giorno');
+Schedule::command('tessere:pulisci')->dailyAt('03:30');

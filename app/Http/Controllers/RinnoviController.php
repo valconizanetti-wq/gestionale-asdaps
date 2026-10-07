@@ -76,6 +76,9 @@ class RinnoviController extends Controller
             'promemoria' => Promemoria::where('funzione', 'quote_non_versate')->get()
                 ->sortBy(fn ($p) => sprintf('%d-%02d-%02d', $p->parametro('anno_sociale') === 'successivo' ? 0 : 1, $p->mese ?? 13, $p->giorno ?? 32))->values(),
             'puoModificare' => $request->user()->puoModificare('rinnovi_quota'),
+            // Tessera CSEN del socio e quota netta dell'anno (v0.37.0, tavole TS-1, TS-4)
+            'tessere' => \App\Services\Tessere::perSoci($soci->pluck('id')),
+            'costiTessere' => \App\Services\Tessere::costiAnno($anno),
         ]);
     }
 
@@ -210,8 +213,15 @@ class RinnoviController extends Controller
             $messaggio .= ': ricevuta da rigenerare (errore nel PDF).';
         }
 
+        // Socio senza tessera CSEN valida (es. socio nuovo): proposta di emetterla subito (analisi-tessere-scadenze.md §2.3)
+        $suggerita = null;
+        if ($request->user()->puoModificare('tesseramento')
+            && in_array(\App\Services\Tessere::situazione($socio->tesseramenti()->get())['stato'], ['mancante', 'scaduta', 'in_scadenza'], true)) {
+            $suggerita = ['id' => $socio->id, 'nome' => trim("{$socio->nome} {$socio->cognome}")];
+        }
+
         return redirect($request->input('da') === 'socio' ? route('soci.show', $socio) . '#quote' : route('rinnovi.index', ['anno' => $r->anno]))
-            ->with('success', $messaggio);
+            ->with('success', $messaggio)->with('tessera_suggerita', $suggerita);
     }
 
     // ----------------------------------------------------------------

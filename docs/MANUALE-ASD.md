@@ -329,6 +329,11 @@ Normativa: D.Lgs. 36/2021 art. 29, corretto da D.Lgs. 163/2022 e D.Lgs.
 
 ### 4.1 Tesseramento sportivo / Certificati medici
 
+> **Aggiornamento v0.37.0**: le tessere CSEN sono in uso (pagina Tessere,
+> scheda `tessere.md`): `gl_tesseramenti` ha tipo, pacchetto, scadenza a un
+> anno dall'emissione e rinnovo; il vincolo (socio, stagione) non c'è più.
+> Certificati, divisioni e specialità restano come descritto qui sotto.
+
 **Non attivo nella configurazione attuale** (vedi §2.5 — nessun tesserato
 agonista, nessuna gara di calendario ufficiale): schema **progettato e
 consegnato** (migration + model + seeder, vedi archivio
@@ -1154,6 +1159,14 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     funzioni: date, testi e destinatari, invio automatico senza doppioni,
     al genitore per i minori. Scontrini e anticipi slittano alle versioni
     dopo.
+    **v0.37.0** (07/10/2026): **Tessere CSEN** (`tessere.md`): tipi di
+    tessera (Silver Base 4 €), pacchetti con numeri stampati e uscita in
+    Prima Nota, emissione e rinnovo a un anno dall'emissione (numero
+    proposto, «Rinnova lo stesso» per chi è in ritardo con la quota), carico
+    delle tessere già emesse dall'elenco del portale CSEN, badge «Tessera
+    scaduta» in soci, scheda e rinnovi, quota netta; Tesoriere sulla sezione
+    Tesseramento. Scadenzario, affiliazione, polizza RC e promemoria delle
+    tessere nella v0.37.1.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

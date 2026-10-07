@@ -8,8 +8,11 @@
     larga: per testi lunghi (statuto, informativa), corpo che scorre.
     aperta: già aperta al caricamento (es. dopo un errore di validazione,
     per mostrare l'errore nella finestra invece di chiuderla).
+    titolo-alpine: espressione Alpine per un titolo che cambia (es. «Rinnova
+    la tessera di …», tavola TS-3), valutata nello scope di chi contiene la
+    finestra; titolo resta il testo iniziale.
 --}}
-@props(['nome', 'titolo', 'piede' => null, 'larga' => false, 'aperta' => false])
+@props(['nome', 'titolo', 'piede' => null, 'larga' => false, 'aperta' => false, 'titoloAlpine' => null])
 <div x-data="{ aperta: @js((bool) $aperta) }"
      @if ($aperta) x-init="$nextTick(() => $refs.pannello.focus())" @endif
      x-on:apri-modale.window="if ($event.detail === '{{ $nome }}') { aperta = true; $nextTick(() => $refs.pannello.focus()) }"
@@ -18,7 +21,7 @@
         <div @class(['modal', 'modal-larga' => $larga]) role="dialog" aria-modal="true" aria-labelledby="modale-{{ $nome }}-titolo" x-ref="pannello" tabindex="-1">
             <div class="modal-body">
                 <div class="modal-testa">
-                    <h2 class="modal-title" id="modale-{{ $nome }}-titolo">{{ $titolo }}</h2>
+                    <h2 class="modal-title" id="modale-{{ $nome }}-titolo" @if ($titoloAlpine) x-text="{{ $titoloAlpine }}" @endif>{{ $titolo }}</h2>
                     <button type="button" class="action-btn" @click="aperta = false" aria-label="Chiudi"><x-icona nome="chiudi" /></button>
                 </div>
                 {{ $slot }}

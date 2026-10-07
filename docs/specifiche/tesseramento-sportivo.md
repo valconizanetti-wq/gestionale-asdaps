@@ -1,6 +1,7 @@
 # Tesseramento sportivo / Certificati medici
 
-**Stato:** in sviluppo (schema consegnato, non attivo sui dati reali)
+**Stato:** tessere CSEN in uso dalla v0.37.0 (scheda `tessere.md`); certificati
+medici, divisioni e specialità restano solo schema
 **Introdotto in:** v0.2.0 (2026-09-22)
 **File coinvolti:**
 - Migration: `2026_09_22_000059` → `2026_09_22_000067` (gl_qualifiche,
@@ -174,3 +175,16 @@ vincolo unique sulla coppia di FK.
   successiva di spostarlo in un'app esterna ("ArcoGare") ha reso quella
   dipendenza non più diretta — §1, §3 e §6 aggiornati di conseguenza.
   Nessun impatto sullo schema.
+
+## 7. Aggiornamento v0.37.0 (07/10/2026): tessere CSEN
+
+`gl_tesseramenti` è ora la tabella delle tessere CSEN emesse, con pacchetti,
+tipi, scadenza a un anno dall'emissione e rinnovo (scheda `tessere.md`):
+- tolto il vincolo unico (socio, stagione): la tessera si rinnova a 12 mesi,
+  non per stagione; `stagione_sportiva` è l'anno di emissione;
+- `numero_tessera_csen` unico; il «pacchetto» CSEN (Base, Silver Base…) è
+  ora un tipo in `gl_tessere_tipi` (`tipo_id`), il campo libero
+  `pacchetto_tesseramento` resta con il nome; «pacchetto» nel gestionale è
+  il lotto di tessere comprato (`gl_tessere_pacchetti`);
+- la scadenza è un campo della tessera, con l'elenco «in scadenza nei
+  prossimi 30 giorni» previsto in §4 (pagina Tessere).

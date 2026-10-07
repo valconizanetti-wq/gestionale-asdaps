@@ -32,6 +32,8 @@
 
     <x-sola-lettura sezione="rinnovi_quota" />
 
+    @include('tessere._suggerita')
+
     {{-- Fase dell'anno (RQ-1): solo se qualcuno non ha ancora versato --}}
     @if ($kpi['mancanti'] > 0 && $nonVersata !== RinnoviQuota::IN_ATTESA)
         @php $link = route('rinnovi.index', ['anno' => $anno, 'situazione' => 'non_versata']); @endphp
@@ -130,6 +132,7 @@
                             <th scope="col">Situazione</th>
                             <th scope="col">Versata</th>
                             <th scope="col">Ricevuta</th>
+                            <th scope="col">Tessera CSEN</th>
                             <th scope="col"><span class="sr-only">Azioni</span></th>
                         </tr>
                     </thead>
@@ -167,6 +170,7 @@
                                         <span class="td-sub">{{ $r->ricevuta_stato === 'inviata' ? 'inviata' : ($r->ricevuta_stato === 'errore' ? 'invio non riuscito' : 'da inviare') }}</span>
                                     @else — @endif
                                 </td>
+                                <td data-label="Tessera CSEN"><x-badge :variante="$tessere[$s->id]['variante']">{{ $tessere[$s->id]['testo'] }}</x-badge></td>
                                 <td class="td-azioni">
                                     @if ($r)
                                         <a href="{{ route('rinnovi.ricevuta', [$r, 'scarica' => 1]) }}" class="action-btn" aria-label="Scarica la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="download" /></a>
@@ -189,7 +193,12 @@
                 </table>
             </div>
             <x-paginazione :elementi="$soci" nome="soci" />
-            <div class="table-footer"><span class="pn-totali">Incassato nel filtro: <strong class="entrate">{{ Importo::it($totaleFiltro, true) }}</strong></span></div>
+            <div class="table-footer">
+                <span class="pn-totali">Incassato nel filtro: <strong class="entrate">{{ Importo::it($totaleFiltro, true) }}</strong></span>
+                {{-- Quota netta (v0.37.0): incassato dell'anno meno il costo delle tessere CSEN emesse nell'anno --}}
+                <span class="pn-totali">Quota netta {{ $anno }}: <strong>{{ Importo::it($costiTessere['netta'], true) }}</strong>
+                    <span class="td-sub">{{ Importo::it($costiTessere['incassato'], true) }} incassati − {{ Importo::it($costiTessere['costo'], true) }} di tessere CSEN ({{ $costiTessere['emesse'] }})</span></span>
+            </div>
         @endif
     </x-card>
 

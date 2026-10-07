@@ -1,10 +1,10 @@
-# Test domande di iscrizione e voto CD (collaudo v0.30.3, aggiornata alla v0.36.0)
+# Test domande di iscrizione e voto CD (collaudo v0.30.3, aggiornata alla v0.37.0)
 
 Lista di collaudo manuale su arco.valconi.it. Collaudo della v0.30.3
 concluso il 30/09/2026: blocchi A–F superati, pulizia fatta. Collaudo della
 v0.32.0 (blocco G, A11–A13) del 05/10/2026: superato, con la sola richiesta
 sulla disposizione dei dati fissi (G3), fatta nella v0.32.1 (installata).
-Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria). Copia viva,
+Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: superato il 07/10/2026), dalla v0.37.0 blocco L (Tessere CSEN). Copia viva,
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.
@@ -187,6 +187,35 @@ UPDATE gl_soci SET quota_scadenza = NULL;
 ALTER TABLE gl_rinnovi AUTO_INCREMENT = 1;
 ```
 Poi `rm -rf storage/app/private/ricevute`. I promemoria di prova si eliminano dalla loro pagina dopo aver svuotato `gl_promemoria_invii`; i tre pronti restano (o si ricreano con `php artisan db:seed --class=PromemoriaSeeder --force` se la funzione non ne ha più).
+
+## L. Tessere CSEN (v0.37.0)
+Dettaglio in `docs/specifiche/tessere.md`, tavole TS-1…TS-5. Da Tesoriere (menu nuovo «Tesseramento»), poi da Presidente o Segretario (scheda del socio) e da Revisore. Prima: `php artisan db:seed --class=TesseraTipoSeeder --force` fatto (LEGGIMI), qualche socio di prova attivo, il file CSV esportato dal portale CSEN. **Dati di prova**: si azzerano con L12. Fino al 31/12/2026 la quota è «nel vecchio gestionale» (nessun blocco); per provare «Rinnova lo stesso» serve una quota di prova del 2026 mancante in un anno contabile aperto, quindi la regola si vede bene dal 2027 (anche nei test automatici).
+- L1 Menu «Tesseramento» per Tesoriere, Presidente, Segretario, Revisore. Il Revisore vede «Sola lettura» e nessun pulsante (niente Nuovo pacchetto, Emetti, Rinnova, matita, cestino, spunta del portale).
+- L2 Pagina `/tessere` a 1440 e 375 px (nessuno scorrimento orizzontale): sottotitolo, avviso giallo con i soci senza tessera valida («Mostra» porta all'elenco), cinque indicatori, «Da rinnovare» con «Mai tesserato» per chi non ha tessere, riquadro «Disponibili» con «Silver Base · 4,00 € a tessera», pacchetti, «Tessere emesse» con ricerca e filtro.
+- L3 Carica tessere già emesse: scegli il CSV del CSEN, «Leggi il file». Anteprima: indicatori (da caricare, già nel gestionale, socio non trovato, da correggere), una riga per tessera con socio abbinato per codice fiscale, numero, tipo, rilascio, scadenza (un anno meno un giorno). Telefono ed email del file non compaiono. «Annulla» torna alla scelta del file.
+- L4 «Carica N tessere»: messaggio con il numero e «Tipi nuovi senza prezzo: Gold Base»; nel riquadro Disponibili «Gold Base · prezzo da scrivere». Elenco: «dall'elenco CSEN», «✓ Inserita». Nell'Audit Log una sola riga «TESSERE_CARICATE». Ricaricare lo stesso file: tutte «Già nel gestionale», nessun pulsante «Carica». Sul server non resta il file (`ls storage/app/private/tmp/tessere`: vuota).
+- L5 Tipi: matita su Gold Base, prezzo (es. 8,00), «In uso» spuntato → salvato. «Nuovo tipo» con un nome già presente: errore nella finestra, che resta aperta.
+- L6 Nuovo pacchetto: tipo Silver Base, prezzo 4,00 proposto, dal `27B1024418` al `27B1024447` (quantità 30, totale 120,00 €). Con data 2026 e «Registra l'uscita» spuntata: errore «prima dell'avvio della contabilità»; tolta la spunta: registrato, «senza movimento», nell'elenco «vecchio gestionale». Un secondo pacchetto che riprende anche un solo numero: errore di sovrapposizione. «Al numero» con un prefisso diverso: errore.
+- L7 Emetti dalla riga «Mai tesserato»: titolo «Emetti la tessera a …», tipo Silver Base, numero proposto `27B1024418` («Primo libero del pacchetto …»), emessa oggi, scade tra un anno meno un giorno, riquadro «Quota 2026 nel vecchio gestionale», pulsante «Emetti la tessera 27B1024418». Emessa: messaggio con le date e «Ricordati di inserirla sul portale CSEN»; il prossimo numero proposto è `27B1024419`.
+- L8 Controlli: numero già usato (anche scritto solo con le cifre) → errore nella finestra; numero fuori dai pacchetti → «registra prima il pacchetto»; prefisso diverso da quello del pacchetto → errore; solo cifre di un numero libero (es. `1024430`) → emessa come `27B1024430`. Seconda tessera allo stesso socio con data dentro la validità della prima → errore con la data da cui può partire.
+- L9 Rinnovo. Le tessere del CSV scadono da gennaio 2027: per provarlo ora, avvicinare la scadenza di una tessera caricata (poi si azzera con L12):
+```sql
+UPDATE gl_tesseramenti SET data_rilascio = DATE_SUB(CURDATE(), INTERVAL 350 DAY), scadenza = DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+WHERE numero_tessera_csen = '26B2749167';
+```
+  Nella pagina Tessere la riga è «tra N giorni · data»; «Rinnova» propone il giorno dopo la scadenza e «Come la tessera precedente.». Dopo il rinnovo la vecchia tessera nella scheda è «Rinnovata» e il socio esce da «Da rinnovare».
+- L10 Scheda del socio (Presidente o Segretario): badge «Tessera CSEN: …» nell'intestazione; riquadro «Tessera CSEN» con lo storico (numero, pacchetto o «dall'elenco CSEN», tipo, date, stato); pulsante «Emetti»/«Rinnova» solo se manca, è scaduta o scade entro 30 giorni: apre la pagina Tessere con la finestra già aperta e dopo l'emissione si torna alla scheda. Socio senza tessera: avviso rosso. Elenco soci: colonna «Tessera CSEN» con lo stesso badge.
+- L11 Rinnovi quota: colonna «Tessera CSEN» e, sotto l'elenco, «Quota netta 2026: incassati − tessere CSEN». Registrare la quota di un socio senza tessera valida: dopo il salvataggio l'avviso «… non ha una tessera valida» con «Emetti la tessera». Pacchetti: matita → correzione; con tessere emesse serve la motivazione (Audit Log «TESSERE_PACCHETTO_CORRETTO»), l'intervallo che esclude un numero usato è rifiutato; senza tessere c'è «Elimina il pacchetto». Cestino su una tessera: motivazione sotto 15 caratteri → errore nella finestra; con motivazione la tessera sparisce e il numero torna proposto.
+- L12 Azzeramento prima dell'apertura (con J12 e K11; le tessere vere si ricaricano dal CSV dopo l'azzeramento dei soci):
+```sql
+DELETE FROM gl_tesseramenti_qualifiche;
+UPDATE gl_tesseramenti SET precedente_id = NULL;
+DELETE FROM gl_tesseramenti;
+DELETE FROM gl_tessere_pacchetti;
+ALTER TABLE gl_tesseramenti AUTO_INCREMENT = 1;
+ALTER TABLE gl_tessere_pacchetti AUTO_INCREMENT = 1;
+```
+I tipi restano (Silver Base, Gold Base con i loro prezzi).
 
 ## CD di prova (SQL)
 Controllo dei soci:

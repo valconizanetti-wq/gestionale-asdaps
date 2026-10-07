@@ -23,6 +23,7 @@
             @if ($minorenne)<x-badge variante="info">Minorenne</x-badge>@endif
             @if ($socio->tipoIncoerenteConEta())<x-badge variante="warn">Tipo da aggiornare</x-badge>@endif
             @if ($socio->pseudonimizzato)<x-badge variante="neutral">Pseudonimizzato</x-badge>@endif
+            @if ($socio->stato === 'attivo')<x-badge :variante="$tessera['variante']">Tessera CSEN: {{ ['mancante' => 'nessuna', 'scaduta' => 'scaduta'][$tessera['stato']] ?? mb_strtolower($tessera['testo']) }}</x-badge>@endif
         </div>
         @if ($puoModificare && ! $socio->pseudonimizzato)
             <x-slot:azioni>
@@ -40,6 +41,8 @@
     </x-page-header>
 
     <x-sola-lettura sezione="soci" />
+
+    @include('tessere._suggerita')
 
     @if ($cancellato)
         <x-avviso tipo="info" titolo="Socio cessato.">
@@ -119,22 +122,47 @@
             </x-card>
         @endif
 
-        <x-card titolo="Tesseramento CSEN" senza-padding>
+        {{-- Tessera CSEN (tavola TS-4): la tessera vale un anno dall'emissione e comprende l'assicurazione base --}}
+        @php $puoTessere = $utente->puoModificare('tesseramento') && $socio->stato === 'attivo' && ! $socio->pseudonimizzato; @endphp
+        <x-card titolo="Tessera CSEN" senza-padding id="tessera">
+            {{-- Tessera valida per più di 30 giorni: il rinnovo si fa quando si avvicina la scadenza --}}
+            @if ($puoTessere && in_array($tessera['stato'], ['in_scadenza', 'scaduta', 'mancante'], true))
+                <x-slot:azioni>
+                    <a href="{{ route('tesseramento.index', ['emetti' => $socio->id, 'da' => 'socio']) }}"
+                       class="btn btn-sm btn-primary">
+                        {{ $socio->tesseramenti->isEmpty() ? 'Emetti' : 'Rinnova' }}
+                    </a>
+                </x-slot:azioni>
+            @endif
+            @if (in_array($tessera['stato'], ['scaduta', 'mancante'], true) && $socio->stato === 'attivo')
+                <div class="card-body">
+                    <x-avviso tipo="ko" :titolo="$tessera['stato'] === 'scaduta' ? 'Tessera scaduta il ' . $tessera['tessera']->scadenza?->format('d/m/Y') . '.' : 'Nessuna tessera CSEN.'">
+                        Senza tessera valida il socio non ha l'assicurazione base: non dovrebbe tirare al campo finché non è rinnovata.
+                    </x-avviso>
+                </div>
+            @endif
             @if ($socio->tesseramenti->isEmpty())
-                <x-vuoto>Nessun tesseramento registrato.</x-vuoto>
+                <x-vuoto>Nessuna tessera registrata.</x-vuoto>
             @else
                 <div class="table-wrap">
-                    <table class="data-table responsive">
+                    <table class="data-table responsive ts-tabella">
                         <thead>
-                            <tr><th scope="col">Stagione</th><th scope="col">N. tessera CSEN</th><th scope="col">Pacchetto</th><th scope="col">Stato</th></tr>
+                            <tr><th scope="col">Numero</th><th scope="col">Tipo</th><th scope="col">Emessa</th><th scope="col">Scade</th><th scope="col">Stato</th></tr>
                         </thead>
                         <tbody>
                             @foreach ($socio->tesseramenti as $t)
+                                @php
+                                    [$sTesto, $sVar] = $tessera['tessera']?->is($t) && in_array($tessera['stato'], ['in_scadenza', 'valida'], true)
+                                        ? [$tessera['testo'], $tessera['variante']]
+                                        : \App\Models\Tesseramento::STATI[$t->statoOggi()];
+                                @endphp
                                 <tr>
-                                    <td class="td-primario">{{ $t->stagione_sportiva }}</td>
-                                    <td data-label="Tessera"><span class="code">{{ $t->numero_tessera_csen ?? '—' }}</span></td>
-                                    <td data-label="Pacchetto">{{ $t->pacchetto_tesseramento ?? '—' }}</td>
-                                    <td data-label="Stato"><x-badge-stato dominio="tesseramento" :valore="$t->stato" /></td>
+                                    <td class="td-primario"><span class="ts-numero">{{ $t->numero_tessera_csen }}</span>
+                                        <span class="td-sub">{{ $t->pacchetto ? 'pacchetto ' . $t->pacchetto->intervallo() : ($t->origine === 'caricata' ? 'dall\'elenco CSEN' : '') }}</span></td>
+                                    <td data-label="Tipo">{{ $t->tipoNome() }}</td>
+                                    <td data-label="Emessa">{{ $t->data_rilascio?->format('d/m/Y') ?? '—' }}</td>
+                                    <td data-label="Scade">{{ $t->scadenza?->format('d/m/Y') ?? '—' }}</td>
+                                    <td data-label="Stato"><x-badge :variante="$sVar">{{ $sTesto }}</x-badge></td>
                                 </tr>
                             @endforeach
                         </tbody>

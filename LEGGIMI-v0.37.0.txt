@@ -1,0 +1,65 @@
+Gestionale ASD - v0.37.0 (07/10/2026)
+Tessere CSEN
+
+Da applicare sopra la v0.36.0. 1 migration, 3 seeder, CSS e JavaScript (npm run build).
+Scheda: docs/specifiche/tessere.md. Analisi: docs/analisi-tessere-scadenze.md (par. 4: decisioni).
+Tavole: docs/mockup/Tavole-tessere-scadenze.pdf (TS-1...TS-5).
+
+COSA CAMBIA
+  - Tessere CSEN (menu "Tesseramento"): indicatori, elenco "Da rinnovare" (in scadenza a 30
+    giorni, scadute, mai tesserati) con la quota dell'anno, disponibili per tipo, pacchetti, elenco
+    di tutte le tessere con ricerca, filtri e spunta "inserita sul portale CSEN".
+  - Tipi di tessera: Silver Base a 4 EUR; altri tipi e prezzi dalla pagina Tessere.
+  - Nuovo pacchetto: numeri come stampati (es. 27B1024418-27B1024447), prezzo, uscita in Prima Nota
+    "Tesseramento Soci EPS" con giustificativi (solo dal 2027: prima si toglie la spunta).
+    Correzione motivata, eliminazione solo senza tessere.
+  - Emetti / Rinnova: numero proposto (primo libero del pacchetto), dal giorno dopo la scadenza
+    della precedente, valida un anno; "Rinnova lo stesso" per chi e' in ritardo con la quota (dal
+    2027; prima la quota e' "nel vecchio gestionale"). Anche dalla scheda del socio e dopo la
+    registrazione della quota di un socio senza tessera.
+  - Carica tessere gia' emesse: il CSV esportato dal portale CSEN, con anteprima e conferma; soci
+    abbinati per codice fiscale; il file si cancella (anche ogni notte, comando tessere:pulisci).
+  - Badge della tessera (valida, scade tra N giorni, scaduta, senza tessera) nell'elenco soci,
+    nella scheda e nei Rinnovi quota; "quota netta" dell'anno nei Rinnovi quota.
+  - Permessi: il Tesoriere entra in Tesseramento; il Revisore in sola lettura.
+
+FILE
+  app/Http/Controllers/TessereController.php, Concerns/Giustificativi.php (nuovi);
+    PrimaNotaController.php (giustificativi spostati nel tratto), RinnoviController.php, SociController.php
+  app/Services/Tessere.php, CaricoTessereCsen.php, TesseraSenzaQuota.php (nuovi)
+  app/Models/TesseraTipo.php, TesseraPacchetto.php (nuovi); Tesseramento.php
+  database/migrations/2026_10_07_000100_create_gl_tessere_tables.php (nuova)
+  database/seeders/TesseraTipoSeeder.php (nuovo); SezioneSeeder.php, PrimaNotaCategoriaSeeder.php, DatabaseSeeder.php
+  resources/views/tessere/* (nuove); soci/index, soci/show, rinnovi/index, components/modale
+  resources/css/app.css, resources/js/app.js; routes/web.php, routes/console.php
+  tests/Feature/TessereTest.php (nuovo)
+  docs: specifiche/tessere.md (nuova), tesseramento-sportivo.md, permessi.md, MANUALE-ASD.md (tutte e
+    due le copie), ui.md, deploy.md, analisi-tessere-scadenze.md, bootstrap-prossima-sessione.md,
+    test-domande-iscrizione.md (tutte e due le copie, blocco L)
+
+LOCALE
+  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.36.0.txt.
+  2. php artisan migrate
+     php artisan db:seed --class=SezioneSeeder
+     php artisan db:seed --class=PrimaNotaCategoriaSeeder
+     php artisan db:seed --class=TesseraTipoSeeder
+  3. php artisan test   -> 86 superati
+  4. git add -A && git commit -m "v0.37.0: Tessere CSEN"
+  5. npm run build ; git archive -o deploy.zip HEAD ; build.zip da public\build
+
+SERVER
+  Come le ultime (deploy.md par. 5: unzip, build.zip, migrate --force, optimize:clear e cache),
+  con in piu' dopo "php artisan migrate --force":
+     php artisan db:seed --class=SezioneSeeder --force
+     php artisan db:seed --class=PrimaNotaCategoriaSeeder --force
+     php artisan db:seed --class=TesseraTipoSeeder --force
+  La migration controlla prima i numeri di tessera gia' presenti: se trova numeri vuoti o ripetuti
+  si ferma senza toccare nulla e li elenca (correggerli e rilanciare). Le righe gia' presenti
+  ricevono scadenza, tipo e "caricata".
+  PrimaNotaCategoriaSeeder mette solo il codice TESSERE_EPS sulla categoria "Tesseramento Soci EPS".
+  Il cron "schedule:run" c'e' gia': tessere:pulisci parte da solo alle 03:30.
+  Verifica: php artisan tessere:pulisci  -> "File tolti: 0".
+
+COLLAUDO
+  Lista di collaudo, blocco L. Serve il CSV del CSEN (quello mandato il 07/10/2026).
+  Azzeramento L12 insieme a J12 e K11.

@@ -53,6 +53,11 @@ class SezioneSeeder extends Seeder
             $this->assegna('segretario', $codice);
         }
 
+        // Tessere CSEN (v0.37.0, analisi-tessere-scadenze.md §2.8): anche il
+        // tesoriere, che compra i pacchetti; revisore in sola lettura.
+        $this->assegna('tesoriere', 'tesseramento');
+        $this->assegna('revisore', 'tesseramento', soloLettura: true);
+
         // Volontari: tesoriere in sola lettura — vede i rimborsi da pagare
         // e registrare in Prima Nota, la gestione resta al segretario.
         $this->assegna('tesoriere', 'volontari', soloLettura: true);

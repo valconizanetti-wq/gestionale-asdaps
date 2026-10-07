@@ -1633,3 +1633,63 @@
     .section-header { flex-wrap: wrap; row-gap: 8px; }
     .section-header-azioni { flex-wrap: wrap; }
 }
+
+/* --------------------------------------------------------------------------
+   15. TESSERE CSEN (v0.37.0)
+   Tavole TS-1…TS-5 (analisi-tessere-scadenze.md).
+   -------------------------------------------------------------------------- */
+@layer components {
+    .ts-numero { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--color-notte); white-space: nowrap; }
+    .ts-tabella .td-azioni { display: flex; gap: 4px; justify-content: flex-end; align-items: center; white-space: nowrap; }
+    .ts-tabella .td-azioni form, .ts-tabella td form { display: inline-flex; }
+    .ts-emesse { display: block; font-size: 12.5px; }
+    .ts-barra { display: block; width: 72px; height: 5px; margin-top: 4px; border: 0; border-radius: 3px; overflow: hidden;
+        background: var(--color-neutro-bg); appearance: none; }
+    .ts-barra::-webkit-progress-bar { background: var(--color-neutro-bg); border-radius: 3px; }
+    .ts-barra::-webkit-progress-value { background: var(--color-primario); border-radius: 3px; }
+    .ts-barra::-moz-progress-bar { background: var(--color-primario); border-radius: 3px; }
+    .ts-nota { margin: -6px 2px 18px; }
+    .ts-da-fare { color: var(--color-warn); font-weight: 600; }
+
+    /* Disponibili per tipo (TS-5) */
+    .ts-disponibili { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .ts-tipo { border: 1px solid var(--color-bordo); border-radius: var(--radius-card); padding: 12px 14px;
+        display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .ts-tipo strong { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--color-notte); line-height: 1.1; }
+    .ts-tipo .kpi-sub { overflow-wrap: anywhere; }
+    .ts-tipo-testa { display: flex; justify-content: space-between; align-items: center; gap: 6px; min-height: 28px; }
+    .ts-tipo-spento { background: var(--color-superficie-2); }
+    .ts-tipo-spento strong { color: var(--color-etichetta); }
+
+    /* Finestra di emissione (TS-3) */
+    .ts-emissione-date { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ts-quota { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: var(--radius-ctrl);
+        border: 1px solid var(--color-bordo); font-size: 13px; color: var(--color-testo-2); }
+    .ts-quota strong { font-size: 13.5px; }
+    .ts-quota-ok { background: var(--color-ok-bg); border-color: rgb(31 107 65 / 0.25); }
+    .ts-quota-ok strong { color: var(--color-ok); }
+    .ts-quota-info { background: var(--color-primario-tenue); border-color: rgb(0 74 173 / 0.2); }
+    .ts-quota-info strong { color: var(--color-primario); }
+    .ts-quota-warn { background: var(--color-warn-bg); border-color: rgb(138 90 13 / 0.25); }
+    .ts-quota-warn strong { color: var(--color-warn); }
+    .ts-quota-ko { background: var(--color-ko-bg); border-color: rgb(158 35 40 / 0.25); }
+    .ts-quota-ko strong { color: var(--color-ko); }
+
+    /* Totale del nuovo pacchetto (TS-2) */
+    .ts-totale { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: var(--radius-card);
+        background: var(--color-primario-tenue); border: 1px solid rgb(0 74 173 / 0.2); font-size: 12.5px; color: var(--color-testo-2); }
+    .ts-totale strong { font-size: 14px; color: var(--color-primario); }
+}
+
+@media (max-width: 1100px) {
+    .ts-disponibili { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+    .ts-emissione-date { grid-template-columns: 1fr; }
+    .ts-tabella .td-azioni .btn { flex: 1; }
+}
+@layer components {
+    .ts-quota-neutral { background: var(--color-superficie-2); }
+    .ts-quota-neutral strong { color: var(--color-notte); }
+}

@@ -90,7 +90,8 @@ modifica.
 
 | Sezione | Presidente | Segretario | Tesoriere | Revisore |
 |---|---|---|---|---|
-| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD, Tesseramento, Scadenzario | ✓ | ✓ | | |
+| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD, Scadenzario | ✓ | ✓ | | |
+| Tesseramento (tessere CSEN, dalla v0.37.0) | ✓ | ✓ | ✓ | ✓ (sola lettura) |
 | Volontari | ✓ | ✓ | ✓ (sola lettura) | |
 | Prima Nota, Rinnovi quota, Bilancio, Progetti | ✓ | | ✓ | ✓ (sola lettura) |
 | Audit Log | ✓ | | | ✓ (sola lettura) |
@@ -146,3 +147,7 @@ modifica.
 - **Helper per la sola lettura** (v0.18.0, all'avvio della fase viste):
   collocati su `User` invece che su `Sezione`, per poter servire la
   sidebar e i componenti con una sola query per richiesta.
+- **Tessere CSEN** (v0.37.0, 07/10/2026, `tessere.md`): su Tesseramento
+  aggiunti il Tesoriere (compra i pacchetti e li registra in Prima Nota) e
+  il Revisore in sola lettura (`analisi-tessere-scadenze.md` §2.8). Solo
+  `SezioneSeeder.php`, da rilanciare.

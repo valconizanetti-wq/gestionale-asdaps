@@ -485,3 +485,16 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   riquadri (`section-header`) vanno a capo quando hanno più azioni.
   Ricevuta PDF `pdf/ricevuta-quota` sulla carta intestata, che ora accetta
   una sezione `stili`. Icona: nessuna nuova. Verificato a 1440 e 375 px.
+- v0.37.0 (07/10/2026): sezione 15 di `app.css` "Tessere CSEN" (tavole
+  TS-1…TS-5, approvate da Paolo). `ts-numero` (numero di tessera),
+  `ts-tabella` (azioni affiancate), `ts-barra` (avanzamento del pacchetto
+  con `<progress>`: niente `style=`), `ts-emesse`, `ts-nota`, `ts-da-fare`;
+  riquadri per tipo `ts-disponibili`/`ts-tipo` (`ts-tipo-testa`,
+  `ts-tipo-spento`); finestra di emissione `ts-emissione-date` (tre colonne,
+  una su telefono) e riquadro della quota `ts-quota` con le varianti
+  `ts-quota-ok|info|warn|ko|neutral`; totale del pacchetto `ts-totale`.
+  `x-modale` accetta `titolo-alpine` (titolo che cambia, valutato nello
+  scope di chi contiene la finestra). Badge della tessera (valida, scade tra
+  N giorni, scaduta, senza tessera) uguale in soci, scheda, rinnovi e
+  pagina Tessere. Verificato a 1440 e 375 px.
+

@@ -95,3 +95,28 @@ dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
 - **Prima emissione**: le tessere dei soci attuali ancora valide si
   caricano con il loro numero e la data di emissione (scadenza calcolata),
   così i rinnovi partono dalle date giuste.
+
+## 4. Decisioni e risposte (07/10/2026, dopo il collaudo K)
+
+- **Tavole approvate** da Paolo: TS-1…TS-5, SC-1…SC-3, PR-3.
+- **Tipi e prezzi**: per il momento solo **Silver Base a 4 €**
+  (`TesseraTipoSeeder`); gli altri si aggiungono dalla pagina Tessere.
+- **Tessere già emesse**: Paolo ha mandato l'elenco esportato dal portale
+  CSEN (30 tessere, CSV con «;»). Non si mette nel codice: diventa la
+  funzione «Carica tessere già emesse» (anteprima, abbinamento per codice
+  fiscale, conferma), da usare sul server.
+- **Cosa mostra l'elenco** (da verificare con Paolo):
+  - i numeri sono prefisso di stagione + progressivo e il progressivo
+    continua al cambio di stagione (`26B2229057` → `27B2229058`): nel
+    gestionale un numero è «usato» per il suo progressivo;
+  - una **Gold Base** sta nell'intervallo delle Silver: se i pacchetti CSEN
+    sono misti, il tipo va sulla tessera e non sul pacchetto.
+- **Scostamento dalla tavola TS-2**: i tipi si aggiungono e si prezzano
+  dalla pagina Tessere, non da Impostazioni (solo del Presidente), perché i
+  pacchetti li compra il Tesoriere.
+- **Prima del 2027** la quota non è nel gestionale: nella finestra «Quota
+  nel vecchio gestionale», senza «Rinnova lo stesso».
+- **Divisione confermata**: v0.37.0 tessere (fatta, scheda `tessere.md`);
+  v0.37.1 Scadenzario (SC-1), riquadri Affiliazione e Polizza RC (SC-2,
+  SC-3), promemoria «N giorni prima» (PR-3). Per la v0.37.1 resta da sapere
+  il **mese di scadenza dell'affiliazione CSEN**.
