@@ -146,3 +146,5 @@ dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
   5. serve anche per il RASD (tecnici dichiarati) dal 2028?
   Proposta: farlo nella v0.38.0 insieme allo Scadenzario (stessa logica di
   scadenze e promemoria «N giorni prima»), dopo tavole approvate.
+  **In attesa (Paolo, 07/10/2026, 15:43)**: tecnici e tesserino tecnico in
+  standby finché Paolo non ha approfondito; la v0.38.0 si fa senza.

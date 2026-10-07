@@ -14,12 +14,11 @@
 Risposte di Paolo (07/10/2026, 15:19; `analisi-tessere-scadenze.md` §5):
 - affiliazione CSEN **scade il 31/12**;
 - tessere: **solo Silver Base** (domanda sui pacchetti misti chiusa);
-- **nuovo**: gestire il **tesserino tecnico sportivo degli istruttori** e i
-  tecnici/istruttori. Prima del codice: analisi (domande in §5) e tavole.
+- **tesserino tecnico sportivo degli istruttori** e tecnici/istruttori: da
+  gestire, ma **in standby** finché Paolo non ha approfondito (domande in
+  §5). La v0.38.0 si fa senza.
 
-Prima di scrivere codice servono ancora da Paolo:
-- risposte alle domande sui tecnici (`analisi-tessere-scadenze.md` §5);
-- (chiuso: solo Silver Base, niente pacchetti misti né prezzo della Gold).
+Per la v0.38.0 non manca nulla: si può partire.
 
 Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
 git, storia compresa, in un file solo; il commit è nel nome). Si
