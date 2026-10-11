@@ -3,7 +3,10 @@
 ## Prossima sessione
 1. **Collaudo M** della v0.38.0 (installata sul server da Paolo
    l'11/10/2026). Correzioni in una v0.38.1, se servono.
-2. Poi, in ordine da concordare: scontrini con OCR, anticipi e note di
+2. **Scontrini con OCR**: analisi fatta l'11/10/2026 sera
+   (`docs/analisi-scontrini.md`, anche nel progetto), **8 domande per
+   Paolo** in §6; poi tavole SN-1…SN-5 sulla tela e codice.
+3. Poi, in ordine da concordare: anticipi e note di
    rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
    Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in
    standby finché Paolo non ha approfondito (`analisi-tessere-scadenze.md`
