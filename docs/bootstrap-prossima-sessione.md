@@ -4,8 +4,11 @@
 1. **Collaudo M** della v0.38.0 (installata sul server da Paolo
    l'11/10/2026). Correzioni in una v0.38.1, se servono.
 2. **Scontrini con OCR**: analisi fatta l'11/10/2026 sera
-   (`docs/analisi-scontrini.md`, anche nel progetto), **8 domande per
-   Paolo** in §6; poi tavole SN-1…SN-5 sulla tela e codice.
+   (`docs/analisi-scontrini.md`, anche nel progetto); risposte di Paolo in
+   §7 (CD registra dal telefono: ruolo «Consigliere»; anticipi dopo; nota e
+   fornitore obbligatori; partita IVA sì; una foto), divisione per righe e
+   categorie in §8. Prossimo passo: tavole SN-1…SN-5 sulla tela (aspettando
+   le foto di scontrini veri di Paolo), poi codice.
 3. Poi, in ordine da concordare: anticipi e note di
    rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
    Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in

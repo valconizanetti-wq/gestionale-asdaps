@@ -180,3 +180,74 @@ l'originale**.
    o servono più foto già al passo 1 (scontrini lunghi)?
 8. **Ci sono scontrini veri** (anche già registrati in `gestionale-acv`) da
    usare come prova per le euristiche? Bastano le foto, anche 5 o 6.
+
+## 7. Risposte di Paolo (11/10/2026, 23:38)
+
+1. **Chiave OCR.space**: l'OCR in `gestionale-acv` legge correttamente gli
+   scontrini. Si tiene la stessa chiave; la copia ridotta per l'OCR resta
+   comunque (sicurezza contro il limite di 1 MB del piano gratuito, foto più
+   veloce da mandare).
+2. **Chi registra dal telefono**: i **membri del CD**. Serve un ruolo nuovo
+   **«Consigliere»** (oggi i ruoli sono Presidente, Segretario, Tesoriere,
+   Revisore) con la sola sezione `scontrini`: registra e vede i suoi
+   scontrini, non la Prima Nota. Presidente, Segretario e Tesoriere hanno
+   anche loro la sezione; classificare e dividere restano a Presidente e
+   Tesoriere.
+3. **«Di tasca mia» (anticipi)**: dopo, con il modulo anticipi e note di
+   rimborso. Per ora cassa e banca.
+4. **Nota** al passo 1: obbligatoria.
+5. **Fornitore**: obbligatorio, anche quando l'OCR non lo legge.
+6. **Partita IVA dei fornitori**: sì.
+7. **Una foto** per scontrino, se basta a leggere tutto; per gli scontrini
+   lunghi resta «Aggiungi un'altra foto» nella scheda.
+8. **Scontrini veri** per la prova: Paolo li manda.
+
+## 8. Scontrino con spese di categorie diverse (domanda di Paolo, 23:38)
+
+Esempio: alla ferramenta colla per le frecce («Acquisto materiali»), una
+cerniera per la porta dei bagni («Manutenzione e gestione bagni») e una
+pinza («Acquisto attrezzature»), 37,40 € in tutto.
+
+Proposta: **le righe dello scontrino si conservano una per una**, e i
+movimenti di Prima Nota si fanno **uno per categoria**.
+
+1. **L'OCR legge anche le righe degli articoli** (descrizione e importo:
+   `isTable` le restituisce una per riga), comprese le righe di sconto
+   (negative), e le propone nella scheda dello scontrino.
+2. **Nella scheda** (dal computer, Presidente o Tesoriere) ogni riga ha la
+   sua categoria:
+   - una tendina per riga, con «Tutte nella stessa categoria» per fare
+     prima;
+   - righe sbagliate o mancanti si correggono o si aggiungono a mano
+     (descrizione e importo), e si possono unire («colla» e «nastro» in una
+     sola riga);
+   - la barra di quadratura dice quanto manca al totale dello scontrino.
+3. **«Registra la divisione»**: il gestionale fa un movimento per categoria
+   con la somma delle sue righe (descrizione: le righe, es. «Colla, nastro»),
+   tutti collegati allo stesso scontrino, con la stessa foto e lo stesso
+   fornitore, conto e data. Lo scontrino diventa «a posto» solo se la somma
+   torna al centesimo.
+4. **Sul telefono** non si divide nulla: il consigliere fotografa, conferma
+   totale, fornitore e nota; il movimento nasce intero su «Uscite da
+   classificare». Se sa già che lo scontrino contiene cose diverse, lo
+   scrive nella nota.
+5. **Righe** in una tabella nuova `gl_prima_nota_scontrini_righe`
+   (scontrino, ordine, descrizione, importo, categoria, movimento): così
+   resta anche *che cosa* si è comprato, utile per il rendiconto e per i tag
+   (es. «Tettoia»), mentre la Prima Nota resta leggibile (un movimento per
+   categoria, non uno per articolo).
+6. **Regole**:
+   - un movimento per categoria e per scontrino; cambiare la categoria di
+     una riga sposta l'importo da un movimento all'altro (e toglie il
+     movimento rimasto vuoto);
+   - importo, data e conto dei movimenti di uno scontrino si cambiano solo
+     dalla scheda dello scontrino;
+   - anno chiuso: motivazione nell'Audit Log, come per i movimenti;
+   - con l'impostazione `scontrini_split_abilitato` spenta le righe restano
+     (per sapere cosa si è comprato) ma tutte nella stessa categoria.
+7. **IVA**: per la Compagnia (ente non commerciale) la spesa è il totale
+   pagato, IVA compresa; le righe dello scontrino sono già IVA compresa,
+   quindi la somma delle righe è il totale.
+
+Tavola in più: **SN-4** diventa la scheda con le righe e le categorie (era
+lo split «a movimenti»).
