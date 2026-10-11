@@ -54,25 +54,48 @@
                 </x-card>
 
                 <x-card titolo="Quando">
-                    <fieldset class="scelta-gruppo">
-                        <legend class="sr-only">Tipo di pianificazione</legend>
-                        <div class="scelta-opzioni">
-                            <label class="scelta">
-                                <input type="radio" name="quando" value="data_fissa" @checked($quando === 'data_fissa')>
-                                <span class="scelta-testo">Data fissa ogni anno <span class="scelta-sub">Es. 1° aprile</span></span>
-                            </label>
-                            <label class="scelta pr-scelta-spenta">
-                                <input type="radio" name="quando" value="relativa" @checked($quando === 'relativa') @disabled(! in_array('relativa', $f->quandoAmmessi(), true))>
-                                <span class="scelta-testo">Prima o dopo una data del destinatario
-                                    <span class="scelta-sub">{{ in_array('relativa', $f->quandoAmmessi(), true) ? 'N giorni prima o dopo' : 'Non disponibile per questa funzione' }}</span></span>
-                            </label>
+                    @php
+                        $ammessi = $f->quandoAmmessi();
+                        $giorniQuanti = old('giorni_quanti', $p->giorni !== null ? abs((int) $p->giorni) : 30);
+                        $verso = old('verso', ($p->giorni ?? -1) > 0 ? 'dopo' : 'prima');
+                    @endphp
+                    <div x-data="{ quando: @js($quando) }">
+                        <fieldset class="scelta-gruppo">
+                            <legend class="sr-only">Tipo di pianificazione</legend>
+                            <div class="scelta-opzioni">
+                                <label class="scelta pr-scelta-spenta">
+                                    <input type="radio" name="quando" value="data_fissa" x-model="quando" @checked($quando === 'data_fissa') @disabled(! in_array('data_fissa', $ammessi, true))>
+                                    <span class="scelta-testo">Data fissa ogni anno
+                                        <span class="scelta-sub">{{ in_array('data_fissa', $ammessi, true) ? 'Es. 1° aprile' : 'Non disponibile per questa funzione' }}</span></span>
+                                </label>
+                                <label class="scelta pr-scelta-spenta">
+                                    <input type="radio" name="quando" value="relativa" x-model="quando" @checked($quando === 'relativa') @disabled(! in_array('relativa', $ammessi, true))>
+                                    <span class="scelta-testo">Prima o dopo una data del destinatario
+                                        <span class="scelta-sub">{{ in_array('relativa', $ammessi, true) ? 'N giorni prima o dopo (es. la scadenza)' : 'Non disponibile per questa funzione' }}</span></span>
+                                </label>
+                            </div>
+                        </fieldset>
+                        @php $nascondi = fn (string $modo) => $quando !== $modo ? 'x-cloak' : ''; @endphp
+                        <div class="form-grid form-grid-3 form-riga">
+                            <div x-show="quando === 'data_fissa'" {{ $nascondi('data_fissa') }}>
+                                <x-campo name="giorno" label="Giorno" tipo="select" :value="$p->giorno" :opzioni="array_combine(range(1, 31), range(1, 31))" x-bind:disabled="quando !== 'data_fissa'" />
+                            </div>
+                            <div x-show="quando === 'data_fissa'" {{ $nascondi('data_fissa') }}>
+                                <x-campo name="mese" label="Mese" tipo="select" :value="$p->mese" :opzioni="array_map('ucfirst', Promemoria::MESI)" x-bind:disabled="quando !== 'data_fissa'" />
+                            </div>
+                            <div x-show="quando === 'relativa'" {{ $nascondi('relativa') }}>
+                                <x-campo name="giorni_quanti" label="Giorni" tipo="number" :value="$giorniQuanti" min="0" max="365" x-bind:disabled="quando !== 'relativa'" />
+                            </div>
+                            <div x-show="quando === 'relativa'" {{ $nascondi('relativa') }}>
+                                <x-campo name="verso" label="Prima o dopo" tipo="select" :value="$verso" :opzioni="['prima' => 'Prima della data', 'dopo' => 'Dopo la data']" x-bind:disabled="quando !== 'relativa'" />
+                            </div>
+                            <x-campo name="ora" label="Ora" tipo="select" :value="$p->oraBreve()"
+                                     :opzioni="collect(range(7, 21))->mapWithKeys(fn ($h) => [sprintf('%02d:00', $h) => $h . ':00'])->all()" />
                         </div>
-                    </fieldset>
-                    <div class="form-grid form-grid-3 form-riga">
-                        <x-campo name="giorno" label="Giorno" tipo="select" :value="$p->giorno" :opzioni="array_combine(range(1, 31), range(1, 31))" />
-                        <x-campo name="mese" label="Mese" tipo="select" :value="$p->mese" :opzioni="array_map('ucfirst', Promemoria::MESI)" />
-                        <x-campo name="ora" label="Ora" tipo="select" :value="$p->oraBreve()"
-                                 :opzioni="collect(range(7, 21))->mapWithKeys(fn ($h) => [sprintf('%02d:00', $h) => $h . ':00'])->all()" />
+                        <p class="form-help form-riga" x-show="quando === 'relativa'" @if ($quando !== 'relativa') x-cloak @endif>
+                            Ogni destinatario ha la sua data (es. la scadenza della polizza): l'email parte quel giorno, all'ora scelta.
+                            Un promemoria «prima» non parte più dopo la data; se il server era spento si recupera nei giorni seguenti.
+                        </p>
                     </div>
                     @foreach ($f->parametri() as $chiave => $def)
                         <div class="form-riga">
@@ -118,7 +141,7 @@
                         {{ $destinatari->take(8)->map(fn ($d) => $d->etichetta . ($d->email ? '' : ' — senza email'))->implode(', ') }}{{ $destinatari->count() > 8 ? '…' : '.' }}
                     </x-avviso>
                 @endif
-                <p class="form-help">Con la situazione di oggi; si ricalcolano il giorno dell'invio: chi nel frattempo è in regola esce dall'elenco.</p>
+                <p class="form-help">Con la situazione di oggi; si ricalcolano il giorno dell'invio: chi nel frattempo è in regola (o ha rinnovato) esce dall'elenco.</p>
             </x-card>
 
             @if ($p->exists)
@@ -139,7 +162,7 @@
                     @else
                         <ul class="pr-storico">
                             @foreach ($storico as $riga)
-                                <li><span>{{ \Illuminate\Support\Carbon::parse($riga->giorno)->format('d/m/Y') }}{{ $riga->periodo === 'prova' ? ' · prova' : ' · anno ' . $riga->periodo }}</span>
+                                <li><span>{{ \Illuminate\Support\Carbon::parse($riga->giorno)->format('d/m/Y') }}{{ $riga->periodo === 'prova' ? ' · prova' : ' · ' . Promemoria::etichettaPeriodo($riga->periodo) }}</span>
                                     <span class="td-sub">
                                         @if ($riga->periodo === 'prova')
                                             {{ (int) $riga->prove }} {{ (int) $riga->prove === 1 ? 'prova' : 'prove' }}

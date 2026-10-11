@@ -58,6 +58,11 @@ class SezioneSeeder extends Seeder
         $this->assegna('tesoriere', 'tesseramento');
         $this->assegna('revisore', 'tesseramento', soloLettura: true);
 
+        // Scadenzario (v0.38.0, scadenzario.md): anche il tesoriere, che paga
+        // affiliazione e polizza; revisore in sola lettura.
+        $this->assegna('tesoriere', 'scadenzario');
+        $this->assegna('revisore', 'scadenzario', soloLettura: true);
+
         // Volontari: tesoriere in sola lettura — vede i rimborsi da pagare
         // e registrare in Prima Nota, la gestione resta al segretario.
         $this->assegna('tesoriere', 'volontari', soloLettura: true);
@@ -90,6 +95,11 @@ class SezioneSeeder extends Seeder
         // Utenti/Ruoli (gl_users, gl_ruoli, gl_ruoli_sezioni), senza una
         // sezione dedicata.
         $this->assegna('presidente', 'impostazioni');
+        // Profilo dell'ente in lettura (v0.38.0, tavola SC-2): tesoriere e
+        // segretario vedono affiliazione e polizza; le modifiche restano al
+        // Presidente (ImpostazioniEnteController::richiediPresidente).
+        $this->assegna('tesoriere', 'impostazioni', soloLettura: true);
+        $this->assegna('segretario', 'impostazioni', soloLettura: true);
 
         // Erogazioni/Collaboratori: nessun ruolo assegnato — sezione
         // dormiente, nessun dipendente/collaboratore oggi (vedi

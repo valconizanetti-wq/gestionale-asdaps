@@ -148,3 +148,27 @@ dell'associazione» (TS-1…TS-5, SC-1…SC-3, PR-3); PDF in
   scadenze e promemoria «N giorni prima»), dopo tavole approvate.
   **In attesa (Paolo, 07/10/2026, 15:43)**: tecnici e tesserino tecnico in
   standby finché Paolo non ha approfondito; la v0.38.0 si fa senza.
+
+## 6. Realizzazione della v0.38.0 (11/10/2026)
+
+Fatto come le tavole SC-1, SC-2, SC-3, PR-3 (scheda
+`docs/specifiche/scadenzario.md`, promemoria in `promemoria.md`):
+- Scadenzario con «Rinnovata» (uscita «Affiliazione EPS» o «Polizze
+  Assicurative» con giustificativo, prossima scadenza un anno dopo) e
+  «Fatta» per gli adempimenti; scadenze pronte: Affiliazione CSEN 31/12,
+  Polizza RC 31/07 (giorno da controllare sulla polizza), Approvazione del
+  rendiconto 30/04;
+- riquadri «Affiliazione all'EPS» e «Polizza RC» in Impostazioni › Ente, con
+  «Modifica» del Presidente; Tesoriere e Segretario vedono;
+- avviso rosso dell'affiliazione scaduta nel riquadro, in Dashboard, nello
+  Scadenzario e nella pagina Tessere;
+- promemoria «N giorni prima»: «Scadenze dell'associazione» (30 e 7 giorni,
+  Presidente e Tesoriere), «Tessere in scadenza» (15 giorni, Tesoriere).
+
+Da confermare con Paolo:
+- **affiliazione scaduta e tessere**: oggi è un avviso, non un blocco
+  dell'emissione (il gestionale registra tessere già emesse sul portale del
+  CSEN). Se Paolo vuole il blocco, si aggiunge in `Tessere::emetti`;
+- **giorno di scadenza della polizza RC** (proposto il 31/07): si corregge
+  dalla scheda della scadenza. Gli importi si propongono dal primo
+  «Rinnovata» registrato nel gestionale.

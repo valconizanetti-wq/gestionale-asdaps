@@ -53,12 +53,36 @@ class Promemoria extends Model
     {
         if ($this->quando === 'relativa') {
             $g = abs((int) $this->giorni);
+            if ($g === 0) {
+                return 'Il giorno della data, alle ' . ltrim($this->oraBreve(), '0');
+            }
 
             return $g . ' ' . ($g === 1 ? 'giorno' : 'giorni') . ($this->giorni < 0 ? ' prima' : ' dopo') . ', alle ' . ltrim($this->oraBreve(), '0');
         }
         $giorno = $this->giorno === 1 ? '1°' : (string) $this->giorno;
 
         return "Ogni anno il {$giorno} " . (self::MESI[$this->mese] ?? '?') . ', alle ' . ltrim($this->oraBreve(), '0');
+    }
+
+    /** Chi riceve, in breve (pagina Promemoria, tavola PR-3): i soci o gli utenti scelti. */
+    public function destinatariTesto(): string
+    {
+        $scelta = $this->parametro('destinatari');
+
+        return $scelta ? (\App\Promemoria\Interni::SCELTE[$scelta] ?? '—') : 'Soci';
+    }
+
+    /** Periodo dello storico in parole: «anno 2027», «scadenza del 31/07/2027», «tessere al 15/02/2027». */
+    public static function etichettaPeriodo(string $periodo): string
+    {
+        if (preg_match('/^s\d+:(\d{4}-\d{2}-\d{2})$/', $periodo, $m)) {
+            return 'scadenza del ' . \Illuminate\Support\Carbon::parse($m[1])->format('d/m/Y');
+        }
+        if (preg_match('/^t:(\d{4}-\d{2}-\d{2})$/', $periodo, $m)) {
+            return 'tessere al ' . \Illuminate\Support\Carbon::parse($m[1])->format('d/m/Y');
+        }
+
+        return 'anno ' . $periodo;
     }
 
     /** "Inviato il 01/02/2027 a 6" oppure "Mai inviato" */

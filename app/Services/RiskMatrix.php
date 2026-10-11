@@ -65,6 +65,15 @@ class RiskMatrix
         if ($modello === 'Promemoria') {
             return $operazione === 'created' ? 'LOW' : 'MEDIUM';
         }
+        // Scadenzario (v0.38.0, scadenzario.md): rinnovi e date spostate
+        // contano (affiliazione, polizza); creazione ordinaria.
+        if ($modello === 'ScadenzaRinnovo') {
+            return 'MEDIUM';
+        }
+        if ($modello === 'Scadenza') {
+            return $operazione === 'created' ? 'LOW'
+                : ($operazione === 'deleted' || array_intersect(['data_scadenza', 'completato', 'prima_nota_categoria_id'], array_keys($dirty)) ? 'MEDIUM' : 'LOW');
+        }
 
         if ($operazione === 'updated') {
             // Chiusura e riapertura dell'anno contabile (v0.35.0, prima-nota.md §3)

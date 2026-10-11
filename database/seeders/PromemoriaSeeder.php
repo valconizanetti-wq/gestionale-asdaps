@@ -9,6 +9,8 @@ use Illuminate\Database\Seeder;
 /**
  * Promemoria pronti di ogni funzione (promemoria.md): si creano solo se la
  * funzione non ne ha ancora, quindi rilanciarlo non tocca quelli modificati.
+ * Data fissa salvo che il promemoria pronto dica altro («relativa», con i
+ * giorni prima: v0.38.0).
  */
 class PromemoriaSeeder extends Seeder
 {

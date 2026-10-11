@@ -17,6 +17,9 @@ class PrimaNotaCategoria extends Model
     /** Codici con un significato nel codice: non si cambiano. */
     public const QUOTE = 'QUOTE';
     public const DA_CLASSIFICARE = 'DA_CLASSIFICARE';
+    /** Uscite delle scadenze dell'associazione (v0.38.0, scadenzario.md). */
+    public const AFFILIAZIONE = 'AFFILIAZIONE_EPS';
+    public const POLIZZE = 'POLIZZE';
 
     public const USI = [
         'movimenti' => 'Movimenti',

@@ -9,6 +9,7 @@ use App\Http\Controllers\ImpostazioniEnteController;
 use App\Http\Controllers\PrimaNotaController;
 use App\Http\Controllers\PromemoriaController;
 use App\Http\Controllers\RinnoviController;
+use App\Http\Controllers\ScadenzarioController;
 use App\Http\Controllers\SociController;
 use App\Http\Controllers\SocioDocumentiController;
 use App\Http\Controllers\TessereController;
@@ -142,6 +143,9 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::get('/ente/periodi/{periodo}/passaggio', 'passaggio')->name('periodi.passaggio');
             Route::post('/ente/periodi/{periodo}/spunte', 'spunta')->name('periodi.spunta');
             Route::post('/iscrizioni', 'iscrizioni')->name('iscrizioni');
+            // Affiliazione e polizza RC (tavole SC-2, SC-3, v0.38.0)
+            Route::put('/ente/affiliazione', 'updateAffiliazione')->name('ente.affiliazione');
+            Route::put('/ente/polizza', 'updatePolizza')->name('ente.polizza');
         });
 
     // Rinnovi quota (rinnovi-quota.md, v0.36.0): Presidente e Tesoriere
@@ -181,6 +185,22 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::put('/tipi/{tipo}', 'updateTipo')->whereNumber('tipo')->name('tipi.update');
             Route::post('/{tessera}/portale', 'portale')->whereNumber('tessera')->name('portale');
             Route::delete('/{tessera}', 'destroy')->whereNumber('tessera')->name('destroy');
+        });
+
+    // Scadenze dell'associazione: affiliazione, polizza, adempimenti
+    // (scadenzario.md, tavola SC-1, v0.38.0).
+    Route::middleware('permesso:scadenzario')
+        ->prefix('scadenzario')->name('scadenzario.')
+        ->controller(ScadenzarioController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/nuova', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{scadenza}', 'edit')->whereNumber('scadenza')->name('edit');
+            Route::put('/{scadenza}', 'update')->whereNumber('scadenza')->name('update');
+            Route::delete('/{scadenza}', 'destroy')->whereNumber('scadenza')->name('destroy');
+            Route::post('/{scadenza}/rinnova', 'rinnova')->whereNumber('scadenza')->name('rinnova');
+            Route::post('/{scadenza}/annulla-rinnovo', 'annulla')->whereNumber('scadenza')->name('annulla');
         });
 
     // Promemoria: email automatiche pianificate per tutte le funzioni

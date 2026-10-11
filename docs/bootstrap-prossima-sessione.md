@@ -1,24 +1,19 @@
-# Bootstrap — Gestionale ASD, dopo la v0.37.2 (Tessere CSEN e correzioni dal collaudo, 07/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.38.0 (Scadenze dell'associazione, 11/10/2026)
 
 ## Prossima sessione
-1. ~~Installazione della v0.37.2 e collaudi K e L~~ (fatti il 07/10/2026).
-   Riferimento storico: ZIP cumulativo con la v0.37.0 e la v0.37.1;
-   `LEGGIMI-v0.37.2.txt`: 1 migration, 3 seeder, `npm run build`), poi
-   **fine del collaudo K** (K3, K7–K9 e le nuove K12, K13) e **collaudo L**.
-   Correzioni in una v0.37.3 prima del resto, se servono.
-2. **v0.38.0** (era la v0.37.1): Scadenzario con «Rinnovata» (SC-1), riquadri Affiliazione e
-   Polizza RC in Impostazioni › Ente (SC-2, SC-3), promemoria «N giorni
-   prima» (PR-3: «Scadenze dell'associazione», «Tessere in scadenza»).
-   Tavole già approvate.
-
-Risposte di Paolo (07/10/2026, 15:19; `analisi-tessere-scadenze.md` §5):
-- affiliazione CSEN **scade il 31/12**;
-- tessere: **solo Silver Base** (domanda sui pacchetti misti chiusa);
-- **tesserino tecnico sportivo degli istruttori** e tecnici/istruttori: da
-  gestire, ma **in standby** finché Paolo non ha approfondito (domande in
-  §5). La v0.38.0 si fa senza.
-
-Per la v0.38.0 non manca nulla: si può partire.
+1. **Installazione della v0.38.0 e collaudo M** (`LEGGIMI-v0.38.0.txt`: 1
+   migration, 4 seeder in ordine, `npm run build`; lista di collaudo blocco
+   M). Correzioni in una v0.38.1, se servono.
+2. Risposte di Paolo da chiedere (`analisi-tessere-scadenze.md` §6):
+   - affiliazione scaduta: solo avviso (com'è ora) o anche blocco
+     dell'emissione delle tessere?
+   - giorno vero di scadenza della polizza RC (proposto il 31/07; si
+     corregge dalla scheda della scadenza).
+3. Poi, in ordine da concordare: scontrini con OCR, anticipi e note di
+   rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
+   Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in
+   standby finché Paolo non ha approfondito (`analisi-tessere-scadenze.md`
+   §5).
 
 Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
 git, storia compresa, in un file solo; il commit è nel nome). Si
@@ -26,15 +21,35 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (91 test verdi).
+mariadb-server`, database `asd_test`) e `php artisan test` (104 test verdi).
 
-## Stato alle 15:00 del 07/10/2026
-- **v0.37.2 installata sul server** (Paolo), compresa la v0.37.0.
-- **Collaudo L superato** (Paolo, 07/10/2026).
-- **Collaudo K superato** (Paolo, 07/10/2026, dopo le correzioni della
-  v0.37.1 e v0.37.2).
-- Prossimo: v0.38.0 (sopra); restano l'azzeramento (J12, K11, L12) e
-  `APP_DEBUG=false` prima dell'apertura.
+## Stato all'11/10/2026
+- Sul server: v0.37.2 (collaudi K e L superati il 07/10/2026).
+- **v0.38.0 consegnata** (sotto), da installare e collaudare (blocco M).
+- Restano l'azzeramento (J12, K11, L12, M12) e `APP_DEBUG=false` prima
+  dell'apertura.
+
+## Fatto l'11/10/2026: v0.38.0 (Scadenze dell'associazione)
+Tavole SC-1, SC-2, SC-3, PR-3 (approvate il 07/10/2026). Scheda
+`docs/specifiche/scadenzario.md` (riscritta), `promemoria.md`.
+- Scadenzario (menu Controllo): ricorrenti e una tantum con stato e
+  preavviso; «Rinnovata» registra l'uscita in Prima Nota con il
+  giustificativo e sposta la data all'anno dopo; «Fatta» per gli
+  adempimenti; storico `gl_scadenzario_rinnovi` e «Annulla l'ultimo
+  rinnovo» motivato. Pronte: Affiliazione CSEN 31/12, Polizza RC 31/07,
+  Approvazione del rendiconto 30/04.
+- Impostazioni › Ente: riquadri «Affiliazione all'EPS» e «Polizza RC»
+  (scadenza letta dallo Scadenzario, un solo dato), «Modifica» del
+  Presidente; Tesoriere e Segretario vedono la pagina in sola lettura.
+- Avviso rosso dell'affiliazione scaduta in riquadro, Dashboard,
+  Scadenzario, pagina Tessere (avviso, non blocco: da confermare).
+- Promemoria «N giorni prima o dopo» nel motore; funzioni «Scadenze
+  dell'associazione» (30 e 7 giorni, Presidente e Tesoriere) e «Tessere in
+  scadenza» (15 giorni, Tesoriere, una email per giorno di scadenza).
+- Permessi: Scadenzario anche al Tesoriere, Revisore in lettura.
+- 104 test (nuovo `ScadenzarioTest`); tre giri di revisione (10 difetti
+  corretti, in `scadenzario.md` §7). `da-riportare-gestionale-aps.md` D10,
+  D11.
 
 ## Fatto il 07/10/2026: v0.37.2 (collaudo, pomeriggio)
 - Errore 500 sul server dopo l'installazione: «Route [tesseramento.index]
@@ -197,7 +212,7 @@ deploy §5). In più: dalla v0.30.0 serve il cron di cPanel
   CSEN, tessere comprate a pacchetti con numeri stampati e assegnate a
   tutti i soci, valide un anno dall'emissione (non dall'anno solare),
   prezzo secondo il tipo; affiliazione con scadenza; polizza RC Unipol
-  tramite CSEN in scadenza a luglio. Analisi
+  tramite CSEN in scadenza a luglio (fatto nella v0.38.0). Analisi
   `docs/analisi-tessere-scadenze.md` (anche nel progetto); tavole TS-1…TS-5,
   SC-1…SC-3 (affiliazione e polizza in Impostazioni › Ente), PR-3 sulla tela e in `docs/mockup/Tavole-tessere-scadenze.pdf`,
   approvate il 07/10/2026; tessere fatte nella v0.37.0, il resto nella
@@ -380,7 +395,8 @@ documentata; le modifiche da riportare al Gestionale APS in
   oggi è tutto in prova): domande, voti, email, verbali, soci, rinnovi e
   movimenti di prova (con anni contabili, tag, fornitori e giustificativi:
   J12), rinnovi, ricevute e invii dei promemoria (K11), tessere e pacchetti
-  (L12), registro di audit;
+  (L12), rinnovi dello Scadenzario e scadenze di prova (M12), registro di
+  audit;
   modalità test spenta. Procedura
   da scrivere quando ci si arriva. Fino ad allora informativa e statuto si
   correggono sul posto con il numero di versione dell'avvio (1.0), senza

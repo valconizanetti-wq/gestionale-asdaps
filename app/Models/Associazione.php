@@ -38,7 +38,11 @@ class Associazione extends Model
         'rete_affiliazione_nome',
         'rete_affiliazione_codice',
         'rete_affiliazione_referente',
+        'rete_affiliazione_contatto',
         'rete_affiliazione_scadenza',
+        'polizza_compagnia',
+        'polizza_numero',
+        'polizza_copertura',
         'anno_sociale_corrente',
     ];
 

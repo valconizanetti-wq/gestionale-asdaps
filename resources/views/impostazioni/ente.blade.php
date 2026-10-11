@@ -15,13 +15,17 @@
         $regimi = \App\Models\AssociazionePeriodo::REGIMI;
     @endphp
 
-    <x-page-header titolo="Profilo" evidenza="dell'ente" sottotitolo="Denominazione, forma, sede e regime per periodo · iscrizioni online">
+    <x-page-header titolo="Profilo" evidenza="dell'ente" sottotitolo="Denominazione, forma, sede e regime per periodo · affiliazione e assicurazione · iscrizioni online">
         <x-slot:azioni>
             @if ($presidente)
                 <a href="{{ route('impostazioni.periodi.create') }}" class="btn btn-primary"><x-icona nome="piu" width="14" height="14" /> Nuovo periodo</a>
             @endif
         </x-slot:azioni>
     </x-page-header>
+
+    @unless ($presidente)
+        <x-avviso tipo="info" titolo="Sola lettura.">Il tuo ruolo consulta il profilo dell'ente; le modifiche le fa il Presidente.</x-avviso>
+    @endunless
 
     @if ($periodi->isEmpty())
         <x-avviso tipo="warn" titolo="Nessun periodo inserito.">Documenti e pagine usano i valori provvisori (denominazione «{{ $mostrato->denominazione }}»). Inserisci il primo periodo dell'ente.</x-avviso>
@@ -76,6 +80,9 @@
             </dl>
         </x-card>
     </div>
+
+    {{-- Affiliazione e assicurazione (tavole SC-2, SC-3, v0.38.0) --}}
+    @include('impostazioni._affiliazione-polizza')
 
     <x-card titolo="Periodi dell'ente" senza-padding class="ente-periodi">
         @if ($periodi->isEmpty())

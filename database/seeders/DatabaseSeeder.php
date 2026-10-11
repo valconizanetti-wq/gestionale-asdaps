@@ -59,6 +59,8 @@ class DatabaseSeeder extends Seeder
             PromemoriaSeeder::class,
             // Tipi di tessera CSEN (v0.37.0)
             TesseraTipoSeeder::class,
+            // Scadenze dell'associazione: affiliazione, polizza RC, rendiconto (v0.38.0)
+            ScadenzarioSeeder::class,
         ]);
     }
 }

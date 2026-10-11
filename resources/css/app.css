@@ -1696,3 +1696,51 @@
     .ts-quota-neutral { background: var(--color-superficie-2); }
     .ts-quota-neutral strong { color: var(--color-notte); }
 }
+
+/* --------------------------------------------------------------------------
+   16. SCADENZE DELL'ASSOCIAZIONE (v0.38.0)
+   Tavole SC-1 (Scadenzario), SC-2 e SC-3 (riquadri di Impostazioni › Ente),
+   scadenzario.md.
+   -------------------------------------------------------------------------- */
+@layer components {
+    /* Avviso con pulsante a destra (affiliazione scaduta o in scadenza) */
+    .sc-avviso { display: flex; justify-content: space-between; align-items: center; gap: 16px;
+        padding: 14px 18px; border-radius: var(--radius-card); border: 1px solid; font-size: 13px; color: var(--color-testo); }
+    .sc-avviso > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .sc-avviso strong { font-size: 14px; }
+    .sc-avviso .btn { flex-shrink: 0; }
+    .sc-avviso-ko { background: var(--color-ko-bg); border-color: rgb(158 35 40 / 0.3); }
+    .sc-avviso-ko strong { color: var(--color-ko); }
+    .sc-avviso-warn { background: var(--color-warn-bg); border-color: rgb(138 90 13 / 0.3); }
+    .sc-avviso-warn strong { color: var(--color-warn); }
+
+    .sc-tabella .td-primario { min-width: 200px; }
+    .sc-descrizione { display: block; max-width: 340px; white-space: normal; }
+    .sc-tabella .riga-azioni { flex-wrap: nowrap; white-space: nowrap; }
+    .sc-nota { margin: -6px 2px 18px; line-height: 1.6; }
+    .sc-modale-testa { font-size: 12.5px; color: var(--color-testo-2); margin: 0; }
+    .sc-stato-testa { margin-top: 8px; }
+
+    /* Riquadri Affiliazione e Polizza RC (SC-2, SC-3) */
+    .ente-riga { align-items: stretch; }
+    .sc-riquadro { display: flex; flex-direction: column; }
+    .sc-riquadro > .card-body { flex: 1; display: flex; flex-direction: column; }
+    .sc-riquadro .td-sub { display: block; }
+    .sc-riquadro-piede { display: flex; justify-content: space-between; align-items: center; gap: 14px;
+        margin-top: auto; padding-top: 14px; border-top: 1px solid var(--color-bordo); }
+    .sc-riquadro .dati-griglia { margin-bottom: 16px; }
+    .sc-riquadro-piede .form-help { margin: 0; font-size: 12px; line-height: 1.45; }
+    .sc-riquadro-piede .btn { flex-shrink: 0; }
+}
+
+@media (max-width: 768px) {
+    .sc-avviso { flex-direction: column; align-items: stretch; }
+    .sc-avviso .btn { width: 100%; }
+    .sc-riquadro-piede { flex-direction: column; align-items: stretch; }
+    .sc-riquadro-piede .btn { width: 100%; }
+    /* Tavola SC-2 telefono: due colonne anche qui (Ente | Stato, Codice | Scadenza) */
+    .sc-riquadro .dati-griglia { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+    .sc-tabella .riga-azioni { justify-content: flex-start; }
+    .sc-tabella .riga-azioni .btn { flex: 1; }
+    .sc-descrizione { max-width: none; }
+}

@@ -1,12 +1,16 @@
 # Promemoria — email automatiche pianificate per tutte le funzioni
 
-**Stato:** in uso (v0.36.0, 07/10/2026). Prima funzione: «Quote non versate».
-**Introdotto in:** v0.36.0
+**Stato:** in uso (v0.36.0, 07/10/2026). Funzioni: «Quote non versate»;
+dalla v0.38.0 «Scadenze dell'associazione» e «Tessere in scadenza», con la
+modalità «N giorni prima o dopo».
+**Introdotto in:** v0.36.0; modalità relativa nella v0.38.0
 **File coinvolti:**
 - Migration: `2026_10_07_000099_create_gl_promemoria_tables`
 - Model: `Promemoria` (con l'AuditObserver), `PromemoriaInvio`
 - Motore: `App\Promemoria\Funzione` (contratto), `Registro`, `Destinatario`,
-  `Invii`; funzione `App\Promemoria\Funzioni\QuoteNonVersate`
+  `Invii`, `Interni` (destinatari interni, v0.38.0); funzioni
+  `App\Promemoria\Funzioni\QuoteNonVersate`, `ScadenzeAssociazione`,
+  `TessereInScadenza`
 - Comando: `promemoria:invia` (`InviaPromemoria`), ogni 15 minuti in
   `routes/console.php`
 - Seeder: `PromemoriaSeeder` (in `DatabaseSeeder`); `SezioneSeeder` con
@@ -14,8 +18,9 @@
 - Controller: `PromemoriaController`; viste `resources/views/promemoria/*`,
   email `emails/promemoria/messaggio`; `PromemoriaEmail`
 - Menu: «Promemoria» nel gruppo Governance (`config/navigazione.php`)
-- Test: in `tests/Feature/RinnoviQuotaTest.php`
-- Tavole PR-1 e PR-2 (`docs/mockup/Tavole-rinnovi-quota.pdf`)
+- Test: in `tests/Feature/RinnoviQuotaTest.php` e `ScadenzarioTest.php`
+- Tavole PR-1 e PR-2 (`docs/mockup/Tavole-rinnovi-quota.pdf`), PR-3
+  (`docs/mockup/Tavole-tessere-scadenze.pdf`)
 
 ## 1. Logica
 
@@ -72,14 +77,29 @@ Funzioni: `App\Promemoria\Registro::FUNZIONI`. Ognuna implementa
 - il 29 febbraio, negli anni non bisestili, diventa il 28;
 - l'output del comando non contiene dati personali.
 
-**Pagina** (PR-1, `/promemoria`):
-- promemoria raggruppati per funzione, con quando, ultimo invio, prossimo
-  invio e stato;
+**Modalità «N giorni prima o dopo»** (relativa, v0.38.0): ogni destinatario
+porta la sua data (la scadenza della polizza, il giorno in cui scadono delle
+tessere) e il suo periodo (`Destinatario::$data`, `$periodo`):
+- l'email parte quella data ± i giorni, all'ora scelta, al primo giro del
+  comando; se il server era spento si recupera nei 7 giorni dopo;
+- un promemoria «prima» non parte più dopo la data (un avviso di scadenza a
+  cose fatte confonderebbe);
+- una volta sola per destinatario e periodo: per le scadenze il periodo è
+  `s<id>:<data>`, così dopo «Rinnovata» il promemoria riparte per l'anno
+  dopo; per le tessere `t:<giorno di scadenza>`;
+- il comando controlla questi promemoria a ogni giro (le date sono per
+  destinatario); «prossimo invio» è la data più vicina tra i destinatari non
+  ancora avvisati, con «che cosa» (es. «01/07/2027 · Polizza RC»).
+
+**Pagina** (PR-1, PR-3, `/promemoria`):
+- promemoria raggruppati per funzione, con quando, destinatari (soci, o gli
+  utenti scelti), ultimo invio, prossimo invio (con «che cosa» per i
+  relativi) e stato;
 - «Nuovo promemoria» per chi modifica la sezione della funzione.
 
 **Modifica** (PR-2):
 - nome, attivo/spento, quando (la modalità non ammessa dalla funzione è
-  spenta), giorno, mese, ora e parametri;
+  spenta), giorno e mese oppure giorni e «prima/dopo», ora e parametri;
 - oggetto e testo con l'elenco dei segnaposti;
 - **destinatari al prossimo invio** con la situazione di oggi;
 - **anteprima** su un destinatario vero;
@@ -94,7 +114,8 @@ Funzioni: `App\Promemoria\Registro::FUNZIONI`. Ognuna implementa
 - ogni funzione si vede e si modifica secondo la sua sezione: le quote con
   `rinnovi_quota`, quindi Presidente e Tesoriere modificano, il Revisore
   legge;
-- il Segretario vede la pagina vuota finché non ci sono funzioni sue.
+- dalla v0.38.0 il Segretario vede le sue funzioni (scadenze e tessere), non
+  le quote.
 
 ## 4. Implementazione tecnica
 
@@ -127,6 +148,37 @@ Funzioni: `App\Promemoria\Registro::FUNZIONI`. Ognuna implementa
 
   tutti alle 9:00 (`rinnovi-quota.md`).
 
+### Destinatari interni (v0.38.0)
+
+`App\Promemoria\Interni`: parametro «Destinatari» con «Presidente e
+Tesoriere», «Solo il Tesoriere», «Solo il Presidente», «Presidente, Tesoriere
+e Segretario»; utenti attivi con quel ruolo, all'email con cui entrano. Chiave
+del destinatario `utente:<id>`.
+
+### Funzione «Scadenze dell'associazione» (v0.38.0)
+
+- **Sezione**: `scadenzario`. Solo «N giorni prima o dopo».
+- **Destinatari**: per ogni scadenza aperta dello Scadenzario (ricorrenti,
+  una tantum non fatte) gli utenti scelti; data = la scadenza.
+- **Segnaposti**: saluto, scadenza, data, giorni («tra 30 giorni», «scade
+  oggi», «scaduta da 3 giorni»), categoria, ultimo_pagamento, link.
+- **Promemoria pronti**: «Scadenza in arrivo» 30 giorni prima e «Ultimi
+  giorni» 7 giorni prima, alle 9:00, a Presidente e Tesoriere.
+
+### Funzione «Tessere in scadenza» (v0.38.0)
+
+- **Sezione**: `tesseramento`. Solo «N giorni prima o dopo».
+- **Destinatari**: l'ultima tessera di ogni socio attivo (se è già
+  rinnovata, l'ultima è la nuova); le tessere che scadono lo stesso giorno
+  in una sola email per utente (tessere caricate tutte insieme dal CSV).
+  Una tessera emessa dopo l'invio con la stessa scadenza non fa ripartire il
+  promemoria (resta nella pagina Tessere, «Da rinnovare»).
+- **Segnaposti**: saluto, data, numero («3 tessere»), elenco (una riga per
+  tessera: socio, numero, situazione della quota per l'anno del rinnovo),
+  link.
+- **Promemoria pronto**: «Tessere da rinnovare» 15 giorni prima, alle 9:00,
+  al Tesoriere.
+
 ## 5. Conformità e sicurezza
 
 - Ai minorenni non arriva nulla di diretto: tutto va al genitore.
@@ -140,8 +192,9 @@ Funzioni: `App\Promemoria\Registro::FUNZIONI`. Ognuna implementa
 - **Registro email** (`gl_email_log`): tipi `promemoria_<funzione>` e
   `promemoria_prova`.
 - **Cron**: lo stesso `schedule:run` ogni minuto (`deploy.md` §6).
-- Funzioni future, per esempio certificati medici in scadenza o scadenze
-  dello Scadenzario, con `quando` relativo.
+- **Scadenzario** (`scadenzario.md`) e **Tessere** (`tessere.md`): funzioni
+  della v0.38.0. Funzioni future, per esempio i certificati medici in
+  scadenza, con la stessa modalità.
 
 ## 7. Storia ed evoluzione
 
@@ -154,3 +207,11 @@ Funzioni: `App\Promemoria\Registro::FUNZIONI`. Ognuna implementa
 - **v0.37.1** (07/10/2026, collaudo K9): elenco nell'ordine dell'anno
   sociale (prima i promemoria sull'anno dopo: l'invito del 15 dicembre), nome
   come link e freccia per aprire il dettaglio (destinatari, anteprima, prova).
+- **v0.38.0** (11/10/2026, tavola PR-3): modalità «N giorni prima o dopo»
+  nel motore (`Invii::momento`, `fineFinestra`, `dovuto`, `periodoDi`,
+  `prossimoDettaglio`), destinatari interni, funzioni «Scadenze
+  dell'associazione» e «Tessere in scadenza»; pagina con la colonna
+  «Destinatari» e «che cosa» nel prossimo invio; nello storico il periodo in
+  parole («scadenza del 31/07/2027», «tessere al 01/03/2027»). Il seeder crea
+  i promemoria pronti anche relativi. Revisione nei tre giri della v0.38.0
+  (`scadenzario.md` §7).

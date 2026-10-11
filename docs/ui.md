@@ -508,3 +508,19 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   (`topbar-hamburger`) sta a destra, dopo «Esci», e la barra laterale entra
   da destra (`.sidebar` con `right: 0` e `translateX(100%)`, bordo a
   sinistra); `aria-expanded` sul pulsante.
+- v0.38.0 (11/10/2026): sezione 16 di `app.css` "Scadenze
+  dell'associazione" (tavole SC-1…SC-3, PR-3, approvate da Paolo).
+  `sc-avviso` con le varianti `sc-avviso-ko|warn` (avviso con il pulsante a
+  destra, a tutta larghezza su telefono: affiliazione scaduta o in scadenza
+  in Scadenzario, Impostazioni › Ente, Dashboard); `sc-tabella` (azioni
+  affiancate, su telefono il pulsante si allarga), `sc-descrizione`,
+  `sc-nota`, `sc-modale-testa`, `sc-stato-testa` (badge sotto il titolo
+  della scheda). Riquadri di Impostazioni › Ente: `ente-riga` (riquadri
+  della stessa altezza), `sc-riquadro` con il piede `sc-riquadro-piede`
+  spinto in basso; su telefono i dati del riquadro restano in due colonne
+  (tavola SC-2 telefono). Finestra «Rinnovata» con campi scritti a mano per
+  non riprendere i valori di un'altra finestra della stessa pagina dopo un
+  errore (bag `rinnovo`, `session('rinnovo_aperto')`). Promemoria: «Quando»
+  con giorno/mese oppure giorni/«prima o dopo» (Alpine, un solo campo
+  «Ora»), colonna «Destinatari», prossimo invio con «che cosa» (`td-pila`).
+  Verificato a 1440 e 375 px.

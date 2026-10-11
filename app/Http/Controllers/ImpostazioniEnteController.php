@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Associazione;
 use App\Models\AssociazionePeriodo;
 use App\Models\Impostazione;
+use App\Models\Scadenza;
 use App\Services\AuditLogService;
 use App\Services\ProfiloEnte;
+use App\Services\Scadenzario;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -42,7 +44,45 @@ class ImpostazioniEnteController extends Controller
                 ->mapWithKeys(fn (AssociazionePeriodo $p) => [$p->id => ProfiloEnte::listaPassaggio($p)]),
             'iscrizioniAperte' => (bool) Impostazione::get('iscrizioni_aperte', false),
             'presidente' => $this->ePresidente(),
+            // Affiliazione e assicurazione (tavole SC-2, SC-3): scadenze dello Scadenzario
+            'affiliazione' => Scadenza::with('ultimoRinnovo.movimento')->where('chiave', Scadenza::AFFILIAZIONE)->first(),
+            'polizza' => Scadenza::with('ultimoRinnovo.movimento')->where('chiave', Scadenza::POLIZZA)->first(),
+            'avvisoAffiliazione' => Scadenzario::avvisoAffiliazione(),
         ]);
+    }
+
+    // ── Affiliazione e polizza RC (tavole SC-2, SC-3) ─────────────────────
+    // La scadenza non si scrive qui: la tiene lo Scadenzario («Rinnovata»).
+
+    public function updateAffiliazione(Request $request): RedirectResponse
+    {
+        $this->richiediPresidente($request);
+        $dati = $request->validateWithBag('affiliazione', [
+            'rete_affiliazione_codice' => ['nullable', 'string', 'max:255'],
+            'rete_affiliazione_referente' => ['nullable', 'string', 'max:255'],
+            'rete_affiliazione_contatto' => ['nullable', 'string', 'max:255'],
+        ], [], ['rete_affiliazione_codice' => 'codice di affiliazione', 'rete_affiliazione_referente' => 'comitato / referente',
+            'rete_affiliazione_contatto' => 'contatto del referente']);
+
+        Associazione::istanza()->fill($dati)->save();
+        $this->audit('Dati dell\'affiliazione all\'EPS modificati.');
+
+        return redirect()->route('impostazioni.index')->with('success', 'Dati dell\'affiliazione salvati.');
+    }
+
+    public function updatePolizza(Request $request): RedirectResponse
+    {
+        $this->richiediPresidente($request);
+        $dati = $request->validateWithBag('polizza', [
+            'polizza_compagnia' => ['nullable', 'string', 'max:255'],
+            'polizza_numero' => ['nullable', 'string', 'max:100'],
+            'polizza_copertura' => ['nullable', 'string', 'max:255'],
+        ], [], ['polizza_compagnia' => 'compagnia', 'polizza_numero' => 'numero di polizza', 'polizza_copertura' => 'copertura']);
+
+        Associazione::istanza()->fill($dati)->save();
+        $this->audit('Dati della polizza RC modificati.');
+
+        return redirect()->route('impostazioni.index')->with('success', 'Dati della polizza salvati.');
     }
 
     // ── Dati fissi ───────────────────────────────────────────────────────

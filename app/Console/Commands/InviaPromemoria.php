@@ -10,7 +10,9 @@ use Illuminate\Console\Command;
  * Invia i promemoria arrivati alla loro data (promemoria.md §3). Pianificato
  * ogni 15 minuti (routes/console.php): parte al primo giro dopo l'ora scelta;
  * se il server era spento, recupera nei 7 giorni dopo. Ogni destinatario
- * riceve lo stesso promemoria una volta sola per periodo.
+ * riceve lo stesso promemoria una volta sola per periodo. I promemoria «N
+ * giorni prima» (v0.38.0) si controllano a ogni giro: parte chi è arrivato
+ * alla sua data.
  * Nessun dato personale nell'output (finisce nei log del cron).
  */
 class InviaPromemoria extends Command
@@ -23,7 +25,9 @@ class InviaPromemoria extends Command
     {
         $adesso = now();
         foreach (Promemoria::where('attivo', true)->orderBy('id')->get() as $p) {
-            if (! Invii::eIlMomento($p, $adesso)) {
+            // Data fissa: solo nella sua finestra. Relativa («N giorni prima»):
+            // ogni destinatario ha la sua data, il motore sceglie chi è dovuto.
+            if ($p->quando !== 'relativa' && ! Invii::eIlMomento($p, $adesso)) {
                 continue;
             }
             if ($this->option('prova')) {

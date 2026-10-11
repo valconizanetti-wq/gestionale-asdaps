@@ -121,7 +121,8 @@ class RinnoviQuotaTest extends TestCase
         $this->actingAs($this->revisore)->get(route('rinnovi.index'))->assertOk()->assertDontSee('Registra quota');
         $this->actingAs($this->revisore)->get(route('rinnovi.create'))->assertForbidden();
         $this->actingAs($this->segretario)->get(route('rinnovi.index'))->assertForbidden();
-        $this->actingAs($this->segretario)->get(route('promemoria.index'))->assertOk()->assertSee('Nessuna funzione con promemoria');
+        // Il segretario non vede le quote (dalla v0.38.0 vede le sue funzioni: scadenze e tessere)
+        $this->actingAs($this->segretario)->get(route('promemoria.index'))->assertOk()->assertDontSee('Quote non versate')->assertSee('Tessere in scadenza');
         $this->actingAs($this->tesoriere)->get(route('promemoria.index'))->assertOk()->assertSee('Quote non versate')->assertSee('Ultimo avviso prima della decadenza');
         $p = Promemoria::firstOrFail();
         $this->actingAs($this->revisore)->get(route('promemoria.edit', $p))->assertOk()->assertSee('Sola lettura');

@@ -243,6 +243,12 @@ impostazioni.
   dall'ammissione; con lo statuto ASD l'anno sociale. Da allineare se si
   sceglie (b) o (c).
 - **Tesseramento**: ente di affiliazione dal periodo.
+- **Scadenzario** (v0.38.0, `specifiche/scadenzario.md`): riga «Affiliazione
+  e assicurazione» della pagina con i riquadri «Affiliazione all'EPS» (ente
+  dal periodo, codice, referente e contatto, scadenza e ultimo rinnovo dallo
+  Scadenzario) e «Polizza RC» (compagnia, numero, copertura); avviso rosso
+  con l'affiliazione scaduta. Tesoriere e Segretario vedono la pagina in sola
+  lettura.
 - **Compliance RASD, Volontari, Prima Nota (plafond)**: visibili o attivi
   secondo il periodo.
 - **Gestionale Core**: il profilo per periodi vale per qualunque derivato;
@@ -312,3 +318,11 @@ impostazioni.
   "Dati fissi dell'ente" della pagina Impostazioni › Ente mostra anche il
   BIC, che prima mancava. Gli altri controlli del blocco G e le prove
   A11–A13 sono stati superati.
+- v0.38.0 (11/10/2026, tavole SC-2, SC-3): riga «Affiliazione e
+  assicurazione» (`impostazioni/_affiliazione-polizza`), finestre «Modifica»
+  del Presidente (`updateAffiliazione`, `updatePolizza`, errori nei bag
+  `affiliazione` e `polizza`), campi `rete_affiliazione_contatto` e
+  `polizza_*` in `gl_associazione`. La scadenza non si scrive qui: la tiene
+  lo Scadenzario. Sezione `impostazioni` in sola lettura per Tesoriere e
+  Segretario (`SezioneSeeder`): vedono il profilo, «Nuovo periodo»,
+  «Modifica» e i pulsanti delle iscrizioni restano al Presidente.

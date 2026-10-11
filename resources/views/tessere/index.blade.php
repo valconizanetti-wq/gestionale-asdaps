@@ -25,6 +25,15 @@
 
     <x-sola-lettura sezione="tesseramento" />
 
+    {{-- Affiliazione all'EPS scaduta (v0.38.0, tavola SC-2): avviso, non blocco --}}
+    @php $affiliazione = \App\Services\Scadenzario::avvisoAffiliazione(); @endphp
+    @if ($affiliazione && $affiliazione['tipo'] === 'ko')
+        <x-avviso tipo="ko" :titolo="$affiliazione['titolo']">
+            Il CSEN non emette né rinnova tessere finché l'affiliazione non è rinnovata. Quando è pagata, segnala con «Rinnovata» nello Scadenzario.
+            @if (auth()->user()->puoAccedere('scadenzario'))<a href="{{ route('scadenzario.index') }}">Vai alla scadenza</a>@endif
+        </x-avviso>
+    @endif
+
     @if ($avvisi > 0)
         <x-avviso tipo="warn" :titolo="collect([
                 $kpi['in_scadenza'] ? $kpi['in_scadenza'] . ($kpi['in_scadenza'] === 1 ? ' tessera scade' : ' tessere scadono') . ' nei prossimi 30 giorni' : null,

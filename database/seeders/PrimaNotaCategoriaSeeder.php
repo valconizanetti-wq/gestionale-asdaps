@@ -21,6 +21,9 @@ use Illuminate\Database\Seeder;
  *   DA_CLASSIFICARE): la ricevono gli scontrini dal telefono (v0.36.0);
  * - codice TESSERE_EPS su "Tesseramento Soci EPS": la usano i pacchetti di
  *   tessere CSEN (v0.37.0);
+ * - codici AFFILIAZIONE_EPS e POLIZZE su "Affiliazione EPS" e "Polizze
+ *   Assicurative": le proposte dello Scadenzario per affiliazione e polizza
+ *   RC (v0.38.0);
  * - "Disavanzo/Attivo anno precedente" solo per preventivo e rendiconto;
  * - due entrate con natura da verificare per il regime 398 dal 2028.
  *
@@ -36,9 +39,9 @@ class PrimaNotaCategoriaSeeder extends Seeder
         $categorie = [
             ['uscita', 'Disavanzo anno precedente', true, 'DISAVANZO_PREC', 'solo_bilancio', false],
             ['uscita', 'Imposte e tasse', true, null, 'movimenti', false],
-            ['uscita', 'Affiliazione EPS', true, null, 'movimenti', false],
+            ['uscita', 'Affiliazione EPS', true, PrimaNotaCategoria::AFFILIAZIONE, 'movimenti', false],
             ['uscita', 'Tesseramento Soci EPS', true, 'TESSERE_EPS', 'movimenti', false],
-            ['uscita', 'Polizze Assicurative', true, null, 'movimenti', false],
+            ['uscita', 'Polizze Assicurative', true, PrimaNotaCategoria::POLIZZE, 'movimenti', false],
             ['uscita', 'Contributi obbligatori, associativi, diversi', true, null, 'movimenti', false],
             ['uscita', 'Attività ricreative interne', true, null, 'movimenti', false],
             ['uscita', 'Gare, manifestazioni e iniziative', true, null, 'movimenti', false],

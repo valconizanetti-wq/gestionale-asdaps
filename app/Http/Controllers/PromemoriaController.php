@@ -30,7 +30,9 @@ class PromemoriaController extends Controller
             // Nell'ordine dell'anno sociale (collaudo K9): prima quelli che
             // riguardano l'anno dopo (l'invito del 15 dicembre), poi per data
             'promemoria' => Promemoria::whereIn('funzione', $funzioni->keys())->orderBy('funzione')->get()
-                ->sortBy(fn ($p) => sprintf('%d-%02d-%02d', $p->parametro('anno_sociale') === 'successivo' ? 0 : 1, $p->mese ?? 13, $p->giorno ?? 32))
+                ->sortBy(fn ($p) => $p->quando === 'relativa'
+                    ? sprintf('2-%04d', 1000 + (int) $p->giorni)   // «N giorni prima»: prima i più lontani dalla data
+                    : sprintf('%d-%02d-%02d', $p->parametro('anno_sociale') === 'successivo' ? 0 : 1, $p->mese ?? 13, $p->giorno ?? 32))
                 ->groupBy('funzione'),
             'utente' => $utente,
         ]);
@@ -41,8 +43,10 @@ class PromemoriaController extends Controller
         $f = Registro::trova($request->query('funzione'));
         abort_unless($f, 404);
         $this->richiediModifica($request, $f->sezione());
-        $p = new Promemoria(['funzione' => $f->chiave(), 'quando' => 'data_fissa', 'ora' => '09:00:00', 'attivo' => true,
-            'giorno' => 1, 'mese' => now()->month, 'parametri' => array_map(fn ($d) => array_key_first($d['opzioni']), $f->parametri())]);
+        $relativa = ! in_array('data_fissa', $f->quandoAmmessi(), true);
+        $p = new Promemoria(['funzione' => $f->chiave(), 'quando' => $relativa ? 'relativa' : 'data_fissa', 'ora' => '09:00:00', 'attivo' => true,
+            'giorno' => $relativa ? null : 1, 'mese' => $relativa ? null : now()->month, 'giorni' => $relativa ? -30 : null,
+            'parametri' => array_map(fn ($d) => array_key_first($d['opzioni']), $f->parametri())]);
 
         return view('promemoria.edit', $this->dati($p, $f) + ['puoModificare' => true]);
     }
@@ -132,12 +136,20 @@ class PromemoriaController extends Controller
     private function valida(Request $request, \App\Promemoria\Funzione $f): array
     {
         $parametri = [];
+        // «N giorni prima/dopo» (v0.38.0): nel modulo un numero e il verso;
+        // in tabella giorni con il segno (negativo = prima)
+        if ($request->input('quando') === 'relativa' && is_numeric($request->input('giorni_quanti'))) {
+            $n = (int) $request->input('giorni_quanti');
+            $request->merge(['giorni' => $request->input('verso') === 'dopo' ? $n : -$n]);
+        }
         $regole = [
             'nome' => ['required', 'string', 'max:150'],
             'attivo' => ['nullable', 'boolean'],
             'quando' => ['required', Rule::in($f->quandoAmmessi())],
             'giorno' => ['required_if:quando,data_fissa', 'nullable', 'integer', 'between:1,31'],
             'mese' => ['required_if:quando,data_fissa', 'nullable', 'integer', 'between:1,12'],
+            'giorni_quanti' => ['required_if:quando,relativa', 'nullable', 'integer', 'between:0,365'],
+            'verso' => ['required_if:quando,relativa', 'nullable', Rule::in(['prima', 'dopo'])],
             'giorni' => ['required_if:quando,relativa', 'nullable', 'integer', 'between:-365,365'],
             'ora' => ['required', 'date_format:H:i'],
             'oggetto' => ['required', 'string', 'max:200'],
@@ -148,7 +160,9 @@ class PromemoriaController extends Controller
         }
         $dati = $request->validate($regole, [
             'giorno.between' => 'Il giorno va da 1 a 31.',
-        ], ['giorni' => 'giorni', 'oggetto' => 'oggetto', 'testo' => 'testo']);
+            'giorni_quanti.required_if' => 'Scrivi quanti giorni prima o dopo.',
+            'giorni_quanti.between' => 'Da 0 a 365 giorni.',
+        ], ['giorni' => 'giorni', 'giorni_quanti' => 'giorni', 'oggetto' => 'oggetto', 'testo' => 'testo']);
 
         foreach ($f->parametri() as $chiave => $def) {
             $parametri[$chiave] = $dati['parametri'][$chiave];

@@ -132,7 +132,8 @@ class ProfiloEnteTest extends TestCase
     public function test_solo_il_presidente_modifica(): void
     {
         $this->conPeriodi();
-        $this->actingAs($this->segretario)->get(route('impostazioni.index'))->assertForbidden();
+        // Dalla v0.38.0 (tavola SC-2) il segretario vede il profilo in sola lettura
+        $this->actingAs($this->segretario)->get(route('impostazioni.index'))->assertOk()->assertSee('Sola lettura')->assertDontSee('Nuovo periodo');
         $this->actingAs($this->segretario)->post(route('impostazioni.iscrizioni'), ['aperte' => 1])->assertForbidden();
         $this->actingAs($this->segretario)->post(route('impostazioni.periodi.store'), self::datiPeriodo())->assertForbidden();
         $this->assertFalse((bool) Impostazione::get('iscrizioni_aperte', false));

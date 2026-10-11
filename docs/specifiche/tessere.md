@@ -181,8 +181,13 @@ tessere presenti si saltano.
   CSEN» e quota netta nell'elenco; dopo la quota di un socio senza tessera,
   invito a emetterla.
 - **Soci**: badge e riquadro nella scheda, colonna nell'elenco.
-- **v0.38.0**: Scadenzario con «Rinnovata» (affiliazione e polizza RC),
-  riquadri in Impostazioni › Ente, promemoria «Tessere in scadenza» (PR-3).
+- **Scadenzario** (v0.38.0, `scadenzario.md`): con l'affiliazione all'EPS
+  scaduta la pagina Tessere mostra un avviso rosso (il CSEN non emette né
+  rinnova tessere); il gestionale non blocca l'emissione, perché registra
+  tessere già emesse sul portale.
+- **Promemoria** (v0.38.0, `promemoria.md`): funzione «Tessere in scadenza»,
+  15 giorni prima, al Tesoriere, con l'elenco delle tessere che scadono quel
+  giorno e la situazione della quota di ciascun socio.
 
 ## 7. Storia ed evoluzione
 
@@ -227,3 +232,6 @@ tessere presenti si saltano.
   il pulsante resta spento finché la data è quella proposta; il messaggio
   del server spiega la regola. Costante `TessereController::GIORNI_AVANTI`.
 - 07/10/2026: collaudo L superato da Paolo sul server, con la v0.37.2.
+- **v0.38.0** (11/10/2026): avviso di affiliazione scaduta in cima alla
+  pagina; promemoria «Tessere in scadenza» (tavola PR-3,
+  `App\Promemoria\Funzioni\TessereInScadenza`).

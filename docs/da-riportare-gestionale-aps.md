@@ -327,6 +327,22 @@ non riportare".
   icona** (v0.37.1, richiesta di Paolo). `app.js` copia l'`aria-label` in
   `title`. *Dove*: `ui.md` (v0.37.1). *(anche nel core)*
 
+- [ ] **D10. Promemoria «N giorni prima o dopo» una data** (v0.38.0).
+  Il motore dei promemoria (D7) accetta, oltre alla data fissa, una data per
+  ogni destinatario (una scadenza): finestra d'invio con recupero a server
+  spento, un promemoria «prima» non parte dopo la data, periodo per
+  destinatario. Destinatari anche interni (Presidente, Tesoriere,
+  Segretario). Nel Gestionale APS servirebbe per affiliazione alla rete,
+  assicurazione dei volontari, scadenze RUNTS. *Dove*: `promemoria.md` §3,
+  §4; `App\Promemoria\Invii`, `Interni`. *(anche nel core)*
+- [ ] **D11. Scadenzario con «Rinnovata» e pagamento in Prima Nota**
+  (v0.38.0). Lo Scadenzario del core aveva solo la tabella; qui pagina con
+  stato e preavviso, «Rinnovata» che registra l'uscita (con giustificativo)
+  e sposta la data all'anno dopo, storico dei rinnovi con annullamento
+  motivato, scadenze «con chiave» lette da altre pagine (riquadri
+  affiliazione e polizza in Impostazioni › Ente). *Dove*: `scadenzario.md`;
+  `App\Services\Scadenzario`, `ScadenzarioController`. *(anche nel core)*
+
 ## E. PDF ed email
 
 - [ ] **E1. Larghezze delle colonne nei PDF messe su `<col>`**: DomPDF le
@@ -350,3 +366,4 @@ non riportare".
 - 06/10/2026 (v0.35.1): aggiunta D5 dal collaudo J.
 - 07/10/2026 (v0.36.0): aggiunte A12, A13, D6, D7 da Rinnovi quota e Promemoria.
 - 07/10/2026 (v0.37.1): aggiunte D8 e D9 dal collaudo K.
+- 11/10/2026 (v0.38.0): aggiunte D10 e D11 da Scadenzario e Promemoria.

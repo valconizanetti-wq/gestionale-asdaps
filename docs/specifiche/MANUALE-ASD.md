@@ -743,6 +743,18 @@ diretto**, nessuna modifica allo schema.
   (es. "Rinnovo affiliazione CSEN") andranno inseriti quando
   l'associazione esisterà realmente (1/1/2028), non ora.
 
+- **Aggiornamento v0.38.0 (11/10/2026)**: lo Scadenzario diventa una
+  pagina (`scadenzario.md`, tavole SC-1…SC-3, PR-3). Le scadenze
+  dell'associazione nascono subito, perché la B.A.S. è già affiliata e
+  assicurata: Affiliazione CSEN (31/12), Polizza RC (luglio), Approvazione
+  del rendiconto (30/04, statuto art. 22.2). Schema esteso: `chiave`,
+  categoria di Prima Nota per i pagamenti («Rinnovata» registra l'uscita e
+  sposta la data all'anno dopo), storico `gl_scadenzario_rinnovi`, categoria
+  `assicurazione`; dati della polizza RC e contatto del referente EPS in
+  `gl_associazione`. La scadenza dell'affiliazione in
+  `gl_associazione.rete_affiliazione_scadenza` è una copia tenuta dallo
+  Scadenzario. Promemoria «N giorni prima» a Presidente e Tesoriere.
+
 ### 6.8 Rinnovi quota — confermato: nessuna modifica necessaria
 
 Analizzata `gl_rinnovi`. Conclusione: **riuso diretto**, nessuna

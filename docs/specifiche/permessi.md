@@ -90,12 +90,13 @@ modifica.
 
 | Sezione | Presidente | Segretario | Tesoriere | Revisore |
 |---|---|---|---|---|
-| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD, Scadenzario | ✓ | ✓ | | |
+| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD | ✓ | ✓ | | |
+| Scadenzario (dalla v0.38.0 anche il Tesoriere) | ✓ | ✓ | ✓ | ✓ (sola lettura) |
 | Tesseramento (tessere CSEN, dalla v0.37.0) | ✓ | ✓ | ✓ | ✓ (sola lettura) |
 | Volontari | ✓ | ✓ | ✓ (sola lettura) | |
 | Prima Nota, Rinnovi quota, Bilancio, Progetti | ✓ | | ✓ | ✓ (sola lettura) |
 | Audit Log | ✓ | | | ✓ (sola lettura) |
-| Impostazioni (incl. Utenti/Ruoli) | ✓ | | | |
+| Impostazioni (incl. Utenti/Ruoli; profilo dell'ente in lettura dalla v0.38.0) | ✓ | ✓ (sola lettura) | ✓ (sola lettura) | |
 | Erogazioni/Collaboratori | | | | |
 
 ## 5. Conformità e sicurezza
@@ -105,7 +106,11 @@ modifica.
   dell'accesso: ogni ruolo vede solo ciò che gli serve).
 - La sezione Impostazioni riservata al solo Presidente limita
   l'accesso a configurazioni sensibili (es. soglie 398/91, split
-  scontrini) a chi ha la responsabilità legale dell'associazione.
+  scontrini) a chi ha la responsabilità legale dell'associazione. Dalla
+  v0.38.0 Tesoriere e Segretario la consultano (profilo dell'ente,
+  affiliazione e polizza); ogni modifica resta al Presidente, e le
+  configurazioni sensibili che verranno vanno protette allo stesso modo
+  (`puoModificare` più il ruolo, come in `ImpostazioniEnteController`).
 
 ## 6. Interazioni con altri moduli
 
@@ -151,3 +156,11 @@ modifica.
   aggiunti il Tesoriere (compra i pacchetti e li registra in Prima Nota) e
   il Revisore in sola lettura (`analisi-tessere-scadenze.md` §2.8). Solo
   `SezioneSeeder.php`, da rilanciare.
+- **Scadenzario e profilo dell'ente** (v0.38.0, 11/10/2026,
+  `scadenzario.md`): su Scadenzario aggiunti il Tesoriere (paga
+  affiliazione e polizza) e il Revisore in sola lettura
+  (`analisi-tessere-scadenze.md` §2.8); Impostazioni in sola lettura per
+  Tesoriere e Segretario (tavola SC-2: vedono affiliazione e polizza; le
+  modifiche le fa il Presidente, controllo nel controller). Dentro lo
+  Scadenzario l'uscita in Prima Nota la registra solo chi modifica anche la
+  Prima Nota. Solo `SezioneSeeder.php`, da rilanciare.
