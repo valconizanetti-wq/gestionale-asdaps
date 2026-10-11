@@ -165,10 +165,7 @@ Fatto come le tavole SC-1, SC-2, SC-3, PR-3 (scheda
 - promemoria «N giorni prima»: «Scadenze dell'associazione» (30 e 7 giorni,
   Presidente e Tesoriere), «Tessere in scadenza» (15 giorni, Tesoriere).
 
-Da confermare con Paolo:
-- **affiliazione scaduta e tessere**: oggi è un avviso, non un blocco
-  dell'emissione (il gestionale registra tessere già emesse sul portale del
-  CSEN). Se Paolo vuole il blocco, si aggiunge in `Tessere::emetti`;
-- **giorno di scadenza della polizza RC** (proposto il 31/07): si corregge
-  dalla scheda della scadenza. Gli importi si propongono dal primo
-  «Rinnovata» registrato nel gestionale.
+Decisioni di Paolo (11/10/2026, 22:48): **va bene come è impostato**:
+- affiliazione scaduta: **solo avviso**, nessun blocco dell'emissione delle
+  tessere;
+- polizza RC: scadenza al **31/07**.

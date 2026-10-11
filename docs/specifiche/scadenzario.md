@@ -48,8 +48,7 @@ Scelte (tavole approvate il 07/10/2026):
   soci) prima di ogni scadenza.
 
 Date (Paolo, 07/10/2026): affiliazione CSEN **al 31/12** (anno solare);
-polizza RC **a luglio** (giorno proposto il 31, da controllare sulla polizza
-e correggere dalla scheda della scadenza); rendiconto **entro il 30/04**
+polizza RC **al 31/07** (confermato da Paolo l'11/10/2026); rendiconto **entro il 30/04**
 (statuto art. 22.2: quattro mesi dalla chiusura dell'esercizio).
 
 ## 2. Struttura dati
@@ -207,8 +206,8 @@ dalla scadenza dell'anno dopo.
   Scostamenti dalle tavole:
   - nessuna colonna «Da confermare»: la data dell'affiliazione è nota;
   - l'avviso rosso non blocca l'emissione delle tessere (il gestionale
-    registra tessere già emesse sul portale; decisione da confermare con
-    Paolo);
+    registra tessere già emesse sul portale; confermato da Paolo
+    l'11/10/2026);
   - nessun numero sulla voce di menu (i numeri della barra laterale non
     sono ancora in uso per nessuna voce).
   Tre giri di revisione critica:
@@ -237,3 +236,5 @@ dalla scadenza dell'anno dopo.
      scheda della scadenza, Impostazioni › Ente (Tesoriere e Presidente,
      finestra «Modifica»), Dashboard con l'avviso rosso, Promemoria (elenco e
      modifica di un promemoria relativo). 104 test superati.
+- 11/10/2026, sera: v0.38.0 installata sul server da Paolo; confermati solo
+  avviso per l'affiliazione scaduta e polizza al 31/07. Collaudo M da fare.

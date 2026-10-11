@@ -1,19 +1,16 @@
 # Bootstrap — Gestionale ASD, dopo la v0.38.0 (Scadenze dell'associazione, 11/10/2026)
 
 ## Prossima sessione
-1. **Installazione della v0.38.0 e collaudo M** (`LEGGIMI-v0.38.0.txt`: 1
-   migration, 4 seeder in ordine, `npm run build`; lista di collaudo blocco
-   M). Correzioni in una v0.38.1, se servono.
-2. Risposte di Paolo da chiedere (`analisi-tessere-scadenze.md` §6):
-   - affiliazione scaduta: solo avviso (com'è ora) o anche blocco
-     dell'emissione delle tessere?
-   - giorno vero di scadenza della polizza RC (proposto il 31/07; si
-     corregge dalla scheda della scadenza).
-3. Poi, in ordine da concordare: scontrini con OCR, anticipi e note di
+1. **Collaudo M** della v0.38.0 (installata sul server da Paolo
+   l'11/10/2026). Correzioni in una v0.38.1, se servono.
+2. Poi, in ordine da concordare: scontrini con OCR, anticipi e note di
    rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
    Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in
    standby finché Paolo non ha approfondito (`analisi-tessere-scadenze.md`
    §5).
+
+Decisioni di Paolo (11/10/2026, 22:48): affiliazione scaduta = **solo
+avviso** (nessun blocco delle tessere); polizza RC al **31/07**.
 
 Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
 git, storia compresa, in un file solo; il commit è nel nome). Si
@@ -24,8 +21,8 @@ key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
 mariadb-server`, database `asd_test`) e `php artisan test` (104 test verdi).
 
 ## Stato all'11/10/2026
-- Sul server: v0.37.2 (collaudi K e L superati il 07/10/2026).
-- **v0.38.0 consegnata** (sotto), da installare e collaudare (blocco M).
+- Sul server: **v0.38.0 installata** (Paolo, 11/10/2026); collaudi K e L
+  superati il 07/10/2026, **collaudo M da fare**.
 - Restano l'azzeramento (J12, K11, L12, M12) e `APP_DEBUG=false` prima
   dell'apertura.
 
@@ -42,7 +39,7 @@ Tavole SC-1, SC-2, SC-3, PR-3 (approvate il 07/10/2026). Scheda
   (scadenza letta dallo Scadenzario, un solo dato), «Modifica» del
   Presidente; Tesoriere e Segretario vedono la pagina in sola lettura.
 - Avviso rosso dell'affiliazione scaduta in riquadro, Dashboard,
-  Scadenzario, pagina Tessere (avviso, non blocco: da confermare).
+  Scadenzario, pagina Tessere (solo avviso, non blocco: confermato da Paolo).
 - Promemoria «N giorni prima o dopo» nel motore; funzioni «Scadenze
   dell'associazione» (30 e 7 giorni, Presidente e Tesoriere) e «Tessere in
   scadenza» (15 giorni, Tesoriere, una email per giorno di scadenza).

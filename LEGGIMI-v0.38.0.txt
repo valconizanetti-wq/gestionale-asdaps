@@ -5,7 +5,7 @@ promemoria "N giorni prima"
 Da applicare sopra la v0.37.2. 1 migration, 4 seeder, CSS (npm run build).
 Scheda: docs/specifiche/scadenzario.md (par. 7: i tre giri di revisione). Promemoria: promemoria.md.
 Tavole: docs/mockup/Tavole-tessere-scadenze.pdf (SC-1, SC-2, SC-3, PR-3).
-Analisi: docs/analisi-tessere-scadenze.md (par. 6: realizzazione e due punti da confermare).
+Analisi: docs/analisi-tessere-scadenze.md (par. 6: realizzazione e decisioni).
 
 COSA CAMBIA
   - Scadenzario (menu Controllo): scadenze ricorrenti e una tantum con stato (tra N giorni,
@@ -19,7 +19,7 @@ COSA CAMBIA
     ultimo rinnovo, "Vai alla scadenza"); "Modifica" del Presidente per codice, referente,
     contatto, numero e copertura. La scadenza non si scrive li': la tiene lo Scadenzario.
   - Affiliazione scaduta: avviso rosso nel riquadro, in Dashboard, nello Scadenzario e nella
-    pagina Tessere (avviso, non blocco: da confermare). In Dashboard anche le scadenze vicine.
+    pagina Tessere (solo avviso, non blocco: confermato da Paolo). In Dashboard anche le scadenze vicine.
   - Promemoria "N giorni prima": "Scadenze dell'associazione" (30 e 7 giorni prima, alle 9,
     a Presidente e Tesoriere) e "Tessere in scadenza" (15 giorni prima, al Tesoriere, una
     email per giorno di scadenza con l'elenco e la quota). Colonna "Destinatari".
@@ -79,4 +79,4 @@ SERVER
 
 COLLAUDO
   Blocco M della lista (docs/test/test-domande-iscrizione.md). Azzeramento M12 insieme a J12,
-  K11 e L12. Da confermare: affiliazione scaduta = solo avviso o anche blocco delle tessere?
+  K11 e L12.
