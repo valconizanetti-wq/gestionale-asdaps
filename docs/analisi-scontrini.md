@@ -298,3 +298,28 @@ doppioni e disattivare; la Prima Nota usa lo stesso elenco nel suo campo
 
 Tavole: SN-2 mostra i tre casi del fornitore; in più **SN-6** pagina
 Fornitori.
+
+## 10. Tavole (12/10/2026)
+
+Sulla tela «Gestionale ASD — Riferimento UI», sezione «Scontrini dal
+telefono con OCR» (sotto le tavole SC), da approvare:
+- **SN-1** telefono, passo 1: foto (o file) e nota obbligatoria;
+- **SN-2** telefono, passo 2: totale, data, fornitore nel caso «forse è uno
+  di questi», nota, pagato con, righe lette; avviso «dopo Registra lo
+  modifica solo il Tesoriere»;
+- **SN-3** telefono: fornitore trovato (per partita IVA), nuovo (dati letti
+  da correggere), lista con ricerca; foto non letta;
+- **SN-4** telefono: registrato e «I miei scontrini» in sola lettura;
+- **SN-5** elenco Scontrini (Tesoriere): da verificare, da quadrare,
+  verificati, spesa dell'anno, filtri per stato e consigliere;
+- **SN-6** scheda: foto e dati a sinistra; righe con la categoria per
+  riga, unisci, «tutte nella stessa categoria», quadratura; riepilogo «un
+  movimento per categoria» e «Registra la divisione» (sostituisce il
+  movimento su «Uscite da classificare»);
+- **SN-7** Fornitori: partita IVA, comune, uso, doppioni da unire, tolti
+  dalla lista; finestra «Unisci»;
+- **SN-8** Prima Nota vista dal Consigliere: sola lettura, solo «Nuovo
+  scontrino», icona sui movimenti nati da uno scontrino.
+
+Le tavole PN-4, PN-5, PN-6 della Prima Nota (06/10/2026) sono superate da
+queste.
