@@ -200,13 +200,32 @@ class Invii
         return $esito;
     }
 
-    /** Prova a sé stessi con i valori del primo destinatario (o di esempio). */
-    public function prova(Promemoria $p, User $utente): bool
+    /**
+     * Valori per l'anteprima e la prova: quelli del destinatario, oppure, se
+     * oggi non ce n'è nessuno, quelli d'esempio della funzione (v0.38.1:
+     * prima restavano i segnaposti tra parentesi quadre).
+     *
+     * @return array{valori: array<string, string>, esempio: bool}
+     */
+    public static function valoriProva(Promemoria $p, ?Destinatario $d, User $utente, ?Carbon $adesso = null): array
+    {
+        if ($d) {
+            return ['valori' => $d->valori, 'esempio' => false];
+        }
+
+        return ['valori' => $p->funzioneOggetto()?->esempio($p, $adesso ?? now(), $utente) ?? [], 'esempio' => true];
+    }
+
+    /**
+     * Prova a sé stessi con i valori del primo destinatario (o d'esempio).
+     *
+     * @return array{ok: bool, esempio: bool}
+     */
+    public function prova(Promemoria $p, User $utente): array
     {
         $d = $this->daAvvisare($p, now())->first() ?? $p->funzioneOggetto()?->destinatari($p, now())->first();
-        $valori = $d?->valori ?? array_combine(array_keys($p->funzioneOggetto()?->segnaposti() ?? []),
-            array_map(fn ($k) => '[' . $k . ']', array_keys($p->funzioneOggetto()?->segnaposti() ?? [])));
-        $ok = InvioEmail::invia(new PromemoriaEmail('[Prova] ' . self::componi($p->oggetto, $valori), self::componi($p->testo, $valori)),
+        ['valori' => $valori, 'esempio' => $esempio] = self::valoriProva($p, $d, $utente);
+        $ok = InvioEmail::invia(new PromemoriaEmail(($esempio ? '[Prova, dati d\'esempio] ' : '[Prova] ') . self::componi($p->oggetto, $valori), self::componi($p->testo, $valori)),
             $utente->email, $utente->name, 'promemoria_prova');
 
         PromemoriaInvio::create([
@@ -214,7 +233,7 @@ class Invii
             'email' => $utente->email, 'esito' => 'prova', 'inviato_da' => $utente->id, 'inviato_il' => now(),
         ]);
 
-        return $ok;
+        return ['ok' => $ok, 'esempio' => $esempio];
     }
 
     private function registra(Promemoria $p, string $periodo, Destinatario $d, ?string $email, string $esito): void

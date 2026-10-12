@@ -122,6 +122,21 @@ class TessereInScadenza implements Funzione
             })->values();
     }
 
+    public function esempio(Promemoria $p, Carbon $quando, \App\Models\User $u): array
+    {
+        $data = Interni::dataEsempio($p, $quando);
+        $anno = $data->copy()->addDay()->year;   // come Tessere::quota: anno del rinnovo
+
+        return [
+            'saluto' => Interni::saluto($u),
+            'data' => $data->format('d/m/Y'),
+            'numero' => '2 tessere',
+            'elenco' => "– Rossi Mario, tessera {$data->format('y')}B0000001 · Quota {$anno} versata\n"
+                . "– Verdi Anna, tessera {$data->format('y')}B0000002 · Quota {$anno} non ancora versata",
+            'link' => route('tesseramento.index'),
+        ];
+    }
+
     public function predefiniti(): array
     {
         return [

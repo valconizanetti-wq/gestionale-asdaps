@@ -127,8 +127,8 @@ rinnovi.
   il link al movimento; «Vai alla scadenza»;
 - **Polizza RC**: compagnia, stato, numero, scadenza, copertura, ultimo
   rinnovo; nota sugli infortuni dei soci (assicurazione base della tessera);
-- stato del riquadro: «Valida · tra N giorni», «Scade tra N giorni» (entro
-  il preavviso), «Scaduta»;
+- stato del riquadro: «Valida», «In scadenza» (entro il preavviso),
+  «Scaduta»: solo lo stato, la data è nella riga «Scadenza» (v0.38.1);
 - «Modifica» solo al Presidente: codice, referente, contatto; compagnia,
   numero, copertura. La finestra ricorda che la scadenza non si scrive lì;
 - affiliazione scaduta: avviso rosso sotto i riquadri.
@@ -238,3 +238,34 @@ dalla scadenza dell'anno dopo.
      modifica di un promemoria relativo). 104 test superati.
 - 11/10/2026, sera: v0.38.0 installata sul server da Paolo; confermati solo
   avviso per l'affiliazione scaduta e polizza al 31/07. Collaudo M da fare.
+- 12/10/2026: collaudo M (primo giro) di Paolo, correzioni nella **v0.38.1**:
+  - M3: nella finestra «Rinnovata» il campo Categoria in sola lettura
+    (`pr-valore`) era più alto di «Prossima scadenza»: ora ha l'altezza e il
+    testo dei campi in ogni contesto (38 px, 34 px nelle finestre, 44 e 38 px
+    su telefono);
+  - M8: «Annulla l'ultimo rinnovo» su una una tantum fatta è voluto (§3: un
+    «Fatta» per errore riapre la scadenza); scritto nella lista di collaudo;
+  - M9: nei riquadri di Impostazioni › Ente lo stato non ripete i giorni
+    («Valida», «In scadenza», «Scaduta»): la data è nella riga «Scadenza»;
+  - M11: prova e comando dei promemoria, in `promemoria.md` §7.
+  Tre giri di revisione critica:
+  1. **Primo giro** (codice): 1 difetto corretto — l'anteprima della pagina
+     passava ai dati d'esempio appena oggi non c'era nessuno da avvisare,
+     mentre la prova usava ancora un destinatario di un'altra data: le due
+     non coincidevano (ora stessa scelta: destinatario di oggi, di un'altra
+     data, esempio).
+  2. **Secondo giro** (casi limite): 1 difetto corretto — nell'esempio delle
+     tessere l'anno della quota era sempre quello dopo la scadenza, mentre
+     il gestionale usa l'anno del giorno dopo la scadenza (una tessera che
+     scade il 27/10/2026 si rinnova con la quota 2026). Verificati: pagina
+     «nuovo promemoria» (senza anteprima), Revisore (saluto col suo nome),
+     promemoria a data fissa con `--prova` («non è il momento; prossimo
+     invio…»), nessun dato personale nell'output del comando.
+  3. **Terzo giro** (CSS, documenti, collaudo): 1 difetto corretto — la
+     prima correzione di M3 dava al campo 38 px, ma nelle finestre i campi
+     sono di 34 px (38 px su telefono): misurati nel browser, ora uguali in
+     ogni contesto. Lista di collaudo aggiornata (titolo alla v0.39.0, blocco
+     N nell'introduzione, M3, M8, M9, M10, M11). Verificati a 1440 e 375 px:
+     finestra «Rinnovata», Impostazioni › Ente, pagina del promemoria
+     «Tessere da rinnovare». 136 test superati.
+

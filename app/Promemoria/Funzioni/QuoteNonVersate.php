@@ -125,6 +125,25 @@ class QuoteNonVersate implements Funzione
             });
     }
 
+    public function esempio(Promemoria $p, Carbon $quando, \App\Models\User $u): array
+    {
+        $anno = $this->anno($p, $quando);
+        $tesoriere = RinnoviQuota::tesoriere();
+
+        return [
+            'saluto' => explode(' ', trim($u->name))[0] ?: $u->name,
+            'nome' => 'Mario',
+            'cognome' => 'Rossi',
+            'anno' => (string) $anno,
+            'importo' => Importo::it(RinnoviQuota::importo('ordinario'), true),
+            'scadenza' => RinnoviQuota::termine($anno)->format('d/m/Y'),
+            'scadenza_decadenza' => RinnoviQuota::ultimoGiorno($anno)->format('d/m/Y'),
+            'iban' => Associazione::istanza()?->iban ?: Quota::IBAN_SEGNAPOSTO,
+            'causale' => "Quota associativa {$anno} – Rossi Mario",
+            'firma' => $tesoriere ? "{$tesoriere}, Tesoriere" : 'Il Tesoriere',
+        ];
+    }
+
     public function predefiniti(): array
     {
         $chiusura = "\n\nPuoi versarla con bonifico all'IBAN {iban}, causale «{causale}», oppure in sede.\n\nUn saluto,\n{firma}";

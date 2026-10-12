@@ -1,13 +1,17 @@
-# Bootstrap — Gestionale ASD, dopo la v0.39.0 (Scontrini dal telefono con OCR, 12/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.38.1 (correzioni dal collaudo M, 12/10/2026)
 
 ## Prossima sessione
-1. **Collaudo M** della v0.38.0 (installata sul server da Paolo
-   l'11/10/2026). Correzioni in una v0.38.1, se servono.
-2. **Scontrini con OCR**: **v0.39.0 consegnata il 12/10/2026**
-   (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8 approvate, analisi
-   `docs/analisi-scontrini.md` §13). Da installare (LEGGIMI-v0.39.0: migration,
-   `RuoloSeeder`, `SezioneSeeder`, `OCR_SPACE_KEY` nel `.env`, Avast in
-   locale) e collaudare (blocco N della lista). Correzioni in una v0.39.1.
+1. **Collaudo M**, in corso (primo giro del 12/10/2026 fino a M11, sulla
+   v0.39.0 installata): correzioni nella **v0.38.1** (sotto), da installare
+   sopra la v0.39.0 e ricontrollare (voci «v0.38.1» di M3, M8, M9, M10, M11),
+   poi M12. **Aperto**: perché `promemoria:invia` non manda l'email delle
+   tessere sul server (comando di diagnosi dato a Paolo il 12/10/2026:
+   tesoriere attivo? tessere di soci attivi?). Con la v0.38.1 lo dice
+   `php artisan promemoria:invia --prova`.
+2. **Scontrini con OCR**: v0.39.0 consegnata e **installata** da Paolo il
+   12/10/2026 (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8, analisi
+   `docs/analisi-scontrini.md` §13). Collaudo: blocco N della lista.
+   Correzioni in una v0.39.1.
 3. Poi, nell'ordine deciso da Paolo il 12/10/2026 (obiettivo: in uso dal
    01/01/2027):
    1. **anticipi e note di rimborso** (il «pagato di tasca mia» degli
@@ -33,15 +37,32 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (135 test verdi; nessuna chiave OCR serve: i test
+mariadb-server`, database `asd_test`) e `php artisan test` (136 test verdi; nessuna chiave OCR serve: i test
 fingono OCR.space col testo vero in `tests/Fixtures/scontrini-ocrspace`).
 
-## Stato al 12/10/2026
-- Sul server: **v0.38.0 installata** (Paolo, 11/10/2026); collaudi K e L
-  superati il 07/10/2026, **collaudo M da fare**. **v0.39.0 consegnata**
-  (ZIP), da installare; **collaudo N da fare**.
+## Stato al 12/10/2026 (sera)
+- Sul server: **v0.39.0 installata** (Paolo, 12/10/2026); collaudi K e L
+  superati il 07/10/2026, **collaudo M in corso** (correzioni nella v0.38.1,
+  consegnata, da installare), **collaudo N da fare**.
 - Restano l'azzeramento (J12, K11, L12, M12, N12) e `APP_DEBUG=false` prima
   dell'apertura.
+
+## Fatto il 12/10/2026 (sera): v0.38.1 (collaudo M, primo giro)
+Osservazioni di Paolo su M3, M8, M9, M11 (le altre prove fino a M11 senza
+note):
+- M3: campo Categoria (sola lettura, `pr-valore`) della finestra
+  «Rinnovata» alto come «Prossima scadenza», in ogni contesto (`ui.md`).
+- M8: «Annulla l'ultimo rinnovo» su una una tantum fatta è voluto
+  (`scadenzario.md` §3: riapre la scadenza); scritto in M8. Chiesto a Paolo
+  se lo vuole togliere.
+- M9: badge dei riquadri Affiliazione e Polizza con il solo stato
+  («Valida», «In scadenza», «Scaduta»).
+- M11: prova e anteprima con dati d'esempio (`Funzione::esempio`) invece di
+  `[saluto]`, `[data]`…; avviso se nessun utente ha il ruolo scelto;
+  `promemoria:invia` scrive sempre l'esito e con `--prova` spiega
+  (`promemoria.md` §7).
+- 136 test (nuovo `test_correzioni_collaudo_m`); tre giri di revisione
+  (`scadenzario.md` §7). Nessuna migration; CSS (`npm run build`).
 
 ## Fatto il 12/10/2026: v0.39.0 (Scontrini dal telefono con OCR)
 Prova con OCR.space vero sulle 14 foto di Paolo (`prova-ocr.php` in Laragon,

@@ -405,4 +405,42 @@ class ScadenzarioTest extends TestCase
         // Pagina di modifica: destinatari e anteprima
         $this->actingAs($this->tesoriere)->get(route('promemoria.edit', $p))->assertOk()->assertSee('tessere al 01/03/2027');
     }
+
+    /** Collaudo M (v0.38.1): stato dei riquadri, prova senza destinatari, comando che spiega. */
+    public function test_correzioni_collaudo_m(): void
+    {
+        // M9: nel riquadro solo lo stato, la data è nella riga «Scadenza»
+        $this->actingAs($this->tesoriere)->get(route('impostazioni.index'))
+            ->assertSee('Valida')->assertDontSee('Valida · tra');
+        Carbon::setTestNow('2027-12-10 10:00:00');
+        $this->actingAs($this->tesoriere)->get(route('impostazioni.index'))->assertSee('In scadenza')->assertDontSee('Scade tra');
+        Carbon::setTestNow('2027-02-15 10:00:00');
+
+        // M11: nessuna tessera → prova e anteprima con dati d'esempio, mai i segnaposti tra parentesi quadre
+        $p = Promemoria::where('funzione', 'tessere_in_scadenza')->firstOrFail();
+        $this->actingAs($this->tesoriere)->get(route('promemoria.edit', $p))->assertOk()
+            ->assertSee('Anteprima con dati d&#039;esempio', false)->assertSee('Rossi Mario, tessera')->assertDontSee('[elenco]');
+        $this->actingAs($this->tesoriere)->post(route('promemoria.prova', $p))->assertSessionHas('success', fn ($m) => str_contains($m, "dati d'esempio"));
+        Mail::assertSent(PromemoriaEmail::class, function ($m) {
+            $html = $m->render();
+
+            return $m->hasTo('tesoriere@example.it') && $m->envelope()->subject === "[Prova, dati d'esempio] Tessere CSEN in scadenza il 02/03/2027: 2 tessere"
+                && str_contains($html, 'Ciao Paolo') && str_contains($html, 'Verdi Anna') && ! str_contains($html, '[');
+        });
+        // Scadenze dell'associazione: con le scadenze pronte la prova usa i dati veri
+        $s = Promemoria::where('funzione', 'scadenze_associazione')->orderBy('id')->firstOrFail();
+        $this->actingAs($this->tesoriere)->post(route('promemoria.prova', $s))->assertSessionHas('success', fn ($m) => str_contains($m, 'primo destinatario'));
+
+        // Comando: una riga anche senza invii; --prova spiega
+        $this->artisan('promemoria:invia')->expectsOutputToContain('Nessun promemoria da inviare adesso')->assertSuccessful();
+        $this->artisan('promemoria:invia --prova')
+            ->expectsOutputToContain('«Tessere da rinnovare»: 0 da avvisare adesso. Nessun destinatario per nessuna data')
+            ->expectsOutputToContain('«Invito a rinnovare la quota»: non è il momento; prossimo invio il 15/12/2027 09:00')
+            ->assertSuccessful();
+        // Nessun tesoriere attivo: lo dice la pagina e il comando
+        $this->tesoriere->update(['attivo' => false]);
+        $t = Promemoria::where('funzione', 'tessere_in_scadenza')->firstOrFail();
+        $this->actingAs($this->presidente)->get(route('promemoria.edit', $t))->assertSee('Nessun utente attivo con il ruolo scelto.');
+        $this->artisan('promemoria:invia --prova')->expectsOutputToContain('Nessun utente attivo con il ruolo scelto')->assertSuccessful();
+    }
 }

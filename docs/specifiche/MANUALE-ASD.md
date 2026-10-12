@@ -1201,6 +1201,11 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     **v0.38.0** (11/10/2026): **Scadenze dell'associazione**
     (`scadenzario.md`): Scadenzario con «Rinnovata», riquadri Affiliazione e
     Polizza RC in Impostazioni › Ente, promemoria «N giorni prima».
+    **v0.38.1** (12/10/2026): correzioni dal collaudo M: campo Categoria
+    della finestra «Rinnovata» alto come gli altri, stato dei riquadri
+    senza i giorni, prova e anteprima dei promemoria con dati d'esempio
+    quando nessuno li riceverebbe, `promemoria:invia` che dice sempre
+    l'esito (e il perché con `--prova`).
     **v0.39.0** (12/10/2026): **Scontrini dal telefono con OCR**
     (`scontrini.md`): passi 1 e 2 dal telefono, fornitore riconosciuto o
     nuovo, scheda con righe, categorie e «Registra la divisione», pagina

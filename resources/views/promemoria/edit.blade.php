@@ -134,7 +134,9 @@
         <aside class="pn-colonna">
             <x-card titolo="Destinatari">
                 @php $quandoTesto = $riferimento->isToday() ? 'Oggi' : 'Il ' . $riferimento->format('d/m/Y'); @endphp
-                @if ($destinatari->isEmpty())
+                @if ($senzaUtenti)
+                    <x-avviso tipo="warn" titolo="Nessun utente attivo con il ruolo scelto.">Il promemoria non parte: in «Destinatari» c'è «{{ \App\Promemoria\Interni::SCELTE[$p->parametro('destinatari')] ?? $p->parametro('destinatari') }}», ma nel gestionale non c'è un utente attivo con quel ruolo.</x-avviso>
+                @elseif ($destinatari->isEmpty())
                     <p class="form-help">{{ $quandoTesto }} nessuno riceverebbe il promemoria (tutti in regola, o già avvisati in questo periodo).</p>
                 @else
                     <x-avviso tipo="info" :titolo="$quandoTesto . ' lo riceverebbero ' . $destinatari->count() . ($destinatari->count() === 1 ? ' destinatario' : ' destinatari')">
@@ -145,15 +147,14 @@
             </x-card>
 
             @if ($p->exists)
-                <x-card :titolo="'Anteprima' . ($esempio ? ' per ' . $esempio->etichetta : '')">
-                    @if ($esempio)
-                        <div class="pr-anteprima">
-                            <div class="pr-anteprima-oggetto"><strong>Oggetto:</strong> {{ Invii::componi($p->oggetto, $esempio->valori) }}</div>
-                            <div>{!! nl2br(e(Invii::componi($p->testo, $esempio->valori)), false) !!}</div>
-                        </div>
-                    @else
-                        <p class="form-help">Nessun destinatario oggi: l'anteprima compare quando ce n'è almeno uno. Per vederla comunque usa «Invia una prova a me».</p>
+                <x-card :titolo="'Anteprima' . ($esempio ? ' per ' . $esempio->etichetta : ' con dati d\'esempio')">
+                    @if ($anteprima['esempio'])
+                        <p class="form-help pr-anteprima-nota">Oggi nessuno lo riceverebbe: nomi, date e importi sono inventati, per vedere il testo. Li usa anche «Invia una prova a me».</p>
                     @endif
+                    <div class="pr-anteprima">
+                        <div class="pr-anteprima-oggetto"><strong>Oggetto:</strong> {{ Invii::componi($p->oggetto, $anteprima['valori']) }}</div>
+                        <div>{!! nl2br(e(Invii::componi($p->testo, $anteprima['valori'])), false) !!}</div>
+                    </div>
                 </x-card>
 
                 <x-card titolo="Storico" senza-padding>

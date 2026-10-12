@@ -1,0 +1,43 @@
+Gestionale ASD - v0.38.1 (12/10/2026)
+Correzioni dal collaudo M (Scadenze dell'associazione e promemoria), primo giro
+
+Da applicare sopra la v0.39.0 (gia' installata). Nessuna migration, nessun seeder; CSS (npm run build).
+Dettaglio: docs/specifiche/scadenzario.md e promemoria.md (par. 7, con i tre giri di revisione).
+
+COSA CAMBIA
+  - M3  Finestra "Rinnovata": il campo Categoria (sola lettura) e' alto come gli altri campi, anche
+        su telefono (stessa regola per tutti i valori in sola lettura accanto ai campi).
+  - M8  "Annulla l'ultimo rinnovo" su una scadenza una tantum fatta resta: serve a riaprirla se
+        "Fatta" e' stato premuto per errore. Scritto nella lista di collaudo.
+  - M9  Impostazioni > Ente: lo stato dei riquadri Affiliazione e Polizza dice solo "Valida",
+        "In scadenza" o "Scaduta"; la data e' nella riga "Scadenza".
+  - M11 "Invia una prova a me" e l'anteprima, quando oggi nessuno riceverebbe il promemoria, usano
+        dati d'esempio (oggetto "[Prova, dati d'esempio] ..."), mai [saluto], [data], [elenco].
+        Se nessun utente attivo ha il ruolo scelto in "Destinatari", la pagina lo dice.
+        php artisan promemoria:invia scrive sempre l'esito ("Nessun promemoria da inviare adesso...");
+        php artisan promemoria:invia --prova spiega, promemoria per promemoria, quanti da avvisare
+        adesso, quanti destinatari in tutto e il prossimo invio, o perche' non ce ne sono.
+
+FILE
+  app/Console/Commands/InviaPromemoria.php; app/Http/Controllers/PromemoriaController.php
+  app/Promemoria/Funzione.php, Interni.php, Invii.php
+  app/Promemoria/Funzioni/QuoteNonVersate.php, ScadenzeAssociazione.php, TessereInScadenza.php
+  resources/css/app.css; resources/views/impostazioni/_affiliazione-polizza.blade.php,
+    promemoria/edit.blade.php
+  tests/Feature/ScadenzarioTest.php
+  docs: specifiche/scadenzario.md, specifiche/promemoria.md, ui.md, MANUALE-ASD.md (tutte e due),
+    test-domande-iscrizione.md (tutte e due), bootstrap-prossima-sessione.md
+
+LOCALE (Laragon)
+  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.39.0.txt.
+  2. php artisan test   -> 136 superati
+  3. git add -A && git commit -m "v0.38.1: correzioni dal collaudo M"
+  4. npm run build ; git archive -o deploy.zip HEAD ; build.zip da public\build
+
+SERVER
+  Come le ultime (deploy.md par. 5): unzip deploy.zip, build.zip in public/build, composer install,
+  php artisan migrate --force (non c'e' nulla da migrare), optimize:clear e le tre cache.
+  Verifica: php artisan promemoria:invia --prova   (una riga per promemoria, con la spiegazione)
+
+COLLAUDO
+  Ricontrollare le voci "v0.38.1" di M3, M8, M9, M10, M11, poi M12. Poi il blocco N.

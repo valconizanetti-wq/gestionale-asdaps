@@ -103,6 +103,23 @@ class ScadenzeAssociazione implements Funzione
             })->values();
     }
 
+    public function esempio(Promemoria $p, Carbon $quando, \App\Models\User $u): array
+    {
+        $data = Interni::dataEsempio($p, $quando);
+        // Stesso testo di «{giorni}» delle scadenze vere (Scadenza::stato)
+        $finta = (new Scadenza())->forceFill(['data_scadenza' => $data, 'giorni_preavviso' => 30, 'completato' => false]);
+
+        return [
+            'saluto' => Interni::saluto($u),
+            'scadenza' => 'Polizza RC',
+            'data' => $data->format('d/m/Y'),
+            'giorni' => $finta->stato($quando)['testo'],
+            'categoria' => 'Polizze Assicurative',
+            'ultimo_pagamento' => $data->copy()->subYear()->format('d/m/Y') . ' · ' . Importo::it(250, true),
+            'link' => route('scadenzario.index'),
+        ];
+    }
+
     public function predefiniti(): array
     {
         $testo = "Ciao {saluto},\n\n«{scadenza}» scade il {data} ({giorni}).\nUltimo rinnovo: {ultimo_pagamento}.\n\n"

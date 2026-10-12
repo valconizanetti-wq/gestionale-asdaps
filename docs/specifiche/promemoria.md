@@ -102,9 +102,15 @@ tessere) e il suo periodo (`Destinatario::$data`, `$periodo`):
   spenta), giorno e mese oppure giorni e «prima/dopo», ora e parametri;
 - oggetto e testo con l'elenco dei segnaposti;
 - **destinatari al prossimo invio** con la situazione di oggi;
-- **anteprima** su un destinatario vero;
-- «Invia una prova a me»: oggetto con «[Prova]» e i valori del primo
-  destinatario;
+- **anteprima** su un destinatario vero; se oggi non ce n'è nessuno, su uno
+  di un'altra data; se la funzione non ne trova per nessuna data, con i
+  **dati d'esempio** della funzione (`Funzione::esempio`: nomi, date e
+  importi inventati, il saluto di chi guarda; v0.38.1), mai i segnaposti;
+- «Invia una prova a me»: stessi valori dell'anteprima, oggetto con
+  «[Prova]» (o «[Prova, dati d'esempio]»);
+- promemoria per gli utenti (parametro «Destinatari»): se nessun utente
+  attivo ha il ruolo scelto, avviso «Nessun utente attivo con il ruolo
+  scelto.» (v0.38.1);
 - storico per giorno e periodo, con l'elenco «da avvisare a mano»;
 - un promemoria già inviato non si elimina, si spegne.
 
@@ -215,3 +221,20 @@ del destinatario `utente:<id>`.
   parole («scadenza del 31/07/2027», «tessere al 01/03/2027»). Il seeder crea
   i promemoria pronti anche relativi. Revisione nei tre giri della v0.38.0
   (`scadenzario.md` §7).
+- **v0.38.1** (12/10/2026, collaudo M11):
+  - «Invia una prova a me» su «Tessere da rinnovare» arrivava con
+    `[saluto]`, `[data]`, `[elenco]`…: senza destinatari la prova metteva il
+    nome del segnaposto tra parentesi quadre. Ora ogni funzione ha
+    `esempio()` (dati inventati, data che farebbe partire il promemoria
+    oggi); l'anteprima della pagina fa lo stesso («Anteprima con dati
+    d'esempio») invece di dire di usare la prova;
+  - `promemoria:invia` non scriveva nulla quando non partiva nessuna email:
+    ora scrive «Nessun promemoria da inviare adesso…»; con `--prova` dice
+    per ogni promemoria quanti da avvisare adesso e, per quelli «N giorni
+    prima o dopo», quanti destinatari in tutto e il prossimo invio, oppure
+    perché non ce ne sono (nessun utente attivo col ruolo scelto, o la
+    funzione non trova nulla). Nessun dato personale nell'output;
+  - nella pagina, avviso se nessun utente attivo ha il ruolo scelto.
+  Causa della mancata email delle tessere sul server: da verificare con
+  Paolo (comando di diagnosi del 12/10/2026).
+

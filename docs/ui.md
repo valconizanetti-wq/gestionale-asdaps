@@ -541,3 +541,10 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   piano e dei movimenti righe a due livelli. Icona `scontrino` (e
   `fotocamera`) in `x-icona`; nella Prima Nota l'icona sui movimenti da
   scontrino. Verificato a 1440 e 375 px.
+- v0.38.1 (12/10/2026, collaudo M): `pr-valore` (valore in sola lettura
+  accanto ai campi) con altezza, bordo e testo di `.form-input` in ogni
+  contesto: 38 px, 34 px nelle finestre (`.form-modale`), 44 px e 38 px su
+  telefono. Riquadri Affiliazione e Polizza: badge con il solo stato
+  («Valida», «In scadenza», «Scaduta»). Promemoria: «Anteprima con dati
+  d'esempio» con la nota `pr-anteprima-nota`, avviso giallo se nessun utente
+  ha il ruolo scelto. Verificato a 1440 e 375 px.

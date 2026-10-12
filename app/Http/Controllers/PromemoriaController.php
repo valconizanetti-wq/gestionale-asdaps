@@ -102,9 +102,14 @@ class PromemoriaController extends Controller
             return back()->with('error', 'Il tuo utente non ha un indirizzo email.');
         }
 
-        return $this->invii->prova($promemoria, $request->user())
-            ? back()->with('success', "Prova inviata a {$request->user()->email} con i dati del primo destinatario (oggetto con «[Prova]»).")
-            : back()->with('error', 'Invio della prova non riuscito: controlla il registro delle email.');
+        $esito = $this->invii->prova($promemoria, $request->user());
+        if (! $esito['ok']) {
+            return back()->with('error', 'Invio della prova non riuscito: controlla il registro delle email.');
+        }
+
+        return back()->with('success', $esito['esempio']
+            ? "Prova inviata a {$request->user()->email} con dati d'esempio: oggi nessuno lo riceverebbe (oggetto con «[Prova, dati d'esempio]»)."
+            : "Prova inviata a {$request->user()->email} con i dati del primo destinatario (oggetto con «[Prova]»).");
     }
 
     // ----------------------------------------------------------------
@@ -117,13 +122,23 @@ class PromemoriaController extends Controller
         $destinatari = $this->invii->daAvvisare($p, $riferimento);
 
         $esempio = $destinatari->first(fn ($d) => $d->email) ?? $destinatari->first();
+        // Anteprima come «Invia una prova a me» (Invii::prova): il primo
+        // destinatario, altrimenti uno di un'altra data, altrimenti i dati
+        // d'esempio della funzione (v0.38.1, mai i segnaposti tra parentesi)
+        $perAnteprima = $esempio ?? ($p->exists ? $f->destinatari($p, $riferimento)->first() : null);
+        $anteprima = $p->exists ? Invii::valoriProva($p, $perAnteprima, request()->user(), $riferimento) : null;
+        // Promemoria per gli utenti del gestionale: nessun utente attivo con il ruolo scelto?
+        $senzaUtenti = array_key_exists('destinatari', $f->parametri())
+            && \App\Promemoria\Interni::utenti($p->parametro('destinatari'))->isEmpty();
 
         return [
             'p' => $p,
             'f' => $f,
             'destinatari' => $destinatari,
             'riferimento' => $riferimento,
-            'esempio' => $esempio,
+            'esempio' => $perAnteprima,
+            'anteprima' => $anteprima,
+            'senzaUtenti' => $senzaUtenti,
             'prossimo' => $p->exists ? Invii::prossimo($p) : null,
             'storico' => $p->exists ? PromemoriaInvio::where('promemoria_id', $p->id)
                 ->selectRaw("DATE(inviato_il) AS giorno, periodo, SUM(esito = 'inviato') AS inviati, SUM(esito = 'fallito') AS falliti, SUM(esito = 'senza_email') AS senza, SUM(esito = 'prova') AS prove")

@@ -38,6 +38,16 @@ interface Funzione
     /** @return Collection<int, Destinatario> */
     public function destinatari(Promemoria $p, Carbon $quando): Collection;
 
+    /**
+     * Valori d'esempio dei segnaposti, per l'anteprima e «Invia una prova a
+     * me» quando oggi non c'è nessun destinatario (collaudo M11, v0.38.1):
+     * mai i segnaposti tra parentesi quadre. Dati inventati, con il saluto di
+     * chi riceve la prova.
+     *
+     * @return array<string, string>
+     */
+    public function esempio(Promemoria $p, Carbon $quando, \App\Models\User $u): array;
+
     /** Promemoria pronti, creati la prima volta (seeder). @return list<array<string, mixed>> */
     public function predefiniti(): array;
 }

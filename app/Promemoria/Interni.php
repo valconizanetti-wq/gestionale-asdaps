@@ -41,6 +41,15 @@ final class Interni
             ->sortBy(fn (User $u) => array_search($u->ruolo, $ruoli, true))->values();
     }
 
+    /**
+     * Data d'esempio per un promemoria «N giorni prima o dopo»: quella che lo
+     * farebbe partire oggi (15 giorni prima → tra 15 giorni).
+     */
+    public static function dataEsempio(\App\Models\Promemoria $p, \Illuminate\Support\Carbon $quando): \Illuminate\Support\Carbon
+    {
+        return $quando->copy()->startOfDay()->subDays((int) ($p->giorni ?? 0));
+    }
+
     /** Nome breve per il saluto: il primo nome. */
     public static function saluto(User $u): string
     {

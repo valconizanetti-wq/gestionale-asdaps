@@ -2,7 +2,8 @@
     Riga «Affiliazione e assicurazione» di Impostazioni › Ente (tavole SC-2,
     SC-3, v0.38.0). La scadenza la tiene lo Scadenzario: qui si legge, e
     «Rinnovata» la aggiorna insieme al pagamento (un solo dato). Stati del
-    riquadro: valida, in scadenza (entro il preavviso), scaduta. «Modifica»
+    riquadro: valida, in scadenza (entro il preavviso), scaduta, senza giorni
+    (la data è nella riga «Scadenza»; v0.38.1). «Modifica»
     solo al Presidente: codice, referente e contatto; compagnia, numero e
     copertura della polizza.
 --}}
@@ -16,9 +17,10 @@
         $st = $s->stato();
 
         return match ($st['stato']) {
+            // Solo lo stato: la data è nella riga «Scadenza» (collaudo M9, v0.38.1)
             'scaduta' => ['Scaduta', 'ko'],
-            'in_scadenza' => [ucfirst($st['testo']), 'warn'],
-            default => ['Valida · ' . $st['testo'], 'ok'],
+            'in_scadenza' => ['In scadenza', 'warn'],
+            default => ['Valida', 'ok'],
         };
     };
     $ultimo = function ($s) {
