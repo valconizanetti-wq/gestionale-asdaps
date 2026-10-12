@@ -262,9 +262,11 @@ lo split «a movimenti»).
 - Lo stesso per il **Segretario** (membro del CD, oggi senza Prima Nota):
   Prima Nota in sola lettura, scontrini sì.
 - Classificare, dividere per categorie, correggere ed eliminare gli
-  scontrini: Presidente e Tesoriere. Chi ha caricato uno scontrino può
-  correggerlo (foto, totale, fornitore, nota) finché il Tesoriere non l'ha
-  classificato.
+  scontrini: Presidente e Tesoriere. **Chi carica uno scontrino non lo
+  modifica più** (Paolo, 12/10/2026, 07:50): dopo «Registra» lo vede in
+  sola lettura; verifica ed eventuali correzioni sono di Presidente e
+  Tesoriere. Il passo 2 (conferma dei dati letti) resta l'unico momento in
+  cui chi carica corregge.
 - Revisore: sola lettura come oggi, anche sugli scontrini.
 
 **2. Il fornitore si acquisisce sempre, dopo la correzione dell'OCR.**
