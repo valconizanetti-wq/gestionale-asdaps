@@ -7,8 +7,9 @@ Dettaglio: docs/specifiche/scadenzario.md e promemoria.md (par. 7, con i tre gir
 COSA CAMBIA
   - M3  Finestra "Rinnovata": il campo Categoria (sola lettura) e' alto come gli altri campi, anche
         su telefono (stessa regola per tutti i valori in sola lettura accanto ai campi).
-  - M8  "Annulla l'ultimo rinnovo" su una scadenza una tantum fatta resta: serve a riaprirla se
-        "Fatta" e' stato premuto per errore. Scritto nella lista di collaudo.
+  - M8  "Annulla l'ultimo rinnovo" diventa "Annulla l'ultima registrazione" ovunque (pulsante,
+        finestra, messaggi, Audit Log): una scadenza una tantum non e' un rinnovo. Su una una tantum
+        fatta serve a riaprirla se "Fatta" e' stato premuto per errore.
   - M9  Impostazioni > Ente: lo stato dei riquadri Affiliazione e Polizza dice solo "Valida",
         "In scadenza" o "Scaduta"; la data e' nella riga "Scadenza".
   - M11 "Invia una prova a me" e l'anteprima, quando oggi nessuno riceverebbe il promemoria, usano
@@ -19,11 +20,12 @@ COSA CAMBIA
         adesso, quanti destinatari in tutto e il prossimo invio, o perche' non ce ne sono.
 
 FILE
-  app/Console/Commands/InviaPromemoria.php; app/Http/Controllers/PromemoriaController.php
+  app/Console/Commands/InviaPromemoria.php; app/Http/Controllers/PromemoriaController.php,
+    ScadenzarioController.php; app/Services/Scadenzario.php
   app/Promemoria/Funzione.php, Interni.php, Invii.php
   app/Promemoria/Funzioni/QuoteNonVersate.php, ScadenzeAssociazione.php, TessereInScadenza.php
   resources/css/app.css; resources/views/impostazioni/_affiliazione-polizza.blade.php,
-    promemoria/edit.blade.php
+    promemoria/edit.blade.php, scadenzario/form.blade.php
   tests/Feature/ScadenzarioTest.php
   docs: specifiche/scadenzario.md, specifiche/promemoria.md, ui.md, MANUALE-ASD.md (tutte e due),
     test-domande-iscrizione.md (tutte e due), bootstrap-prossima-sessione.md

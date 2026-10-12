@@ -235,6 +235,8 @@ del destinatario `utente:<id>`.
     perché non ce ne sono (nessun utente attivo col ruolo scelto, o la
     funzione non trova nulla). Nessun dato personale nell'output;
   - nella pagina, avviso se nessun utente attivo ha il ruolo scelto.
-  Causa della mancata email delle tessere sul server: da verificare con
-  Paolo (comando di diagnosi del 12/10/2026).
+  Causa della mancata email delle tessere sul server (diagnosi del
+  12/10/2026): nessun utente attivo con ruolo `tesoriere`, scelto in
+  «Destinatari»; sistemato da Paolo, poi l'invio è partito. Con la v0.38.1
+  la pagina e `--prova` lo dicono subito.
 

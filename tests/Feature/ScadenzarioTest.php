@@ -224,12 +224,15 @@ class ScadenzarioTest extends TestCase
         $this->rinnova($this->tesoriere, $polizza, ['documenti' => [UploadedFile::fake()->create('q.pdf', 20, 'application/pdf')]]);
         $m = PrimaNota::firstOrFail();
         $file = $m->documenti()->first()->path;
+        // Dicitura generica (collaudo M8, v0.38.1): vale anche per una una tantum
+        $this->actingAs($this->tesoriere)->get(route('scadenzario.edit', $polizza))
+            ->assertSee("Annulla l'ultima registrazione", false)->assertDontSee('ultimo rinnovo');
 
         $this->actingAs($this->tesoriere)->post(route('scadenzario.annulla', $polizza), ['motivo' => 'corto'])->assertSessionHasErrors('motivo');
         // Il segretario non annulla un rinnovo con uscita
         $this->actingAs($this->segretario)->post(route('scadenzario.annulla', $polizza), ['motivo' => 'Registrata sulla scadenza sbagliata'])->assertSessionHas('error');
         $this->actingAs($this->tesoriere)->post(route('scadenzario.annulla', $polizza), ['motivo' => 'Registrata sulla scadenza sbagliata'])
-            ->assertRedirect(route('scadenzario.edit', $polizza))->assertSessionHas('success');
+            ->assertRedirect(route('scadenzario.edit', $polizza))->assertSessionHas('success', fn ($m) => str_starts_with($m, 'Ultima registrazione annullata'));
 
         $this->assertSame('2027-07-31', $polizza->fresh()->data_scadenza->toDateString());
         $this->assertSame(0, ScadenzaRinnovo::count());

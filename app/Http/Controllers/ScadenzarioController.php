@@ -151,11 +151,11 @@ class ScadenzarioController extends Controller
         $this->richiediModifica($request);
         $motivo = $request->validate([
             'motivo' => ['required', 'string', 'min:15', 'max:1000'],
-        ], ['motivo.required' => 'Scrivi perché annulli il rinnovo.', 'motivo.min' => 'La motivazione deve avere almeno 15 caratteri.'])['motivo'];
+        ], ['motivo.required' => 'Scrivi perché annulli la registrazione.', 'motivo.min' => 'La motivazione deve avere almeno 15 caratteri.'])['motivo'];
 
         $r = $scadenza->rinnovi()->orderByDesc('id')->first();
         if ($r?->prima_nota_id && ! $request->user()->puoModificare('prima_nota')) {
-            return back()->with('error', 'Il rinnovo ha un\'uscita in Prima Nota: lo annulla il Presidente o il Tesoriere.');
+            return back()->with('error', 'La registrazione ha un\'uscita in Prima Nota: la annulla il Presidente o il Tesoriere.');
         }
         try {
             $this->scadenzario->annullaUltimo($scadenza, $motivo);
@@ -163,7 +163,7 @@ class ScadenzarioController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('scadenzario.edit', $scadenza)->with('success', "Ultimo rinnovo annullato: «{$scadenza->titolo}» torna a scadere il {$scadenza->fresh()->data_scadenza->format('d/m/Y')}.");
+        return redirect()->route('scadenzario.edit', $scadenza)->with('success', "Ultima registrazione annullata: «{$scadenza->titolo}» torna a scadere il {$scadenza->fresh()->data_scadenza->format('d/m/Y')}.");
     }
 
     // ----------------------------------------------------------------

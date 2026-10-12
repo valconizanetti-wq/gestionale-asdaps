@@ -114,8 +114,8 @@ Polizza RC (31/07, «Polizze Assicurative»), Approvazione del rendiconto
 
 **Scheda della scadenza** (`/scadenzario/{id}`): titolo, descrizione,
 ripetizione, data (per spostarla dopo un pagamento si usa «Rinnovata»),
-preavviso, categoria, categoria dell'uscita; storico dei rinnovi; «Annulla
-l'ultimo rinnovo» (per un errore di registrazione: motivazione di almeno 15
+preavviso, categoria, categoria dell'uscita; storico delle registrazioni;
+«Annulla l'ultima registrazione» (v0.38.1; prima «Annulla l'ultimo rinnovo») (per un errore di registrazione: motivazione di almeno 15
 caratteri, la scadenza torna alla data di prima, l'uscita si elimina con i
 giustificativi; non su un anno chiuso; con un'uscita lo annullano solo
 Presidente e Tesoriere); «Elimina» solo per le scadenze senza chiave e senza
@@ -244,7 +244,10 @@ dalla scadenza dell'anno dopo.
     testo dei campi in ogni contesto (38 px, 34 px nelle finestre, 44 e 38 px
     su telefono);
   - M8: «Annulla l'ultimo rinnovo» su una una tantum fatta è voluto (§3: un
-    «Fatta» per errore riapre la scadenza); scritto nella lista di collaudo;
+    «Fatta» per errore riapre la scadenza), ma la dicitura non andava bene
+    (una una tantum non si rinnova, può essere un'azione qualunque): su
+    richiesta di Paolo ora è generica ovunque, «Annulla l'ultima
+    registrazione» (pulsante, finestra, messaggi, Audit Log);
   - M9: nei riquadri di Impostazioni › Ente lo stato non ripete i giorni
     («Valida», «In scadenza», «Scaduta»): la data è nella riga «Scadenza»;
   - M11: prova e comando dei promemoria, in `promemoria.md` §7.
@@ -268,4 +271,10 @@ dalla scadenza dell'anno dopo.
      N nell'introduzione, M3, M8, M9, M10, M11). Verificati a 1440 e 375 px:
      finestra «Rinnovata», Impostazioni › Ente, pagina del promemoria
      «Tessere da rinnovare». 136 test superati.
+  Poi, stessa sera (ricontrollo di Paolo, M8): dicitura generica
+  «Annulla l'ultima registrazione» (pulsante, finestra, messaggi, dettaglio
+  dell'Audit Log; il codice dell'evento resta `SCADENZA_RINNOVO_ANNULLATO`
+  per non spezzare lo storico del registro). Revisione: cercate nelle viste
+  le altre scritte «rinnovo» rivolte all'utente: restano solo dove si parla
+  di un pagamento (finestra «Rinnovata»), corrette lì. 136 test superati.
 

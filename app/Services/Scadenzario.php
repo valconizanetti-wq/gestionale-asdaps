@@ -133,7 +133,7 @@ class Scadenzario
             }
             $m = $r->movimento;
             if ($m && $this->anni->chiuso($m->annoMovimento())) {
-                throw new \RuntimeException("L'uscita n. {$m->id} è dell'anno chiuso {$m->annoMovimento()}: il rinnovo non si annulla.");
+                throw new \RuntimeException("L'uscita n. {$m->id} è dell'anno chiuso {$m->annoMovimento()}: la registrazione non si annulla.");
             }
 
             AuditLogService::scrivi([
@@ -142,7 +142,7 @@ class Scadenzario
                 'entita_id' => $s->id,
                 'livello_rischio' => 'MEDIUM',
                 // La motivazione nei valori, fuori dall'hash (come per le schede eliminate)
-                'dettaglio' => "Annullato il rinnovo del {$r->fatto_il->format('d/m/Y')} di «{$s->titolo}» (scadenza del {$r->data_scadenza->format('d/m/Y')})"
+                'dettaglio' => "Annullata la registrazione del {$r->fatto_il->format('d/m/Y')} di «{$s->titolo}» (scadenza del {$r->data_scadenza->format('d/m/Y')})"
                     . ($m ? ", con l'uscita n. {$m->id}" : '') . ', con motivazione.',
                 'new_values' => ['motivazione' => $motivo],
             ]);

@@ -4,10 +4,8 @@
 1. **Collaudo M**, in corso (primo giro del 12/10/2026 fino a M11, sulla
    v0.39.0 installata): correzioni nella **v0.38.1** (sotto), da installare
    sopra la v0.39.0 e ricontrollare (voci «v0.38.1» di M3, M8, M9, M10, M11),
-   poi M12. **Aperto**: perché `promemoria:invia` non manda l'email delle
-   tessere sul server (comando di diagnosi dato a Paolo il 12/10/2026:
-   tesoriere attivo? tessere di soci attivi?). Con la v0.38.1 lo dice
-   `php artisan promemoria:invia --prova`.
+   poi M12. L'email delle tessere non partiva perché sul server non
+   c'era un utente Tesoriere attivo (risolto da Paolo il 12/10/2026).
 2. **Scontrini con OCR**: v0.39.0 consegnata e **installata** da Paolo il
    12/10/2026 (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8, analisi
    `docs/analisi-scontrini.md` §13). Collaudo: blocco N della lista.
@@ -53,8 +51,11 @@ note):
 - M3: campo Categoria (sola lettura, `pr-valore`) della finestra
   «Rinnovata» alto come «Prossima scadenza», in ogni contesto (`ui.md`).
 - M8: «Annulla l'ultimo rinnovo» su una una tantum fatta è voluto
-  (`scadenzario.md` §3: riapre la scadenza); scritto in M8. Chiesto a Paolo
-  se lo vuole togliere.
+  (`scadenzario.md` §3: riapre la scadenza); su richiesta di Paolo la
+  dicitura è ora generica ovunque: «Annulla l'ultima registrazione».
+- Causa della mancata email delle tessere (M11): nessun utente attivo con
+  ruolo `tesoriere` sul server (diagnosi del 12/10/2026); sistemato da
+  Paolo, ora funziona.
 - M9: badge dei riquadri Affiliazione e Polizza con il solo stato
   («Valida», «In scadenza», «Scaduta»).
 - M11: prova e anteprima con dati d'esempio (`Funzione::esempio`) invece di

@@ -1,7 +1,7 @@
 {{--
     Nuova scadenza o scheda di una scadenza (scadenzario.md §3): dati, con
     la categoria di Prima Nota per i pagamenti, e storico dei rinnovi con
-    «Annulla l'ultimo». Revisore: tutto in sola lettura.
+    «Annulla l'ultima registrazione». Revisore: tutto in sola lettura.
 --}}
 @extends('layouts.app')
 
@@ -75,7 +75,7 @@
             <aside class="pn-colonna">
                 <x-card titolo="Storico" senza-padding>
                     @if ($s->rinnovi->isEmpty())
-                        <x-vuoto>Nessun rinnovo registrato.</x-vuoto>
+                        <x-vuoto>Nessuna registrazione.</x-vuoto>
                     @else
                         <ul class="pr-storico">
                             @foreach ($s->rinnovi as $r)
@@ -96,8 +96,8 @@
                         </ul>
                         @if ($puo)
                             <div class="card-body">
-                                <button type="button" class="btn btn-danger-outline btn-sm" x-data x-on:click="$dispatch('apri-modale', 'annulla-rinnovo')">Annulla l'ultimo rinnovo</button>
-                                <p class="form-help">Per un errore di registrazione: la scadenza torna al {{ $ultimo->data_scadenza->format('d/m/Y') }}{{ $ultimo->prima_nota_id ? ' e l\'uscita in Prima Nota si elimina' : '' }}.</p>
+                                <button type="button" class="btn btn-danger-outline btn-sm" x-data x-on:click="$dispatch('apri-modale', 'annulla-rinnovo')">Annulla l'ultima registrazione</button>
+                                <p class="form-help">Per correggere un errore: la scadenza torna al {{ $ultimo->data_scadenza->format('d/m/Y') }}{{ $ultimo->prima_nota_id ? ' e l\'uscita in Prima Nota si elimina' : '' }}.</p>
                             </div>
                         @endif
                     @endif
@@ -105,7 +105,7 @@
 
                 @if ($puo && ! $s->chiave && $s->rinnovi->isEmpty())
                     <x-card titolo="Eliminare la scadenza?" class="pn-aiuto">
-                        <p>Nessun rinnovo registrato: si può eliminare.</p>
+                        <p>Nessuna registrazione: si può eliminare.</p>
                         <form method="POST" action="{{ route('scadenzario.destroy', $s) }}" x-data x-on:submit="if (! confirm('Eliminare la scadenza?')) $event.preventDefault()">
                             @csrf
                             @method('DELETE')
@@ -119,7 +119,7 @@
 
     @if (! $nuova && $puo && $ultimo)
         @push('modals')
-            <x-modale nome="annulla-rinnovo" titolo="Annullare l'ultimo rinnovo?" :aperta="$errors->has('motivo')">
+            <x-modale nome="annulla-rinnovo" titolo="Annullare l'ultima registrazione?" :aperta="$errors->has('motivo')">
                 <form method="POST" action="{{ route('scadenzario.annulla', $s) }}" class="form-modale" id="form-annulla-rinnovo">
                     @csrf
                     <p>{{ $s->conPagamento() ? 'Pagamento' : 'Adempimento' }} del {{ $ultimo->fatto_il->format('d/m/Y') }}: la scadenza torna al <strong>{{ $ultimo->data_scadenza->format('d/m/Y') }}</strong>{{ $ultimo->prima_nota_id ? ' e l\'uscita n. ' . $ultimo->prima_nota_id . ' si elimina dalla Prima Nota, con i giustificativi' : '' }}.</p>
@@ -128,7 +128,7 @@
                 </form>
                 <x-slot:piede>
                     <button type="button" class="btn btn-ghost" x-on:click="aperta = false">Indietro</button>
-                    <button type="submit" form="form-annulla-rinnovo" class="btn btn-danger">Annulla il rinnovo</button>
+                    <button type="submit" form="form-annulla-rinnovo" class="btn btn-danger">Annulla la registrazione</button>
                 </x-slot:piede>
             </x-modale>
         @endpush
