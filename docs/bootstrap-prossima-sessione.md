@@ -8,8 +8,9 @@
    c'era un utente Tesoriere attivo (risolto da Paolo il 12/10/2026).
 2. **Scontrini con OCR**: v0.39.0 consegnata e **installata** da Paolo il
    12/10/2026 (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8, analisi
-   `docs/analisi-scontrini.md` §13). Collaudo: blocco N, in `docs/test/collaudo-N-scontrini.md`.
-   Correzioni in una v0.39.1.
+   `docs/analisi-scontrini.md` §13). Collaudo: blocco N, in `docs/test/collaudo-N-scontrini.md`,
+   iniziato il 12/10/2026: errore 500 in N2 corretto nella **v0.39.1**
+   (sotto), da installare; poi riprendere da N2.
 3. Poi, nell'ordine deciso da Paolo il 12/10/2026 (obiettivo: in uso dal
    01/01/2027):
    1. **anticipi e note di rimborso** (il «pagato di tasca mia» degli
@@ -35,7 +36,7 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (136 test verdi; nessuna chiave OCR serve: i test
+mariadb-server`, database `asd_test`) e `php artisan test` (139 test verdi; nessuna chiave OCR serve: i test
 fingono OCR.space col testo vero in `tests/Fixtures/scontrini-ocrspace`).
 
 ## Stato al 12/10/2026 (sera)
@@ -44,6 +45,15 @@ fingono OCR.space col testo vero in `tests/Fixtures/scontrini-ocrspace`).
   consegnata, da installare), **collaudo N da fare**.
 - Restano l'azzeramento (J12, K11, L12, M12, N12) e `APP_DEBUG=false` prima
   dell'apertura.
+
+## Fatto il 12/10/2026 (sera tardi): v0.39.1 (collaudo N, prova N2)
+- N2: «Leggi lo scontrino» dal telefono dava errore 500 (`imagesx()`,
+  `Foto.php:73`): `imagescale()` del GD del server restituiva false.
+  `Foto::riduci` riscritta con `imagecopyresampled`, controlli a ogni
+  passo, rotazione EXIF dopo la riduzione, memoria alzata se serve
+  (`scontrini.md` §7). Nuovo `tests/Unit/FotoTest`; 139 test.
+- ZIP cumulativo v0.39.1 (contiene anche la v0.38.1). Collaudo N da
+  riprendere da N2.
 
 ## Fatto il 12/10/2026 (sera): v0.38.1 (collaudo M, primo giro)
 Osservazioni di Paolo su M3, M8, M9, M11 (le altre prove fino a M11 senza

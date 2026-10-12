@@ -37,6 +37,7 @@ Riscritto per esteso il 12/10/2026, su richiesta di Paolo. Dettaglio tecnico in 
 - Al passo 2 si apre la fotocamera posteriore; dopo lo scatto la foto compare nel riquadro con nome e peso del file.
 - «Leggi lo scontrino» resta spento finché mancano foto o nota; con la nota vuota compare l'errore «Scrivi che cosa hai comprato».
 - Al passo 4 un PDF o una foto della galleria vanno bene.
+- **v0.39.1:** dopo «Leggi lo scontrino» con una foto del telefono non deve più comparire la pagina d'errore 500 («imagesx(): … GdImage, false given», primo giro del 12/10/2026). Se la lettura non riesce compare al massimo l'avviso «Foto non letta.» e si scrive a mano.
 - Al passo 5 compare un messaggio che spiega come passare al formato compatibile: *Impostazioni › Fotocamera › Formati › Più compatibile*.
 
 ### N3 — Lettura della foto e passo 2

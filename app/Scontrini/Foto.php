@@ -30,7 +30,13 @@ class Foto
 
     /**
      * Copia JPEG ridotta e raddrizzata; null se l'immagine non si apre o
-     * manca gd.
+     * manca gd (allora si usa l'originale).
+     *
+     * v0.39.1 (collaudo N2, 12/10/2026): sul server imagescale() restituiva
+     * false e la pagina andava in errore 500. Ora la riduzione usa
+     * imagecopyresampled (presente in ogni versione di GD), ogni passo è
+     * controllato e la rotazione si fa sulla copia già ridotta: una foto da
+     * 12 megapixel ruotata a piena grandezza occupava due volte la memoria.
      */
     public static function riduci(string $file, int $lato = 1600, int $qualita = 75): ?string
     {
@@ -38,9 +44,10 @@ class Foto
             return null;
         }
         $info = @getimagesize($file);
-        if (! $info) {
+        if (! $info || $info[0] < 1 || $info[1] < 1) {
             return null;
         }
+        self::memoria($info[0] * $info[1]);
         $img = match ($info[2]) {
             IMAGETYPE_JPEG => @imagecreatefromjpeg($file),
             IMAGETYPE_PNG => @imagecreatefrompng($file),
@@ -49,35 +56,76 @@ class Foto
         if (! $img) {
             return null;
         }
-        if ($info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
-            $orientamento = (int) (@exif_read_data($file)['Orientation'] ?? 1);
-            $ruotata = match ($orientamento) {
-                3 => imagerotate($img, 180, 0),
-                6 => imagerotate($img, -90, 0),
-                8 => imagerotate($img, 90, 0),
-                default => null,
-            };
-            if ($ruotata) {
-                imagedestroy($img);
-                $img = $ruotata;
-            }
-        }
+        $orientamento = $info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')
+            ? (int) (@exif_read_data($file)['Orientation'] ?? 1) : 1;
+
+        // Riduzione e sfondo bianco (PNG trasparente) in un solo passaggio
         [$w, $h] = [imagesx($img), imagesy($img)];
-        $f = min(1, $lato / max($w, $h));
-        if ($f < 1) {
-            $nuova = imagescale($img, max(1, (int) round($w * $f)), max(1, (int) round($h * $f)), IMG_BICUBIC);
+        $f = min(1, $lato / max($w, $h, 1));
+        [$nw, $nh] = [max(1, (int) round($w * $f)), max(1, (int) round($h * $f))];
+        $fondo = @imagecreatetruecolor($nw, $nh);
+        if (! $fondo) {
             imagedestroy($img);
-            $img = $nuova;
+
+            return null;
         }
-        // PNG trasparente: sfondo bianco nel JPEG
-        $fondo = imagecreatetruecolor(imagesx($img), imagesy($img));
         imagefill($fondo, 0, 0, imagecolorallocate($fondo, 255, 255, 255));
-        imagecopy($fondo, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+        $ok = @imagecopyresampled($fondo, $img, 0, 0, 0, 0, $nw, $nh, $w, $h);
         imagedestroy($img);
+        if (! $ok) {
+            imagedestroy($fondo);
+
+            return null;
+        }
+
+        // Raddrizzata con l'orientamento EXIF, sulla copia piccola
+        $ruotata = match ($orientamento) {
+            3 => @imagerotate($fondo, 180, 0),
+            6 => @imagerotate($fondo, -90, 0),
+            8 => @imagerotate($fondo, 90, 0),
+            default => null,
+        };
+        if ($ruotata) {
+            imagedestroy($fondo);
+            $fondo = $ruotata;
+        }
+
         ob_start();
-        imagejpeg($fondo, null, $qualita);
+        $scritta = @imagejpeg($fondo, null, $qualita);
+        $jpeg = ob_get_clean();
         imagedestroy($fondo);
 
-        return ob_get_clean() ?: null;
+        return $scritta && $jpeg ? $jpeg : null;
+    }
+
+    /**
+     * Memoria per aprire la foto: GD tiene circa 5 byte per pixel, una foto
+     * da 12 megapixel ne vuole una sessantina di MB oltre al resto. Se il
+     * limite di PHP è più basso, lo si alza per questa richiesta (fino a
+     * 512 MB); altrimenti un errore fatale non lascerebbe usare l'originale.
+     */
+    private static function memoria(int $pixel): void
+    {
+        $serve = (int) ($pixel * 5 * 1.5) + memory_get_usage() + 32 * 1024 * 1024;
+        $limite = self::byte((string) ini_get('memory_limit'));
+        if ($limite > 0 && $limite < $serve) {
+            @ini_set('memory_limit', (string) min(max($serve, $limite), 512 * 1024 * 1024));
+        }
+    }
+
+    private static function byte(string $v): int
+    {
+        $v = trim($v);
+        if ($v === '' || $v === '-1') {
+            return -1;
+        }
+        $n = (int) $v;
+
+        return match (strtolower(substr($v, -1))) {
+            'g' => $n * 1024 ** 3,
+            'm' => $n * 1024 ** 2,
+            'k' => $n * 1024,
+            default => $n,
+        };
     }
 }

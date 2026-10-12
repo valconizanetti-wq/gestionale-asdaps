@@ -250,3 +250,26 @@ della consegna:
    15. il Tesoriere che carica dal computer finiva su «I miei scontrini» →
        va alla scheda;
    16. fonte del totale in minuscolo → come sullo scontrino.
+- **v0.39.1** (12/10/2026, collaudo N2 sul server): «Leggi lo scontrino»
+  con una foto del telefono dava errore 500 («imagesx(): Argument #1 must
+  be of type GdImage, false given», `Foto.php:73`). Causa: `imagescale()`
+  della versione di GD del server restituiva `false` invece dell'immagine
+  ridotta, e il passo dopo non lo controllava; in locale e nei test (GD di
+  PHP) non succedeva. Correzione in `App\Scontrini\Foto::riduci`:
+  riduzione con `imagecopyresampled` (in ogni versione di GD) insieme allo
+  sfondo bianco, ogni passo controllato (se uno fallisce: `null`, si usa
+  l'originale e, sopra 1 MB, «Foto non letta» con i campi da scrivere a
+  mano, mai un errore 500); rotazione EXIF fatta sulla copia già ridotta
+  (una foto da 12 megapixel ruotata a piena grandezza occupava il doppio
+  della memoria); limite di memoria di PHP alzato per la richiesta, fino a
+  512 MB, se quello del server non basta. Test `tests/Unit/FotoTest`
+  (foto 4000 × 3000 con orientamento 6, PNG trasparente, file non
+  immagine). Tre giri di revisione:
+  1. codice: verificato che la miniatura dell'elenco (`Scontrini.php`) usa
+     la stessa funzione e quindi è corretta anche lei; la rotazione dopo
+     la riduzione dà le stesse misure (il lato lungo è lo stesso);
+  2. casi limite: foto non apribile, GD assente, file sopra 1 MB senza
+     copia ridotta → «Foto non letta», nessun errore; il limite di memoria
+     non viene mai abbassato;
+  3. documenti e collaudo: N2 e N3 nella lista (`collaudo-N-scontrini.md`)
+     con la nota sulla v0.39.1. 139 test superati.

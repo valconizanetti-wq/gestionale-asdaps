@@ -1,3 +1,38 @@
+Gestionale ASD - v0.39.1 (12/10/2026, sera)
+Correzione dal collaudo N (prova N2): errore 500 dopo "Leggi lo scontrino"
+
+ZIP CUMULATIVO: contiene anche la v0.38.1 (correzioni del collaudo M, descritte sotto).
+Da applicare sopra la v0.39.0. Se la v0.38.1 e' gia' installata, si sovrascrive senza problemi.
+Nessuna migration, nessun seeder; CSS solo per la v0.38.1 (npm run build).
+
+COSA CAMBIA (v0.39.1)
+  - N2  "Leggi lo scontrino" con una foto del telefono dava la pagina d'errore 500
+        ("imagesx(): Argument #1 ($image) must be of type GdImage, false given", Foto.php:73).
+        La funzione imagescale() della versione di GD del server restituiva false invece della
+        foto ridotta. Ora la riduzione usa imagecopyresampled (c'e' in ogni versione di GD), ogni
+        passo e' controllato e, se qualcosa non va, si usa l'originale: al massimo compare
+        "Foto non letta." e i dati si scrivono a mano, mai piu' un errore 500. La rotazione della
+        foto si fa sulla copia gia' ridotta (meno memoria) e il limite di memoria di PHP si alza
+        per quella richiesta se non basta.
+  File: app/Scontrini/Foto.php; tests/Unit/FotoTest.php e due immagini in tests/Fixtures/scontrini;
+        docs/specifiche/scontrini.md (par. 7), docs/test/collaudo-N-scontrini.md,
+        docs/bootstrap-prossima-sessione.md.
+
+LOCALE (Laragon)
+  1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.39.0.txt e LEGGIMI-v0.38.1.txt.
+  2. php artisan test   -> 139 superati
+  3. git add -A && git commit -m "v0.39.1: foto ridotta senza imagescale (collaudo N2)"
+  4. npm run build ; git archive -o deploy.zip HEAD ; build.zip da public\build
+
+SERVER
+  Come le ultime (deploy.md par. 5): unzip deploy.zip, build.zip in public/build, composer install,
+  php artisan migrate --force (nulla da migrare), optimize:clear e le tre cache.
+
+COLLAUDO
+  Riprendere il blocco N da N2 (docs/test/collaudo-N-scontrini.md). Per M: voci "v0.38.1" e M12
+  (docs/test/collaudo-M-scadenzario.md).
+
+------------------------------------------------------------------------------------------------
 Gestionale ASD - v0.38.1 (12/10/2026)
 Correzioni dal collaudo M (Scadenze dell'associazione e promemoria), primo giro
 
