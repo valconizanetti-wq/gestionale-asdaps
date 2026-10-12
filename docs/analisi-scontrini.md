@@ -251,3 +251,48 @@ movimenti di Prima Nota si fanno **uno per categoria**.
 
 Tavola in più: **SN-4** diventa la scheda con le righe e le categorie (era
 lo split «a movimenti»).
+
+## 9. Due note di Paolo (12/10/2026, 07:39)
+
+**1. Il CD vede la Prima Nota, ma inserisce solo scontrini.**
+- Ruolo «Consigliere»: sezione `prima_nota` **in sola lettura** (elenco,
+  schede, giustificativi, esportazioni) e sezione `scontrini` per
+  **caricare** gli scontrini. Nessun «Nuovo movimento», giroconto, modifica
+  o eliminazione.
+- Lo stesso per il **Segretario** (membro del CD, oggi senza Prima Nota):
+  Prima Nota in sola lettura, scontrini sì.
+- Classificare, dividere per categorie, correggere ed eliminare gli
+  scontrini: Presidente e Tesoriere. Chi ha caricato uno scontrino può
+  correggerlo (foto, totale, fornitore, nota) finché il Tesoriere non l'ha
+  classificato.
+- Revisore: sola lettura come oggi, anche sugli scontrini.
+
+**2. Il fornitore si acquisisce sempre, dopo la correzione dell'OCR.**
+Al passo 2, nel riquadro «Fornitore»:
+1. l'OCR propone ragione sociale, partita IVA e, se le legge, indirizzo e
+   comune (le righe in cima allo scontrino);
+2. il gestionale cerca tra i fornitori già registrati: prima per **partita
+   IVA** (sicura), poi per **nome** senza badare a maiuscole, punteggiatura e
+   forme come «S.R.L.», «SRL», «& C.» (es. «ACQUA & SAPONE S.R.L.» = «Acqua e
+   Sapone srl»);
+3. tre casi, sempre modificabili:
+   - **trovato**: è già scelto, con l'etichetta «già in elenco»;
+   - **simile ma non sicuro**: «Forse è uno di questi?» con i due o tre più
+     somiglianti da toccare;
+   - **nessuno**: «Nuovo fornitore» con i dati letti, da correggere;
+4. in ogni momento si può aprire la **lista dei fornitori** (con ricerca) e
+   sceglierne un altro, oppure passare a «Nuovo»;
+5. alla registrazione il fornitore nuovo nasce **con i dati corretti**
+   (ragione sociale, partita IVA, indirizzo, comune), nella stessa
+   transazione dello scontrino: se la registrazione non va, non resta un
+   fornitore a metà; una partita IVA già presente su un altro fornitore
+   viene segnalata invece di creare un doppione.
+
+Schema: `gl_soggetti` riceve `partita_iva` (unica se c'è), `indirizzo`,
+`comune`, `attivo` (un fornitore usato non si elimina, si toglie dalla lista).
+Una pagina «Fornitori» (Presidente e Tesoriere) per correggere, unire due
+doppioni e disattivare; la Prima Nota usa lo stesso elenco nel suo campo
+«Fornitore».
+
+Tavole: SN-2 mostra i tre casi del fornitore; in più **SN-6** pagina
+Fornitori.

@@ -7,7 +7,8 @@
    (`docs/analisi-scontrini.md`, anche nel progetto); risposte di Paolo in
    §7 (CD registra dal telefono: ruolo «Consigliere»; anticipi dopo; nota e
    fornitore obbligatori; partita IVA sì; una foto), divisione per righe e
-   categorie in §8. Prossimo passo: tavole SN-1…SN-5 sulla tela (aspettando
+   categorie in §8; CD con Prima Nota in lettura e fornitore riconosciuto,
+   scelto o creato in §9. Prossimo passo: tavole SN-1…SN-5 sulla tela (aspettando
    le foto di scontrini veri di Paolo), poi codice.
 3. Poi, in ordine da concordare: anticipi e note di
    rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
