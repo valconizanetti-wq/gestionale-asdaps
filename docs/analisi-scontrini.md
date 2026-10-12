@@ -439,3 +439,22 @@ tabulazioni → **una richiesta per foto**, non due.
 
 Test: `test_testo_vero_di_ocr_space` (14 foto) in
 `tests/Unit/LettoreScontrinoTest.php`; 120 test in tutto.
+
+## 13. Realizzazione (v0.39.0, 12/10/2026)
+
+Tavole approvate da Paolo il 12/10/2026 («Ok per le tavole»). Modulo
+realizzato come descritto in `docs/specifiche/scontrini.md`; le scelte di
+questa analisi restano, con queste precisazioni:
+- il movimento nasce su «Uscite da classificare»; la divisione **riusa** quel
+  movimento (stesso numero) per la prima categoria invece di toglierlo, e
+  aggiunge gli altri; il piano mostrato nella scheda segue la stessa regola;
+- stato **ricalcolato** dai movimenti (da verificare / da quadrare /
+  verificato); la chiusura dell'anno controlla anche gli scontrini da
+  quadrare;
+- registrazione solo dall'anno di avvio della contabilità (2027, o prima con
+  un anno contabile di prova): fino al 31/12/2026 gli scontrini veri restano
+  in `gestionale-acv`;
+- attesa massima di OCR.space 15 secondi; senza chiave o senza risposta si
+  scrive a mano;
+- nel menu nessun contatore (come negli altri moduli).
+Tre giri di revisione: `scontrini.md` §7 (15 difetti corretti).

@@ -13,7 +13,15 @@
     $chiuso = $chiuso ?? false;
     $categoriaScelta = (string) old('categoria_id', $m->categoria_id);
     $importo = old('importo', $m->importo !== null ? \App\Support\Importo::it($m->importo) : '');
+    // Movimento di uno scontrino: tipo, conto, data e importo dalla scheda dello scontrino
+    $bloccati = (bool) $m->scontrino_id;
 @endphp
+
+@if ($bloccati)
+    <x-avviso tipo="info" titolo="Movimento dello scontrino {{ $m->scontrino?->codice() }}.">
+        Importo, data e conto si cambiano dalla <a href="{{ route('scontrini.show', $m->scontrino_id) }}">scheda dello scontrino</a>; qui categoria, descrizione e il resto.
+    </x-avviso>
+@endif
 
 @if ($errors->any())
     <x-avviso tipo="ko" titolo="Controlla i dati.">Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
@@ -35,11 +43,11 @@
                     <legend>Tipo <span class="obbligatorio" aria-hidden="true">*</span></legend>
                     <div class="scelta-opzioni">
                         <label class="scelta">
-                            <input type="radio" name="tipo" value="uscita" x-model="tipo" @checked($tipo === 'uscita')>
+                            <input type="radio" name="tipo" value="uscita" x-model="tipo" @checked($tipo === 'uscita') @disabled($bloccati)>
                             <span class="scelta-testo">Uscita <span class="scelta-sub">Spesa</span></span>
                         </label>
                         <label class="scelta">
-                            <input type="radio" name="tipo" value="entrata" x-model="tipo" @checked($tipo === 'entrata')>
+                            <input type="radio" name="tipo" value="entrata" x-model="tipo" @checked($tipo === 'entrata') @disabled($bloccati)>
                             <span class="scelta-testo">Entrata <span class="scelta-sub">Incasso</span></span>
                         </label>
                     </div>
@@ -48,11 +56,11 @@
                     <legend>Conto <span class="obbligatorio" aria-hidden="true">*</span></legend>
                     <div class="scelta-opzioni">
                         <label class="scelta">
-                            <input type="radio" name="conto" value="cassa" @checked($conto === 'cassa')>
+                            <input type="radio" name="conto" value="cassa" @checked($conto === 'cassa') @disabled($bloccati)>
                             <span class="scelta-testo">Cassa <span class="scelta-sub">Contanti</span></span>
                         </label>
                         <label class="scelta">
-                            <input type="radio" name="conto" value="banca" @checked($conto === 'banca')>
+                            <input type="radio" name="conto" value="banca" @checked($conto === 'banca') @disabled($bloccati)>
                             <span class="scelta-testo">Banca <span class="scelta-sub">Bonifico, carta, POS</span></span>
                         </label>
                     </div>
@@ -63,8 +71,8 @@
 
         <x-card titolo="Importo e categoria">
             <div class="form-grid form-grid-3">
-                <x-campo name="data" label="Data" tipo="date" required :value="$m->data" />
-                <x-campo name="importo" label="Importo €" required :value="$importo" inputmode="decimal" autocomplete="off"
+                <x-campo name="data" label="Data" tipo="date" required :value="$m->data" :disabled="$bloccati" />
+                <x-campo name="importo" label="Importo €" required :value="$importo" inputmode="decimal" autocomplete="off" :disabled="$bloccati"
                          class="pn-campo-importo" aiuto="Virgola per i centesimi: 1.450 vale millequattrocentocinquanta." />
                 @foreach (['uscita' => $categorieUscita, 'entrata' => $categorieEntrata] as $t => $elenco)
                     <div @class(['form-field', 'has-error' => $errors->has('categoria_id')]) x-show="tipo === '{{ $t }}'" @if ($tipo !== $t) x-cloak @endif>
@@ -125,7 +133,7 @@
         <x-card titolo="Come funziona" class="pn-aiuto">
             <p>Le <strong>quote associative</strong> entrano da sole quando si iscrive un socio dalla domanda online; i rinnovi avranno il loro modulo, con la ricevuta.</p>
             <p>Per spostare soldi tra <strong>cassa e banca</strong> usa «Giroconto»: non è né un'entrata né un'uscita.</p>
-            <p>Uno <strong>scontrino</strong> con voci di categorie diverse si potrà dividere in più righe dal telefono (prossima versione).</p>
+            <p>Gli <strong>scontrini</strong> si caricano dal telefono (pagina Scontrini); uno scontrino con voci di categorie diverse si divide dalla sua scheda, un movimento per categoria.</p>
         </x-card>
         <x-card titolo="Correzioni" class="pn-aiuto">
             <p>Finché l'anno è aperto il movimento si corregge liberamente; ogni modifica resta comunque nell'Audit Log.</p>

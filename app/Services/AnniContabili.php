@@ -118,6 +118,8 @@ class AnniContabili
         $daClassificare = PrimaNota::query()->anno($anno)
             ->whereHas('categoria', fn ($q) => $q->where('codice', PrimaNotaCategoria::DA_CLASSIFICARE))->count();
         $anticipi = PrimaNota::query()->anno($anno)->where('sospeso', true)->whereNull('rimborsato_il')->count();
+        // Scontrini con le righe che non tornano al totale (v0.39.0, scontrini.md §7)
+        $daQuadrare = \App\Models\PrimaNotaScontrino::where('anno', $anno)->where('stato', 'da_quadrare')->count();
         $prima = $this->precedente($anno);
         $finito = now()->year > $anno;
         $apertura = $this->apertura($anno);
@@ -127,6 +129,7 @@ class AnniContabili
             ["L'anno prima è chiuso", ! $prima || $prima->isChiuso(), $prima && ! $prima->isChiuso() ? "Prima va chiuso il {$prima->anno}" : 'Nessun anno aperto prima'],
             ['Saldi di apertura impostati', ! $apertura['da_impostare'], $apertura['da_impostare'] ? 'Mancano i saldi di apertura di cassa e banca' : ($apertura['da_anno_prima'] ? 'Dai saldi finali del ' . $prima?->anno : 'Scritti a mano')],
             ['Nessun movimento da classificare', $daClassificare === 0, $daClassificare === 0 ? 'Tutti i movimenti hanno la loro categoria' : $daClassificare . ' ' . ($daClassificare === 1 ? 'movimento' : 'movimenti') . ' in «Uscite da classificare»'],
+            ['Nessuno scontrino da quadrare', $daQuadrare === 0, $daQuadrare === 0 ? 'I movimenti di ogni scontrino tornano al suo totale' : $daQuadrare . ' ' . ($daQuadrare === 1 ? 'scontrino' : 'scontrini') . ' da quadrare (Scontrini)'],
             ['Nessun anticipo da rimborsare', $anticipi === 0, $anticipi === 0 ? 'Nessuna spesa anticipata in sospeso' : $anticipi . ' ' . ($anticipi === 1 ? 'spesa anticipata' : 'spese anticipate') . ' da rimborsare'],
         ];
     }

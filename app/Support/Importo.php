@@ -43,6 +43,26 @@ class Importo
         return number_format((float) $s, 2, '.', '');
     }
 
+    /**
+     * Centesimi interi da un importo normalizzato ("12.50", "-4.50"): per
+     * somme e confronti esatti senza bcmath (non c'è su ogni server).
+     */
+    public static function centesimi(mixed $importo): int
+    {
+        $t = trim((string) $importo);
+        $negativo = str_starts_with($t, '-');
+        [$interi, $decimali] = array_pad(explode('.', ltrim($t, '-+')), 2, '0');
+        $c = (int) $interi * 100 + (int) str_pad(substr($decimali, 0, 2), 2, '0');
+
+        return $negativo ? -$c : $c;
+    }
+
+    /** Da centesimi a importo normalizzato ("-4.50"). */
+    public static function daCentesimi(int $c): string
+    {
+        return ($c < 0 ? '-' : '') . intdiv(abs($c), 100) . '.' . str_pad((string) (abs($c) % 100), 2, '0', STR_PAD_LEFT);
+    }
+
     /** "1.234,50" per le viste e i PDF. */
     public static function it(mixed $valore, bool $euro = false): string
     {

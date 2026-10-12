@@ -7,6 +7,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DomandeController;
 use App\Http\Controllers\ImpostazioniEnteController;
 use App\Http\Controllers\PrimaNotaController;
+use App\Http\Controllers\ScontriniController;
+use App\Http\Controllers\FornitoriController;
 use App\Http\Controllers\PromemoriaController;
 use App\Http\Controllers\RinnoviController;
 use App\Http\Controllers\ScadenzarioController;
@@ -259,6 +261,40 @@ Route::middleware(['auth', 'attivo'])->group(function () {
                 Route::post('/{movimento}/documenti', 'aggiungiDocumenti')->whereNumber('movimento')->name('documenti.store');
                 Route::get('/{movimento}/documenti/{documento}', 'documento')->whereNumber('movimento')->name('documenti.show');
                 Route::delete('/{movimento}/documenti/{documento}', 'eliminaDocumento')->whereNumber('movimento')->name('documenti.destroy');
+            });
+        });
+
+    // Scontrini dal telefono con OCR e fornitori (scontrini.md, tavole
+    // SN-1…SN-8, v0.39.0). Caricano tutti i ruoli con la sezione piena;
+    // verificano, dividono e correggono Presidente e Tesoriere (controllo
+    // nei controller con puoModificare('prima_nota')).
+    Route::middleware('permesso:scontrini')
+        ->prefix('scontrini')->name('scontrini.')
+        ->group(function () {
+            Route::controller(FornitoriController::class)->prefix('fornitori')->name('fornitori.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::post('/unisci', 'unisci')->name('unisci');
+                Route::put('/{fornitore}', 'update')->whereNumber('fornitore')->name('update');
+                Route::delete('/{fornitore}', 'destroy')->whereNumber('fornitore')->name('destroy');
+            });
+
+            Route::controller(ScontriniController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/miei', 'miei')->name('miei');
+                Route::get('/nuovo', 'create')->name('create');
+                Route::post('/leggi', 'leggi')->name('leggi');
+                Route::get('/nuovo/{token}', 'conferma')->where('token', '[A-Za-z0-9]{32}')->name('conferma');
+                Route::get('/nuovo/{token}/foto', 'fotoBozza')->where('token', '[A-Za-z0-9]{32}')->name('conferma.foto');
+                Route::post('/nuovo/{token}', 'store')->where('token', '[A-Za-z0-9]{32}')->name('store');
+                Route::delete('/nuovo/{token}', 'annulla')->where('token', '[A-Za-z0-9]{32}')->name('annulla');
+                Route::get('/{scontrino}', 'show')->whereNumber('scontrino')->name('show');
+                Route::put('/{scontrino}', 'update')->whereNumber('scontrino')->name('update');
+                Route::delete('/{scontrino}', 'destroy')->whereNumber('scontrino')->name('destroy');
+                Route::post('/{scontrino}/dividi', 'dividi')->whereNumber('scontrino')->name('dividi');
+                Route::post('/{scontrino}/foto', 'aggiungiFoto')->whereNumber('scontrino')->name('foto.store');
+                Route::get('/{scontrino}/foto/{file}', 'foto')->whereNumber('scontrino')->whereNumber('file')->name('foto.show');
+                Route::get('/{scontrino}/anteprima', 'anteprima')->whereNumber('scontrino')->name('anteprima');
             });
         });
 

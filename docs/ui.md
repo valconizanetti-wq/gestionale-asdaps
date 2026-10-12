@@ -524,3 +524,20 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   con giorno/mese oppure giorni/«prima o dopo» (Alpine, un solo campo
   «Ora»), colonna «Destinatari», prossimo invio con «che cosa» (`td-pila`).
   Verificato a 1440 e 375 px.
+- v0.39.0 (12/10/2026): sezione 17 di `app.css` "Scontrini dal telefono
+  con OCR" (tavole SN-1…SN-8, approvate da Paolo il 12/10/2026). Passi 1 e 2
+  in una colonna stretta anche su desktop (`sn-passo`, pulsanti
+  `sn-pulsante` a tutta larghezza): riquadro foto tratteggiato
+  (`sn-foto`, con anteprima della foto scelta), due campi «foto»
+  (fotocamera e file) di cui si invia quello usato; riquadro «Fornitore»
+  come `fieldset.card` (`sn-legenda`), scelte a più righe (`sn-scelta`),
+  «già in elenco» e «Le aggiungo la partita IVA letta» in verde, finestra
+  della lista con ricerca dentro il modulo (usa lo stato Alpine del
+  riquadro). «I miei scontrini» a schede (`sn-mio`). Scheda: due colonne
+  (foto e dati | quadratura, righe, piano), una sola sotto i 1100 px;
+  barra di quadratura con larghezze a passi del 5% (`sn-barra-N`, niente
+  `style=`); su telefono le righe modificabili diventano blocchi
+  (spunta · descrizione · togli, poi categoria · importo) e le tabelle del
+  piano e dei movimenti righe a due livelli. Icona `scontrino` (e
+  `fotocamera`) in `x-icona`; nella Prima Nota l'icona sui movimenti da
+  scontrino. Verificato a 1440 e 375 px.

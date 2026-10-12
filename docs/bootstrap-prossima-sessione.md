@@ -1,23 +1,15 @@
-# Bootstrap — Gestionale ASD, dopo la v0.38.0 (Scadenze dell'associazione, 11/10/2026)
+# Bootstrap — Gestionale ASD, dopo la v0.39.0 (Scontrini dal telefono con OCR, 12/10/2026)
 
 ## Prossima sessione
 1. **Collaudo M** della v0.38.0 (installata sul server da Paolo
    l'11/10/2026). Correzioni in una v0.38.1, se servono.
-2. **Scontrini con OCR**: analisi fatta l'11/10/2026 sera
-   (`docs/analisi-scontrini.md`, anche nel progetto); risposte di Paolo in
-   §7 (CD registra dal telefono: ruolo «Consigliere»; anticipi dopo; nota e
-   fornitore obbligatori; partita IVA sì; una foto), divisione per righe e
-   categorie in §8; CD con Prima Nota in lettura e fornitore riconosciuto,
-   scelto o creato in §9. Tavole SN-1…SN-8 sulla tela (§10, PDF in
-   `docs/mockup/Tavole-scontrini.pdf`), da approvare. Prova sui 14 scontrini
-   veri: testo pulito §11, **OCR.space vero §12** (totale, data, pagamento
-   14/14, partita IVA 13/14, solo `isTable=true`, una richiesta per foto;
-   in locale serve l'eccezione Avast per `api.ocr.space`). Lettore
-   `App\Scontrini\LettoreScontrino` con test; script di prova in
-   `docs/strumenti/prova-ocr.php`. Prossimo passo: approvazione delle
-   tavole, poi codice del modulo.
-3. Poi, in ordine da concordare: anticipi e note di
-   rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
+2. **Scontrini con OCR**: **v0.39.0 consegnata il 12/10/2026**
+   (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8 approvate, analisi
+   `docs/analisi-scontrini.md` §13). Da installare (LEGGIMI-v0.39.0: migration,
+   `RuoloSeeder`, `SezioneSeeder`, `OCR_SPACE_KEY` nel `.env`, Avast in
+   locale) e collaudare (blocco N della lista). Correzioni in una v0.39.1.
+3. Poi, in ordine da concordare: **anticipi e note di rimborso** (il
+   «pagato di tasca mia» degli scontrini), Verbali (servono per le decadenze e la chiusura dell'anno),
    Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in
    standby finché Paolo non ha approfondito (`analisi-tessere-scadenze.md`
    §5).
@@ -31,13 +23,36 @@ ricostruisce con `git clone gestionale-asd-<commit>.bundle
 /home/claude/gestionale-asd` e si verifica con `git log -1`; poi
 `cp .env.example .env`, `composer install`, `npm ci`, `php artisan
 key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (104 test verdi).
+mariadb-server`, database `asd_test`) e `php artisan test` (135 test verdi; nessuna chiave OCR serve: i test
+fingono OCR.space col testo vero in `tests/Fixtures/scontrini-ocrspace`).
 
-## Stato all'11/10/2026
+## Stato al 12/10/2026
 - Sul server: **v0.38.0 installata** (Paolo, 11/10/2026); collaudi K e L
-  superati il 07/10/2026, **collaudo M da fare**.
-- Restano l'azzeramento (J12, K11, L12, M12) e `APP_DEBUG=false` prima
+  superati il 07/10/2026, **collaudo M da fare**. **v0.39.0 consegnata**
+  (ZIP), da installare; **collaudo N da fare**.
+- Restano l'azzeramento (J12, K11, L12, M12, N12) e `APP_DEBUG=false` prima
   dell'apertura.
+
+## Fatto il 12/10/2026: v0.39.0 (Scontrini dal telefono con OCR)
+Prova con OCR.space vero sulle 14 foto di Paolo (`prova-ocr.php` in Laragon,
+dopo l'eccezione di Avast): solo `isTable=true`, lettore adattato (analisi
+§12). Tavole SN-1…SN-8 approvate. Scheda `docs/specifiche/scontrini.md`
+(nuova stesura): passi 1 e 2 dal telefono (`ScontriniController`, bozza in
+sessione, `ServizioOcr`, `Foto`, `LettoreScontrino`, `Fornitori`),
+registrazione con un movimento su «Uscite da classificare», scheda con
+righe, categorie e «Registra la divisione» (`App\Services\Scontrini`,
+`piano()` uguale in PHP e Alpine), pagina Fornitori (`FornitoriController`:
+unisci, rinomina, togli dalla lista), ruolo **Consigliere** (scontrini +
+Prima Nota in lettura; uguale il Segretario), movimenti di scontrino con
+importo, data e conto bloccati in Prima Nota, controllo «Nessuno scontrino
+da quadrare» alla chiusura. Migration `2026_10_12_000102`. CSS sezione 17.
+- 135 test (nuovi `ScontriniTest`, test del testo vero in
+  `LettoreScontrinoTest`); tre giri di revisione (15 difetti, `scontrini.md`
+  §7). Importi in centesimi interi (`Importo::centesimi`): bcmath non c'è.
+- Docs: `scontrini.md`, `prima-nota.md`, `permessi.md`, `deploy.md` §6
+  (chiave, gd/exif, Avast), `ui.md`, `MANUALE-ASD.md` (tutte e due le
+  copie), `test-domande-iscrizione.md` (tutte e due: blocco N),
+  `da-riportare-gestionale-aps.md` (D12, D13), `analisi-scontrini.md` §13.
 
 ## Fatto l'11/10/2026: v0.38.0 (Scadenze dell'associazione)
 Tavole SC-1, SC-2, SC-3, PR-3 (approvate il 07/10/2026). Scheda

@@ -16,6 +16,7 @@ class SezioneSeeder extends Seeder
             ['codice' => 'domande', 'label' => 'Domande/Iscrizione', 'ordine' => 20],
             ['codice' => 'rinnovi_quota', 'label' => 'Rinnovi quota', 'ordine' => 30],
             ['codice' => 'prima_nota', 'label' => 'Prima Nota', 'ordine' => 40],
+            ['codice' => 'scontrini', 'label' => 'Scontrini', 'ordine' => 42],
             ['codice' => 'bilancio', 'label' => 'Bilancio', 'ordine' => 50],
             ['codice' => 'progetti', 'label' => 'Progetti', 'ordine' => 60],
             ['codice' => 'governance_cd', 'label' => 'Governance CD', 'ordine' => 70],
@@ -75,6 +76,18 @@ class SezioneSeeder extends Seeder
             $this->assegna('tesoriere', $codice);
             $this->assegna('revisore', $codice, soloLettura: true);
         }
+
+        // Scontrini (v0.39.0, scontrini.md §6): tutto il CD carica gli
+        // scontrini dal telefono (sezione 'scontrini' piena = caricare);
+        // Segretario e Consigliere vedono la Prima Nota in sola lettura.
+        // Verificare, dividere, correggere ed eliminare restano a chi
+        // modifica la Prima Nota (Presidente e Tesoriere); il Revisore legge.
+        foreach (['presidente', 'tesoriere', 'segretario', 'consigliere'] as $ruolo) {
+            $this->assegna($ruolo, 'scontrini');
+        }
+        $this->assegna('revisore', 'scontrini', soloLettura: true);
+        $this->assegna('segretario', 'prima_nota', soloLettura: true);
+        $this->assegna('consigliere', 'prima_nota', soloLettura: true);
 
         // Promemoria (v0.36.0, promemoria.md): la pagina la vedono i ruoli che
         // hanno almeno una funzione con promemoria; chi modifica il singolo

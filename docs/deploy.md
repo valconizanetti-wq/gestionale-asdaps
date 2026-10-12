@@ -215,8 +215,10 @@ php artisan tinker
 App\Models\User::create(['name' => 'Paolo', 'email' => 'indirizzo@reale.it', 'password' => 'password-lunga-e-unica', 'ruolo' => 'presidente', 'attivo' => true]);
 exit
 ```
-Gli altri utenti (segretario, tesoriere, revisore) si creano allo stesso
-modo, finché non ci sarà la gestione utenti nelle Impostazioni.
+Gli altri utenti (segretario, tesoriere, revisore e, dalla v0.39.0, i
+consiglieri con `'ruolo' => 'consigliere'`, che caricano gli scontrini) si
+creano allo stesso modo, finché non ci sarà la gestione utenti nelle
+Impostazioni.
 
 ### 3.9 Permessi e ottimizzazione (Terminale)
 
@@ -277,6 +279,21 @@ Il `.env` e la cartella `storage/` del server non sono nello ZIP, quindi
 non vengono toccati.
 
 ## 6. Interazioni e punti aperti
+
+- **Lettura degli scontrini** (dalla v0.39.0, `scontrini.md` §4): nel
+  `.env` del server `OCR_SPACE_KEY=` con la chiave di OCR.space (la stessa
+  di `gestionale-acv`, `conta_impostazioni.ocr_space_api_key`), poi
+  `php artisan config:cache`. Mai nel codice, nel database o in chat. Senza
+  chiave gli scontrini si caricano lo stesso, con i dati scritti a mano (lo
+  dice la riga sotto l'elenco Scontrini). In *Select PHP Version* devono
+  essere attive le estensioni `gd` ed `exif` (copia ridotta e raddrizzata
+  della foto). Limiti di caricamento: bastano quelli del §3.10
+  (`upload_max_filesize` 8M, `post_max_size` 10M; foto fino a 8 MB).
+  **In locale (Laragon)**: se compare «SSL certificate problem: unable to
+  get local issuer certificate», è lo Scudo Web di Avast che controlla
+  l'HTTPS: eccezione `https://api.ocr.space/*` in Avast (Impostazioni ›
+  Generale › Eccezioni), oppure `OCR_SPACE_CA=` con un file di certificati
+  che contenga anche quello di Avast. Mai spegnere la verifica.
 
 - **Sito ed email definitivi** (Paolo, 29/09/2026): `info@arciericastello.it`
   è già il valore predefinito di `SITO_EMAIL` (se il `.env` del server ha

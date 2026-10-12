@@ -75,6 +75,16 @@ class RiskMatrix
                 : ($operazione === 'deleted' || array_intersect(['data_scadenza', 'completato', 'prima_nota_categoria_id'], array_keys($dirty)) ? 'MEDIUM' : 'LOW');
         }
 
+        // Scontrini (v0.39.0, scontrini.md): eliminazione rilevante (toglie
+        // movimenti e foto), correzioni dei dati MEDIUM. Fornitori: unione e
+        // cambio di nome o partita IVA MEDIUM (cambiano i movimenti).
+        if ($modello === 'PrimaNotaScontrino') {
+            return $operazione === 'deleted' ? 'HIGH' : ($operazione === 'created' ? 'LOW' : 'MEDIUM');
+        }
+        if ($modello === 'Soggetto') {
+            return $operazione === 'deleted' || array_intersect(['nome', 'partita_iva'], array_keys($dirty)) && $operazione === 'updated' ? 'MEDIUM' : 'LOW';
+        }
+
         if ($operazione === 'updated') {
             // Chiusura e riapertura dell'anno contabile (v0.35.0, prima-nota.md §3)
             if ($modello === 'AnnoContabile') {

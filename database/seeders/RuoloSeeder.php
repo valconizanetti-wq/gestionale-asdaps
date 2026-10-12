@@ -14,6 +14,9 @@ class RuoloSeeder extends Seeder
             ['codice' => 'segretario', 'label' => 'Segretario',  'colore_avatar' => '#2980b9', 'badge_class' => 'bg-blue',   'ordine' => 2],
             ['codice' => 'tesoriere',  'label' => 'Tesoriere',   'colore_avatar' => '#27ae60', 'badge_class' => 'bg-green',  'ordine' => 3],
             ['codice' => 'revisore',   'label' => 'Revisore',    'colore_avatar' => '#d35400', 'badge_class' => 'bg-orange', 'ordine' => 4],
+            // Membri del CD senza carica (v0.39.0, scontrini.md §6): caricano
+            // gli scontrini dal telefono e vedono la Prima Nota in lettura.
+            ['codice' => 'consigliere', 'label' => 'Consigliere', 'colore_avatar' => '#16a085', 'badge_class' => 'bg-teal',  'ordine' => 5],
         ];
 
         foreach ($ruoli as $ruolo) {

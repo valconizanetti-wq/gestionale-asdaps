@@ -11,6 +11,8 @@
     @case('matita')<path d="M4 20h4L18.5 9.5a2.8 2.8 0 00-4-4L4 16v4z"/>@break
     @case('cestino')<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>@break
     @case('download')<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>@break
+    @case('scontrino')<path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/>@break
+    @case('fotocamera')<path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13.5" r="3.5"/>@break
     @case('documento')<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>@break
     @case('ripristina')<path d="M4 12a8 8 0 108-8 8 8 0 00-5.7 2.3L4 8.6M4 4v4.6h4.6"/>@break
     @case('lucchetto')<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>@break

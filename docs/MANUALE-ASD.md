@@ -537,6 +537,20 @@ seeder).
   sistema originale), da incapsulare in un service Laravel dedicato
   (`Http::` facade invece di cURL diretto) in fase di implementazione —
   decisione implementativa, non di schema, rimandata a quella fase.
+- **Aggiornamento v0.39.0 (12/10/2026)**: modulo realizzato
+  (`scontrini.md`, tavole SN-1…SN-8, `analisi-scontrini.md`). Caricano gli
+  scontrini dal telefono i membri del CD (ruolo nuovo **Consigliere** e il
+  Segretario, con la Prima Nota in sola lettura); chi carica non modifica
+  dopo «Registra»; verificano e dividono Presidente e Tesoriere. Lettura con
+  OCR.space (`App\Scontrini\ServizioOcr`, `Http::`, motore 2 a tabella, una
+  richiesta per foto, copia ridotta sotto 1 MB; prova sui 14 scontrini veri:
+  totale, data e pagamento 14/14). Le righe dello scontrino si conservano
+  (`gl_prima_nota_scontrini_righe`) e la divisione fa **un movimento per
+  categoria**; foto in `gl_prima_nota_scontrini_file`; fornitori con
+  partita IVA, riconosciuti, uniti e tolti dalla lista
+  (`gl_soggetti` esteso). Stati da verificare / da quadrare / verificato;
+  la chiusura dell'anno controlla anche gli scontrini da quadrare. Chiave in
+  `.env` (`OCR_SPACE_KEY`).
 
 ### 6.1 Monitoraggio regime L. 398/1991 (plafond e tracciabilità)
 
@@ -1184,6 +1198,13 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     schede eliminate ripristinabili dal filtro dei soci, avviso sulle
     domande di prova, ordine dei promemoria, descrizione al passaggio del
     mouse per i pulsanti con la sola icona.
+    **v0.38.0** (11/10/2026): **Scadenze dell'associazione**
+    (`scadenzario.md`): Scadenzario con «Rinnovata», riquadri Affiliazione e
+    Polizza RC in Impostazioni › Ente, promemoria «N giorni prima».
+    **v0.39.0** (12/10/2026): **Scontrini dal telefono con OCR**
+    (`scontrini.md`): passi 1 e 2 dal telefono, fornitore riconosciuto o
+    nuovo, scheda con righe, categorie e «Registra la divisione», pagina
+    Fornitori, ruolo Consigliere. Poi: anticipi e note di rimborso.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

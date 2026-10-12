@@ -132,7 +132,9 @@ class PrimaNotaTest extends TestCase
         $this->actingAs($this->revisore)->post(route('prima-nota.store'), $this->datiForm())->assertForbidden();
         $this->actingAs($this->revisore)->get(route('prima-nota.anni.index'))->assertOk();
         $this->actingAs($this->revisore)->get(route('prima-nota.categorie.index'))->assertOk();
-        $this->actingAs($this->segretario)->get(route('prima-nota.index'))->assertForbidden();
+        // Dalla v0.39.0 il Segretario (membro del CD) legge la Prima Nota e carica solo scontrini
+        $this->actingAs($this->segretario)->get(route('prima-nota.index'))->assertOk();
+        $this->actingAs($this->segretario)->get(route('prima-nota.create'))->assertForbidden();
         $this->assertSame(0, PrimaNota::count());
     }
 

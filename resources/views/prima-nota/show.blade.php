@@ -45,6 +45,13 @@
         <x-avviso tipo="ko" titolo="Operazione non eseguita.">{{ $errors->first() }}</x-avviso>
     @endif
 
+    @if ($m->scontrino)
+        <x-avviso tipo="info" titolo="Scontrino {{ $m->scontrino->codice() }}.">
+            Movimento nato da uno scontrino caricato dal telefono@if ($m->scontrino->movimenti->count() > 1), diviso in {{ $m->scontrino->movimenti->count() }} movimenti per categoria@endif.
+            Foto, righe, importo, data e conto: <a href="{{ route('scontrini.show', $m->scontrino) }}">scheda dello scontrino</a>.
+        </x-avviso>
+    @endif
+
     @if ($m->rinnovo_id)
         <x-avviso tipo="info" titolo="Quota associativa.">
             Movimento della quota {{ $m->rinnovo?->anno }}@if ($m->socio) di {{ $m->socio->cognome }} {{ $m->socio->nome }}@endif: non si elimina da qui.
@@ -91,8 +98,20 @@
 
         @unless ($giroconto)
             <x-card titolo="Giustificativi">
-                @if ($m->documenti->isEmpty())
+                @if ($m->scontrino && $m->scontrino->file->isNotEmpty())
+                    <ul class="sn-file-lista">
+                        @foreach ($m->scontrino->file as $f)
+                            <li>
+                                <x-icona nome="scontrino" width="14" height="14" />
+                                <a href="{{ route('scontrini.foto.show', [$m->scontrino, $f]) }}" target="_blank" rel="noopener">{{ $f->nome }}</a>
+                                <span class="td-sub">foto dello scontrino</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($m->documenti->isEmpty() && ! $m->scontrino?->file->isNotEmpty())
                     <p class="form-help">Nessun giustificativo allegato.</p>
+                @elseif ($m->documenti->isEmpty())
                 @else
                     {{-- Anteprime: immagine ridotta (o icona del PDF); clic per vederla grande in una finestra (collaudo J4) --}}
                     <div class="pn-anteprime">

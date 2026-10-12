@@ -34,6 +34,9 @@ class AuditObserver
         // chi legge l'audit potrebbe usarli per agire al posto
         // dell'interessato finché il link è valido (v0.26.0).
         'token', 'token_conferma', 'token_link',
+        // Testo letto dalla foto dello scontrino (v0.39.0): lungo, resta
+        // nella scheda dello scontrino.
+        'ocr_testo_grezzo', 'righe_lette',
     ];
 
     public function created($model): void  { $this->registra($model, 'created'); }

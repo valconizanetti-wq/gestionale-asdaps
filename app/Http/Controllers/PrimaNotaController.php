@@ -174,7 +174,7 @@ class PrimaNotaController extends Controller
             return redirect()->route('prima-nota.show', $movimento->giroconto_id);
         }
 
-        $movimento->load(['categoria', 'tag', 'socio', 'progetto', 'rinnovo', 'registratoDa', 'giroconto',
+        $movimento->load(['categoria', 'tag', 'socio', 'progetto', 'rinnovo', 'registratoDa', 'giroconto', 'scontrino.file', 'scontrino.movimenti:id,scontrino_id',
             'documenti' => fn ($q) => $q->orderBy('created_at')]);
 
         return view('prima-nota.show', [
@@ -262,6 +262,18 @@ class PrimaNotaController extends Controller
             return $this->aggiornaGiroconto($request, $movimento->isEntrata() ? $movimento->giroconto : $movimento);
         }
 
+        // Movimento di uno scontrino: importo, data e conto si cambiano solo
+        // dalla scheda dello scontrino (scontrini.md §4); qui categoria,
+        // descrizione, tag e il resto.
+        if ($movimento->scontrino_id) {
+            $request->merge([
+                'tipo' => 'uscita',
+                'conto' => $movimento->conto,
+                'data' => $movimento->data->toDateString(),
+                'importo' => Importo::it($movimento->importo),
+            ]);
+        }
+
         $annoPrima = $movimento->annoMovimento();
         $chiusoPrima = $this->anni->chiuso($annoPrima);
         $erroriFile = $this->trattieniFile($request);
@@ -276,6 +288,11 @@ class PrimaNotaController extends Controller
             $this->anni->assicura($annoDopo);
             $movimento->fill($this->campi($dati))->save();
             $this->salvaFile($movimento, $dati['file_temp'] ?? [], $request);
+            if ($movimento->scontrino_id) {
+                // Le righe dello scontrino seguono la categoria del loro movimento
+                \App\Models\PrimaNotaScontrinoRiga::where('prima_nota_id', $movimento->id)->update(['categoria_id' => $movimento->categoria_id]);
+                $movimento->scontrino?->ricalcolaStato();
+            }
             if ($chiusoPrima) {
                 $this->registraCorrezione($movimento, 'modifica', $dati['motivazione']);
                 $this->anni->aggiornaChiusura($annoPrima);
@@ -532,7 +549,8 @@ class PrimaNotaController extends Controller
             'categorieUscita' => PrimaNotaCategoria::perMovimenti('uscita', $m->tipo === 'uscita' ? $m->categoria_id : null),
             'soci' => Socio::where(fn ($q) => $q->where('stato', 'attivo')->when($m->socio_id, fn ($w) => $w->orWhere('id', $m->socio_id)))
                 ->orderBy('cognome')->orderBy('nome')->get(['id', 'nome', 'cognome']),
-            'soggetti' => Soggetto::orderBy('nome')->pluck('nome'),
+            // Fornitori in elenco (quelli tolti dalla lista no, v0.39.0), più quello del movimento
+            'soggetti' => Soggetto::where(fn ($q) => $q->where('attivo', true)->when($m->soggetto, fn ($w) => $w->orWhere('nome', $m->soggetto)))->orderBy('nome')->pluck('nome'),
             'tags' => Tag::orderBy('nome')->pluck('nome'),
             'progetti' => Progetto::orderByDesc('id')->get(),
         ];

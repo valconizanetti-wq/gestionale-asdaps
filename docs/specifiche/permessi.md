@@ -31,7 +31,8 @@ core (`presidente`, `segretario`, `tesoriere`, `revisore`).
   `rinnovi_quota`, `prima_nota`, `bilancio`, `progetti`,
   `governance_cd`, `assemblee`, `verbali`, `volontari`, `tesseramento`,
   `compliance_rasd`, `comunicazioni`, `archivio`, `gdpr`, `scadenzario`,
-  `audit_log`, `impostazioni`, `erogazioni_collaboratori`. La gestione
+  `audit_log`, `impostazioni`, `erogazioni_collaboratori`; dalla v0.39.0
+  anche `scontrini` (e `promemoria` dalla v0.36.0). La gestione
   Utenti/Ruoli (`gl_users`, `gl_ruoli`, `gl_ruoli_sezioni`) non ha una
   sezione propria: ricade in `impostazioni`.
 - **`gl_ruoli_sezioni`**: pivot `ruolo_codice` (FK → `gl_ruoli.codice`)
@@ -88,16 +89,19 @@ modifica.
 
 **Matrice permessi applicata**:
 
-| Sezione | Presidente | Segretario | Tesoriere | Revisore |
-|---|---|---|---|---|
-| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD | ✓ | ✓ | | |
-| Scadenzario (dalla v0.38.0 anche il Tesoriere) | ✓ | ✓ | ✓ | ✓ (sola lettura) |
-| Tesseramento (tessere CSEN, dalla v0.37.0) | ✓ | ✓ | ✓ | ✓ (sola lettura) |
-| Volontari | ✓ | ✓ | ✓ (sola lettura) | |
-| Prima Nota, Rinnovi quota, Bilancio, Progetti | ✓ | | ✓ | ✓ (sola lettura) |
-| Audit Log | ✓ | | | ✓ (sola lettura) |
-| Impostazioni (incl. Utenti/Ruoli; profilo dell'ente in lettura dalla v0.38.0) | ✓ | ✓ (sola lettura) | ✓ (sola lettura) | |
-| Erogazioni/Collaboratori | | | | |
+| Sezione | Presidente | Segretario | Tesoriere | Revisore | Consigliere |
+|---|---|---|---|---|---|
+| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD | ✓ | ✓ | | | |
+| Scadenzario (dalla v0.38.0 anche il Tesoriere) | ✓ | ✓ | ✓ | ✓ (sola lettura) | |
+| Tesseramento (tessere CSEN, dalla v0.37.0) | ✓ | ✓ | ✓ | ✓ (sola lettura) | |
+| Volontari | ✓ | ✓ | ✓ (sola lettura) | | |
+| Prima Nota (dalla v0.39.0 Segretario e Consigliere in lettura) | ✓ | ✓ (sola lettura) | ✓ | ✓ (sola lettura) | ✓ (sola lettura) |
+| Scontrini (v0.39.0: «piena» = caricare; verificare e dividere solo chi modifica la Prima Nota) | ✓ | ✓ | ✓ | ✓ (sola lettura) | ✓ |
+| Rinnovi quota, Bilancio, Progetti | ✓ | | ✓ | ✓ (sola lettura) | |
+| Promemoria | ✓ | ✓ | ✓ | ✓ (sola lettura) | |
+| Audit Log | ✓ | | | ✓ (sola lettura) | |
+| Impostazioni (incl. Utenti/Ruoli; profilo dell'ente in lettura dalla v0.38.0) | ✓ | ✓ (sola lettura) | ✓ (sola lettura) | | |
+| Erogazioni/Collaboratori | | | | | |
 
 ## 5. Conformità e sicurezza
 
@@ -164,3 +168,13 @@ modifica.
   modifiche le fa il Presidente, controllo nel controller). Dentro lo
   Scadenzario l'uscita in Prima Nota la registra solo chi modifica anche la
   Prima Nota. Solo `SezioneSeeder.php`, da rilanciare.
+- **Scontrini e ruolo Consigliere** (v0.39.0, 12/10/2026, `scontrini.md`):
+  ruolo nuovo **Consigliere** (`RuoloSeeder`) per i membri del CD senza
+  carica: sezione `scontrini` (carica gli scontrini dal telefono) e Prima
+  Nota in sola lettura; lo stesso il Segretario (prima senza Prima Nota).
+  Revisore: scontrini in sola lettura. Verificano, dividono, correggono ed
+  eliminano gli scontrini e gestiscono i fornitori solo Presidente e
+  Tesoriere (`puoModificare('prima_nota')`, controllo nei controller); chi
+  carica non modifica dopo «Registra» (Paolo, 12/10/2026). Gli utenti
+  Consigliere si creano come gli altri (tinker, `deploy.md` §7). Da
+  rilanciare `RuoloSeeder` e `SezioneSeeder`.

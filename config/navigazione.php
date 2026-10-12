@@ -30,6 +30,7 @@ return [
         'gruppo' => 'Contabilità',
         'voci' => [
             ['label' => 'Prima Nota',    'sezione' => 'prima_nota',    'rotta' => 'prima-nota.index'],
+            ['label' => 'Scontrini',     'sezione' => 'scontrini',     'rotta' => 'scontrini.index'],
             ['label' => 'Rinnovi quota', 'sezione' => 'rinnovi_quota', 'rotta' => 'rinnovi.index'],
             ['label' => 'Bilancio',      'sezione' => 'bilancio',      'rotta' => 'bilancio.index'],
             ['label' => 'Progetti',      'sezione' => 'progetti',      'rotta' => 'progetti.index'],

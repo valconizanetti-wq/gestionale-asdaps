@@ -342,6 +342,22 @@ non riportare".
   motivato, scadenze «con chiave» lette da altre pagine (riquadri
   affiliazione e polizza in Impostazioni › Ente). *Dove*: `scadenzario.md`;
   `App\Services\Scadenzario`, `ScadenzarioController`. *(anche nel core)*
+- [ ] **D12. Scontrini dal telefono con OCR e fornitori con partita IVA**
+  (v0.39.0). Foto dal telefono, copia ridotta (1600 px, sotto 1 MB) letta
+  da OCR.space (motore 2, `isTable`, una richiesta), lettore di totale,
+  data, partita IVA con cifra di controllo, fornitore, pagamento e righe
+  provato su scontrini veri; conferma dei dati prima di registrare; righe
+  conservate e un movimento per categoria; fornitori riconosciuti per
+  partita IVA (anche quasi uguale) o nome normalizzato, uniti e tolti dalla
+  lista; ruolo che carica senza modificare. Il Gestionale APS ha
+  giustificativi e fornitori ma non la lettura. Valutare OCR.space
+  (a9t9, Germania) tra i fornitori di servizi nel registro dei
+  trattamenti. *Dove*: `scontrini.md`, `analisi-scontrini.md` §11–§12;
+  `App\Scontrini\*`, `App\Services\Scontrini`. *(anche nel core)*
+- [ ] **D13. Importi senza bcmath**: il modello degli scontrini del core
+  usava `bccomp`, che non c'è su ogni server; qui somme e confronti in
+  centesimi interi (`Importo::centesimi`, `daCentesimi`). Da controllare
+  nel Gestionale APS (`grep bc`). *(anche nel core)*
 
 ## E. PDF ed email
 
@@ -367,3 +383,4 @@ non riportare".
 - 07/10/2026 (v0.36.0): aggiunte A12, A13, D6, D7 da Rinnovi quota e Promemoria.
 - 07/10/2026 (v0.37.1): aggiunte D8 e D9 dal collaudo K.
 - 11/10/2026 (v0.38.0): aggiunte D10 e D11 da Scadenzario e Promemoria.
+- 12/10/2026 (v0.39.0): aggiunte D12 e D13 dagli Scontrini.

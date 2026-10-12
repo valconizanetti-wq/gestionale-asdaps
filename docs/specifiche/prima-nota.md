@@ -1,7 +1,7 @@
 # Prima Nota — movimenti, giroconti, anni contabili, categorie e tag
 
-**Stato:** in uso (v0.35.1, 06/10/2026: correzioni dal collaudo J). Scontrini dal telefono e
-anticipi con note di rimborso in versioni successive (Rinnovi quota è passato davanti: v0.36.0).
+**Stato:** in uso (v0.35.1, 06/10/2026: correzioni dal collaudo J). Scontrini dal telefono
+nella v0.39.0 (`scontrini.md`); anticipi con note di rimborso in una versione successiva.
 **Introdotto in:** v0.35.0 (2026-10-06)
 **File coinvolti:**
 - Migration: `2026_10_06_000094_create_gl_anni_contabili_table`
@@ -227,7 +227,12 @@ Revisore consulta tutto (anche esportazioni e giustificativi).
 - **Audit Log**: eventi `PRIMANOTA_*`, `ANNOCONTABILE_*`, `TAG_*`,
   `PRIMA_NOTA_ESPORTATA`, `PRIMA_NOTA_CORREZIONE_ANNO_CHIUSO`,
   `SALDI_APERTURA_MODIFICATI`, `ANNO_CONTABILE_RIAPERTO`.
-- **Scontrini** (da fare): categoria `DA_CLASSIFICARE`, `scontrino_id`;
+- **Scontrini** (v0.39.0, `scontrini.md`): categoria `DA_CLASSIFICARE`,
+  `scontrino_id`; i movimenti di uno scontrino hanno importo, data e conto
+  bloccati (si cambiano dalla scheda dello scontrino), un'icona
+  nell'elenco e non si eliminano da qui; la chiusura controlla anche gli
+  scontrini da quadrare; Segretario e Consigliere leggono la Prima Nota;
+  il campo «Fornitore» propone solo i fornitori in elenco;
   **Anticipi** (da fare): `sospeso`, `rimborsato_il`, già esclusi dai saldi.
 - **Bilancio/Rendiconto** (da fare): voci per categoria; tag sulle voci del
   preventivo; approvazione collegata al verbale.

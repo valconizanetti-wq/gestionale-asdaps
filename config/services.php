@@ -14,6 +14,17 @@ return [
     |
     */
 
+    // Lettura degli scontrini (v0.39.0, scontrini.md §4). La chiave sta
+    // SOLO nel .env (OCR_SPACE_KEY), mai nel codice né nel database.
+    // OCR_SPACE_CA: file di certificati da usare al posto di quello di PHP
+    // (in locale, con un antivirus che controlla l'HTTPS); vuoto sul server.
+    'ocr_space' => [
+        'key' => env('OCR_SPACE_KEY'),
+        'url' => env('OCR_SPACE_URL', 'https://api.ocr.space/parse/image'),
+        'timeout' => (int) env('OCR_SPACE_TIMEOUT', 15),
+        'ca' => env('OCR_SPACE_CA'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

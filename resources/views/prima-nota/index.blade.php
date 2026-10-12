@@ -22,6 +22,11 @@
             </a>
             <a href="{{ route('prima-nota.anni.index') }}" class="btn btn-secondary">Anni e saldi</a>
             <a href="{{ route('prima-nota.categorie.index') }}" class="btn btn-secondary">Categorie</a>
+            @if (! $chiuso && auth()->user()->puoModificare('scontrini') && Route::has('scontrini.create'))
+                <a href="{{ route('scontrini.create') }}" @class(['btn', 'btn-primary' => ! $puoModificare, 'btn-secondary' => $puoModificare])>
+                    <x-icona nome="scontrino" width="14" height="14" /> Nuovo scontrino
+                </a>
+            @endif
             @if ($puoModificare && ! $chiuso)
                 <a href="{{ route('prima-nota.giroconto.create') }}" class="btn btn-secondary">Giroconto</a>
                 <a href="{{ route('prima-nota.create') }}" class="btn btn-primary">
@@ -31,13 +36,20 @@
         </x-slot:azioni>
     </x-page-header>
 
-    <x-sola-lettura sezione="prima_nota" />
+    @if (! $puoModificare && auth()->user()->puoModificare('scontrini'))
+        {{-- Consigliere e Segretario (v0.39.0, tavola SN-8) --}}
+        <x-avviso tipo="info" titolo="Sola lettura.">
+            Il tuo ruolo ({{ ucfirst(auth()->user()->ruolo) }}) vede la Prima Nota e carica gli scontrini; movimenti, giroconti e correzioni li fanno Presidente e Tesoriere.
+        </x-avviso>
+    @else
+        <x-sola-lettura sezione="prima_nota" />
+    @endif
 
     @if ($chiuso)
         <x-avviso tipo="info" titolo="Anno {{ $anno }} chiuso.">
             Chiuso il {{ $riga->chiuso_il?->format('d/m/Y') }}. Le correzioni chiedono una motivazione, registrata nell'Audit Log.
         </x-avviso>
-    @elseif ($apertura['da_impostare'] && ($riga || $anno === now()->year))
+    @elseif ($puoModificare && $apertura['da_impostare'] && ($riga || $anno === now()->year))
         <x-avviso tipo="warn" titolo="Saldi di apertura {{ $anno }} da impostare.">
             Senza i saldi di partenza di cassa e banca i saldi qui sotto partono da zero.
             <a href="{{ route('prima-nota.anni.index') }}">Scrivili in Anni e saldi</a>.
@@ -182,7 +194,7 @@
                                 <td data-label="N." class="td-solo-desktop"><span class="pn-numero">{{ $m->id }}</span></td>
                                 <td data-label="Data"><strong>{{ $m->data->format('d/m/Y') }}</strong></td>
                                 <td class="td-primario">
-                                    <a href="{{ route('prima-nota.show', $m) }}" class="pn-desc">{{ $m->descrizione }}</a>
+                                    <a href="{{ route('prima-nota.show', $m) }}" class="pn-desc">@if ($m->scontrino_id)<x-icona nome="scontrino" width="14" height="14" class="pn-icona-scontrino" /><span class="sr-only">Da scontrino: </span>@endif{{ $m->descrizione }}</a>
                                     @if ($m->tag || $m->documenti_count)
                                         <span class="pn-etichette">
                                             @if ($m->tag)<a href="{{ route('prima-nota.index', ['anno' => $anno, 'tag' => $m->tag_id]) }}" class="badge-tag">{{ $m->tag->nome }}</a>@endif
