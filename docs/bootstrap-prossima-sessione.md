@@ -8,11 +8,21 @@
    `docs/analisi-scontrini.md` §13). Da installare (LEGGIMI-v0.39.0: migration,
    `RuoloSeeder`, `SezioneSeeder`, `OCR_SPACE_KEY` nel `.env`, Avast in
    locale) e collaudare (blocco N della lista). Correzioni in una v0.39.1.
-3. Poi, in ordine da concordare: **anticipi e note di rimborso** (il
-   «pagato di tasca mia» degli scontrini), Verbali (servono per le decadenze e la chiusura dell'anno),
-   Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in
-   standby finché Paolo non ha approfondito (`analisi-tessere-scadenze.md`
-   §5).
+3. Poi, nell'ordine deciso da Paolo il 12/10/2026 (obiettivo: in uso dal
+   01/01/2027):
+   1. **anticipi e note di rimborso** (il «pagato di tasca mia» degli
+      scontrini);
+   2. **rendiconto e preventivo** (prima dei Verbali, per decisione di
+      Paolo): l'approvazione va collegata a un verbale, quindi va
+      progettata in modo che il collegamento si faccia quando ci saranno i
+      Verbali (`gl_bilancio.verbale_approvazione_id` c'è già);
+   3. **Verbali** (servono a rendiconto e preventivo, alle decadenze e alla
+      chiusura dell'anno contabile);
+   4. **azzeramento e apertura** a fine dicembre (dati di prova J–N, saldi
+      di cassa e banca al 31/12/2026, `APP_DEBUG=false`).
+   Tecnici e tesserino tecnico in standby finché Paolo non ha approfondito
+   (`analisi-tessere-scadenze.md` §5). OCR.space nel registro dei
+   trattamenti: da valutare.
 
 Decisioni di Paolo (11/10/2026, 22:48): affiliazione scaduta = **solo
 avviso** (nessun blocco delle tessere); polizza RC al **31/07**.
