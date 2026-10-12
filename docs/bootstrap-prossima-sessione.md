@@ -8,7 +8,7 @@
    c'era un utente Tesoriere attivo (risolto da Paolo il 12/10/2026).
 2. **Scontrini con OCR**: v0.39.0 consegnata e **installata** da Paolo il
    12/10/2026 (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8, analisi
-   `docs/analisi-scontrini.md` §13). Collaudo: blocco N della lista.
+   `docs/analisi-scontrini.md` §13). Collaudo: blocco N, in `docs/test/collaudo-N-scontrini.md`.
    Correzioni in una v0.39.1.
 3. Poi, nell'ordine deciso da Paolo il 12/10/2026 (obiettivo: in uso dal
    01/01/2027):
@@ -63,7 +63,11 @@ note):
   `promemoria:invia` scrive sempre l'esito e con `--prova` spiega
   (`promemoria.md` §7).
 - Lista di collaudo: blocchi M e N riscritti per esteso (richiesta di
-  Paolo: le prove sintetiche spesso non si capivano).
+  Paolo: le prove sintetiche spesso non si capivano) e spostati in un file
+  ciascuno, `docs/test/collaudo-M-scadenzario.md` e
+  `collaudo-N-scontrini.md` (copie `claude/…` nel progetto): la lista unica
+  cresceva troppo. `test-domande-iscrizione.md` tiene A–L, le regole comuni
+  e l'indice dei blocchi.
 - 136 test (nuovo `test_correzioni_collaudo_m`); tre giri di revisione
   (`scadenzario.md` §7). Nessuna migration; CSS (`npm run build`).
 
@@ -370,7 +374,10 @@ progetto e LEGGIMI; documentazione sempre aggiornata (scheda, ui.md,
 MANUALE, lista di collaudo, bootstrap); ogni analisi o decisione
 documentata; **prove di collaudo in forma estesa** (Paolo, 12/10/2026:
 scopo, chi, prima, passi numerati, risultato atteso con le scritte esatte;
-blocchi M e N già riscritti così, A–L restano brevi); le modifiche da riportare al Gestionale APS in
+blocchi M e N già riscritti così, A–L restano brevi; **un file .md per
+ogni blocco nuovo** in `docs/test/collaudo-<lettera>-<argomento>.md`, con
+copia `claude/` nel progetto e una riga nell'indice di
+`test-domande-iscrizione.md`); le modifiche da riportare al Gestionale APS in
 `da-riportare-gestionale-aps.md`.
 
 ## Collaudo (29–30/09/2026)

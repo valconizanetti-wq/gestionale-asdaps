@@ -28,7 +28,8 @@ FILE
     promemoria/edit.blade.php, scadenzario/form.blade.php
   tests/Feature/ScadenzarioTest.php
   docs: specifiche/scadenzario.md, specifiche/promemoria.md, ui.md, MANUALE-ASD.md (tutte e due),
-    test-domande-iscrizione.md (tutte e due), bootstrap-prossima-sessione.md
+    test-domande-iscrizione.md (tutte e due), test/collaudo-M-scadenzario.md e
+    test/collaudo-N-scontrini.md (nuovi: un file per blocco), bootstrap-prossima-sessione.md
 
 LOCALE (Laragon)
   1. Estrarre lo ZIP nella radice (sovrascrivere); cancellare LEGGIMI-v0.39.0.txt.
@@ -42,4 +43,5 @@ SERVER
   Verifica: php artisan promemoria:invia --prova   (una riga per promemoria, con la spiegazione)
 
 COLLAUDO
-  Ricontrollare le voci "v0.38.1" di M3, M8, M9, M10, M11, poi M12. Poi il blocco N.
+  Ricontrollare le voci "v0.38.1" di M3, M8, M9, M10, M11, poi M12 (docs/test/collaudo-M-scadenzario.md).
+  Poi il blocco N (docs/test/collaudo-N-scontrini.md). Le liste dei blocchi ora sono un file ciascuno.
