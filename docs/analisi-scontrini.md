@@ -323,3 +323,58 @@ telefono con OCR» (sotto le tavole SC), da approvare:
 
 Le tavole PN-4, PN-5, PN-6 della Prima Nota (06/10/2026) sono superate da
 queste.
+
+## 11. Prova sui 14 scontrini veri (12/10/2026)
+
+Paolo ha mandato 14 foto (bar, Eurospin ×2, ferramenta, vivaio, fornaio,
+copisteria, Lidl, telefonia, articoli casa, tabaccheria, arceria ×2,
+legname). Che cosa insegnano:
+
+- **Totale**: sempre «TOTALE COMPLESSIVO», scritto anche «TOT.COMPLESSIVO»,
+  «Totale Complessivo» con la prima lettera tagliata, «9.0» con una sola
+  cifra; lo ripetono «IMPORTO PAGATO» e «PAGAMENTO CONTANTE/ELETTRONICO».
+  Trappola: al Lidl «Pagamento contante 5,41» con «Resto 1,00». Regola: si
+  confrontano le righe che ripetono il totale (voto) e si scarta il contante
+  quando c'è un resto; «sicuro» se almeno due righe concordano.
+- **Data**: GG/MM/AA, GG/MM/AAAA, GG-MM-AAAA; in due foto il giorno è
+  tagliato dal bordo («/09/2026», «5/10/2026»): nessuna data o avviso. Uno
+  scontrino del 2020 (foto di uno schermo): avviso «più di un anno fa».
+- **Partita IVA**: «P.IVA:», «P. IVA», «P.IVA.», «P.I.», «PARTITA IVA»,
+  «PI02275030233» attaccato; all'Eurospin anche il «C.F.» di 11 cifre
+  accanto. Tutte e 14 passano la cifra di controllo, che serve a scoprire
+  una cifra letta male. Su un negozio individuale compare il codice fiscale
+  del titolare: non si salva.
+- **Fornitore**: la prima riga a volte è il genere («FERRAMENTA»,
+  «TABACCHERIA») e la seconda il titolare; «di Tiracorrendo Emanuele» va
+  unito al nome; loghi senza testo (Eurospin, Lidl) → la riga con la forma
+  giuridica («Eurospin Lazio S.p.A.», «Lidl Italia S.r.l.»); «snc» dopo «Via
+  Igino Gini» è «senza numero civico», non la forma giuridica.
+- **Pagamento**: «PAGAMENTO CONTANTE» → cassa, «PAGAMENTO ELETTRONICO» o
+  «CARTA DI CREDITO» → banca: si propone anche «Pagato con».
+- **Righe**: spesso generiche («CAFFETTERIA», «REPARTO 1», «ARCERIA»,
+  «PRODOTTI 22%», «ARTICOLI CASA»): la **nota del consigliere resta
+  indispensabile**; utili al supermercato (14 righe con uno sconto
+  «OMAGGIO … -0,99»). Quantità su una riga a parte, prima o dopo l'articolo
+  («2x 2,50», «150 x 0,09», «2 PZ x 1,89 EUR/PZ», «Cad 1,89 Pz. 2», «0,8 X
+  10,00»): si attaccano all'articolo come dettaglio. Codici di cassa
+  («D-005SW000001J1uj***») e righe «NUM ARTICOLI» si saltano. Con IVA
+  «NS*» (non soggetta) e aliquote 4/10/22%.
+- **Foto**: 1,1–2,6 MP, 250 KB–1,2 MB come arrivate qui (già compresse dalla
+  chat; dal telefono saranno più grandi): conferma la copia ridotta per
+  l'OCR. Sfondi (granito, jeans, dita), pieghe, una foto di uno schermo.
+- **Nota scritta a mano** sullo scontrino («CUFFIE»): l'OCR non la legge;
+  la nota del consigliere la sostituisce.
+
+**Lettore** (`App\Scontrini\LettoreScontrino`, prototipo del servizio, con
+`tests/Unit/LettoreScontrinoTest.php` e i 14 testi in
+`tests/Fixtures/scontrini/`):
+- sul **testo pulito** (trascritto dalle foto, come lo darebbe un OCR
+  buono): totale 14/14, data 14/14 (dove leggibile), partita IVA 14/14,
+  pagamento 14/14, righe che sommano al totale 14/14, fornitore 13/14
+  («EURO Eurospin» per il logo);
+- sul testo di un **OCR locale peggiore** (Tesseract, foto già compresse,
+  usato solo per mettere alla prova le regole: OCR.space da qui non è
+  raggiungibile): totale 9/14, data 9/14, partita IVA 4/14. Dove l'OCR
+  sbaglia, il lettore non inventa: lascia vuoto o avvisa.
+- Da fare con la chiave vera: provare gli stessi 14 su OCR.space (motore 2,
+  `isTable`) e confrontare.
