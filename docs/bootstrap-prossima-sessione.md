@@ -62,6 +62,8 @@ note):
   `[saluto]`, `[data]`…; avviso se nessun utente ha il ruolo scelto;
   `promemoria:invia` scrive sempre l'esito e con `--prova` spiega
   (`promemoria.md` §7).
+- Lista di collaudo: blocchi M e N riscritti per esteso (richiesta di
+  Paolo: le prove sintetiche spesso non si capivano).
 - 136 test (nuovo `test_correzioni_collaudo_m`); tre giri di revisione
   (`scadenzario.md` §7). Nessuna migration; CSS (`npm run build`).
 
@@ -366,7 +368,9 @@ viste; verifica a 1440 e 375 px; tre giri di revisione critica prima di
 ogni consegna, dichiarandone i risultati; ZIP con la struttura del
 progetto e LEGGIMI; documentazione sempre aggiornata (scheda, ui.md,
 MANUALE, lista di collaudo, bootstrap); ogni analisi o decisione
-documentata; le modifiche da riportare al Gestionale APS in
+documentata; **prove di collaudo in forma estesa** (Paolo, 12/10/2026:
+scopo, chi, prima, passi numerati, risultato atteso con le scritte esatte;
+blocchi M e N già riscritti così, A–L restano brevi); le modifiche da riportare al Gestionale APS in
 `da-riportare-gestionale-aps.md`.
 
 ## Collaudo (29–30/09/2026)

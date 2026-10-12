@@ -8,6 +8,7 @@ Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco 
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.
+**Come sono scritte le prove (dal 12/10/2026, richiesta di Paolo).** Dal blocco M in poi ogni prova ha: lo **scopo** (che cosa si controlla), **chi** deve entrare (ruolo), che cosa preparare **prima**, i **passi** numerati da eseguire e il **risultato atteso**, con le scritte esatte che devono comparire. I blocchi più vecchi (A–L, già superati) restano nella forma breve. Le prove nuove si scrivono sempre in forma estesa.
 Per ogni prova fallita portare nella chat di debug: numero della prova, id
 della domanda, cosa si è fatto, atteso, risultato, screenshot, righe di
 `storage/logs/laravel.log` dell'orario.
@@ -221,41 +222,364 @@ ALTER TABLE gl_tessere_pacchetti AUTO_INCREMENT = 1;
 ```
 I tipi restano (Silver Base, Gold Base con i loro prezzi).
 
-## M. Scadenze dell'associazione e promemoria «N giorni prima» (v0.38.0)
-Dettaglio in `docs/specifiche/scadenzario.md` e `promemoria.md`, tavole SC-1…SC-3, PR-3. Da Tesoriere, poi da Presidente, Segretario e Revisore. Prima: `ScadenzarioSeeder`, `PrimaNotaCategoriaSeeder`, `SezioneSeeder`, `PromemoriaSeeder` lanciati (LEGGIMI). **Dati di prova**: si azzerano con M12. Fino al 31/12/2026 un pagamento non va in Prima Nota (contabilità dal 2027), salvo che esista già l'anno contabile 2026 di prova (blocco J): in quel caso la spunta «Registra l'uscita» è proposta e l'uscita si registra.
-- M1 Menu: «Scadenzario» (Controllo) per Tesoriere, Presidente, Segretario e Revisore; «Impostazioni» anche per Tesoriere e Segretario. Il Revisore vede «Sola lettura» e nessun pulsante («Nuova scadenza», «Rinnovata», «Fatta»); in Impostazioni non entra.
-- M2 Pagina `/scadenzario` a 1440 e 375 px (nessuno scorrimento orizzontale): «Ricorrenti ogni anno» con Affiliazione CSEN 31/12/2026, Approvazione del rendiconto 30/04/2027, Polizza RC 31/07/2027; categoria (Affiliazione EPS, Assemblea, Polizze Assicurative), stato «tra N giorni», ultimo pagamento «—», preavviso «30 giorni prima», «Rinnovata» o «Fatta» e la matita. Sotto, la nota sugli stati e il link a Promemoria.
-- M3 Polizza RC (v0.38.1: nella finestra «Rinnovata» il campo Categoria, in sola lettura, è alto come «Prossima scadenza», anche a 375 px): matita → scheda; correggere il giorno se sulla polizza non è il 31/07 (Data), salvare. Si vede il badge di stato sotto il titolo e il riquadro «Storico» vuoto. «Elimina» non c'è (scadenza usata dal gestionale).
-- M4 «Rinnovata» sulla Polizza RC: finestra «Polizza RC rinnovata» (data di oggi, importo vuoto «Primo pagamento registrato qui», conto Banca, categoria Polizze Assicurative, prossima scadenza un anno dopo). Data nel futuro: il campo non lo accetta. Con la spunta «Registra l'uscita»: importo obbligatorio; con un giustificativo PDF → messaggio «rinnovata: prossima scadenza il …, uscita n. … in Prima Nota»; in Prima Nota l'uscita «Polizza RC, scadenza del …», soggetto «Unipol, tramite CSEN», col giustificativo `PN2026-…`. Nell'elenco «Pagata il … · importo» e il link all'uscita. Se la spunta non è proposta (nessun anno contabile 2026): toglierla resta l'unica via, l'importo resta nello storico.
-- M5 Errori nella finestra: un secondo «Rinnovata» aperto in un'altra scheda del browser prima del primo → «già rinnovata (ora scade il …): ricarica la pagina», la data non si sposta di due anni; prossima scadenza uguale a quella di adesso → errore; dopo un errore la finestra si riapre con i dati scritti (importo «12,50», non «12.50») e il file già caricato.
-- M6 Scheda della Polizza RC: storico con «Pagata il …», scadenza del … → …, chi l'ha registrata, link all'uscita. «Annulla l'ultima registrazione» (v0.38.1: dicitura generica, anche nella finestra e nei messaggi): motivazione sotto 15 caratteri → errore nella finestra; con motivazione la scadenza torna alla data di prima, l'uscita e il giustificativo spariscono dalla Prima Nota; nell'Audit Log «SCADENZA_RINNOVO_ANNULLATO» con la motivazione nei valori (non nel dettaglio). Poi rifare M4 per avere un rinnovo.
-- M7 «Fatta» sull'Approvazione del rendiconto: finestra senza importo né uscita; registrata → prossima scadenza 30/04/2028. Annullarla dalla scheda (come M6) per riportarla al 30/04/2027.
-- M8 «Nuova scadenza» (Segretario): una tantum, titolo di prova, data tra 10 giorni, preavviso 30, senza categoria dell'uscita → «in scadenza» (giallo) nel riquadro «Una tantum» e nella Dashboard; «Fatta» → «Fatta il …», non compare più «Fatta»; nella scheda niente «Elimina» (ha un rinnovo), c'è «Annulla l'ultima registrazione» (v0.38.1, dicitura generica: per un «Fatta» segnato per errore, la scadenza si riapre). Un'altra scadenza nuova, senza rinnovi, si elimina dalla scheda («Eliminare la scadenza?»). Il Segretario, su una scadenza con pagamento, vede la spunta «Registra l'uscita» spenta («la registra il Tesoriere»): il rinnovo si segna senza uscita.
-- M9 Impostazioni › Ente (Tesoriere): avviso «Sola lettura», riga «Affiliazione all'EPS» e «Polizza RC» (tavole SC-2, SC-3) con stato «Valida» (v0.38.1: solo lo stato, senza «tra N giorni»; la data è nella riga «Scadenza»), scadenza, ultimo rinnovo («movimento PN» porta all'uscita), «Vai alla scadenza»; nessun «Modifica». Da Presidente: «Modifica» su ciascuno, finestre con il riquadro «La scadenza non si scrive qui»; scrivere codice di affiliazione, comitato/referente, contatto, numero di polizza → salvati e visibili; Audit Log «PROFILO_ENTE_MODIFICATO». A 375 px i dati dei riquadri in due colonne, pulsanti a tutta larghezza.
-- M10 Affiliazione scaduta (prova da azzerare con M12): `UPDATE gl_scadenzario SET data_scadenza = DATE_SUB(CURDATE(), INTERVAL 3 DAY) WHERE chiave = 'affiliazione_eps';` → avviso rosso «Affiliazione CSEN scaduta il …» in Dashboard (con «Vai alla scadenza»), nello Scadenzario (con «Rinnovata»), in Impostazioni › Ente (stato «Scaduta») e nella pagina Tessere. In scadenza: `UPDATE gl_scadenzario SET data_scadenza = DATE_ADD(CURDATE(), INTERVAL 10 DAY) WHERE chiave = 'affiliazione_eps';` → avviso giallo «Affiliazione CSEN: tra 10 giorni» in Dashboard e Scadenzario, «In scadenza» nel riquadro (v0.38.1). Alla fine: `UPDATE gl_scadenzario SET data_scadenza = '2026-12-31' WHERE chiave = 'affiliazione_eps';`.
-- M11 Promemoria `/promemoria`: funzioni «Scadenze dell'associazione» (Scadenza in arrivo, 30 giorni prima; Ultimi giorni, 7 giorni prima; Presidente e Tesoriere; prossimo invio con la scadenza più vicina, es. «01/12/2026 09:00 · Affiliazione CSEN») e «Tessere in scadenza» (Tessere da rinnovare, 15 giorni prima, Solo il Tesoriere). Apri «Scadenza in arrivo»: «Data fissa» spenta, giorni 30 «Prima della data», destinatari al prossimo invio, anteprima con i segnaposti sostituiti, «Invia una prova a me». v0.38.1: apri «Tessere da rinnovare» senza tessere in scadenza → «Anteprima con dati d'esempio» (Rossi Mario, Verdi Anna) e la prova arriva con oggetto «[Prova, dati d'esempio] …», mai con [saluto], [data]…; senza un utente attivo col ruolo scelto, avviso «Nessun utente attivo con il ruolo scelto.». Invio vero senza aspettare: portare la Polizza RC a 30 giorni da oggi (`UPDATE gl_scadenzario SET data_scadenza = DATE_ADD(CURDATE(), INTERVAL 30 DAY) WHERE chiave = 'polizza_rc';`), poi `php artisan promemoria:invia` (dopo le 9:00): un'email a Presidente e una al Tesoriere; secondo lancio nulla; nello storico «scadenza del …». Tessere: con le tessere caricate dal CSV (L), portarne una a 15 giorni (`UPDATE gl_tesseramenti SET scadenza = DATE_ADD(CURDATE(), INTERVAL 15 DAY) WHERE numero_tessera_csen = '…';`) e lanciare il comando: una email al Tesoriere con l'elenco e la quota. v0.38.1: il comando scrive sempre una riga («Nessun promemoria da inviare adesso…» se non parte nulla); `php artisan promemoria:invia --prova` spiega, per ogni promemoria, quanti da avvisare adesso, quanti destinatari in tutto e il prossimo invio, oppure «Nessun utente attivo con il ruolo scelto» / «Nessun destinatario per nessuna data» (la tessera deve essere di un socio attivo, con data di rilascio, e l'ultima del socio). Rimettere le date e il giorno della polizza alla fine.
-- M12 Azzeramento prima dell'apertura (con J12, K11, L12; i rinnovi di prova annullati da M6 non lasciano nulla):
-```sql
-DELETE FROM gl_scadenzario_rinnovi;
-DELETE FROM gl_scadenzario WHERE chiave IS NULL;
-ALTER TABLE gl_scadenzario_rinnovi AUTO_INCREMENT = 1;
-```
-Poi controllare nello Scadenzario le date delle tre scadenze pronte (affiliazione 31/12, polizza col giorno vero, rendiconto 30/04). Non registrare con «Rinnovata» i pagamenti già fatti per le scadenze in corso: «Rinnovata» sposta la data all'anno dopo. Il primo «Rinnovata» vero (es. l'affiliazione 2027, a dicembre) scrive l'importo, che poi viene proposto.
+## M. Scadenze dell'associazione e promemoria «N giorni prima» (v0.38.0, correzioni v0.38.1)
+
+Riscritto per esteso il 12/10/2026, su richiesta di Paolo. Dettaglio tecnico in `docs/specifiche/scadenzario.md` e `promemoria.md`, tavole SC-1…SC-3 e PR-3.
+
+**Che cosa si prova.** Lo Scadenzario (menu *Controllo › Scadenzario*) tiene le scadenze dell'associazione: quelle ricorrenti ogni anno (affiliazione CSEN, polizza RC, approvazione del rendiconto) e quelle una tantum. Quando una scadenza è stata pagata o fatta si preme «Rinnovata» (o «Fatta»): il gestionale registra il pagamento, se serve mette l'uscita in Prima Nota e sposta la scadenza all'anno dopo. I promemoria mandano un'email qualche giorno prima di ogni scadenza.
+
+**Prima di cominciare (una volta sola).**
+1. Sul server devono essere stati lanciati i seeder della v0.38.0: `ScadenzarioSeeder`, `PrimaNotaCategoriaSeeder`, `SezioneSeeder`, `PromemoriaSeeder`. Se nello Scadenzario non vedi le tre scadenze pronte, lanciali (`php artisan db:seed --class=… --force`).
+2. Servono quattro utenti attivi, uno per ruolo: **Tesoriere**, **Presidente**, **Segretario**, **Revisore**. Senza un Tesoriere attivo i promemoria «Solo il Tesoriere» non partono (è stata la causa del problema di M11 del 12/10/2026).
+3. Per vedere le uscite in Prima Nota serve l'anno contabile 2026 di prova (blocco J). Senza, fino al 31/12/2026 i pagamenti non vanno in Prima Nota (la contabilità vera parte dal 2027) e la spunta «Registra l'uscita» non è proposta: è normale.
+4. Tutto quello che si fa in questo blocco è di prova e si cancella con M12.
+
+### M1 — Chi vede lo Scadenzario e chi lo modifica
+**Scopo:** controllare che ogni ruolo veda le voci di menu giuste e possa fare solo ciò che gli spetta.
+**Passi:** entra con un ruolo alla volta e guarda la barra laterale, poi apri *Controllo › Scadenzario*.
+**Risultato atteso:**
+- **Tesoriere e Presidente:** nel menu c'è «Scadenzario» (gruppo *Controllo*) e «Impostazioni» (in fondo). Nello Scadenzario ci sono il pulsante «Nuova scadenza» in alto a destra e, su ogni riga, «Rinnovata» (o «Fatta») e la matita.
+- **Segretario:** come sopra; in più, dalla v0.39.0, vede anche «Prima Nota» e «Scontrini» nel gruppo *Contabilità*.
+- **Revisore:** vede «Scadenzario» ma con l'avviso azzurro «Sola lettura» e **senza** i pulsanti «Nuova scadenza», «Rinnovata», «Fatta». Nel menu non c'è «Impostazioni»; se scrivi a mano l'indirizzo `/impostazioni` compare l'errore 403 (accesso negato).
+
+### M2 — La pagina dello Scadenzario, da computer e da telefono
+**Scopo:** controllare che la pagina mostri le tre scadenze pronte con le informazioni giuste e che si legga bene anche sul telefono.
+**Chi:** Tesoriere.
+**Passi:**
+1. Apri *Controllo › Scadenzario* dal computer (finestra larga).
+2. Riapri la stessa pagina dal telefono (o restringi la finestra a circa 375 px).
+**Risultato atteso:**
+- Un riquadro «Ricorrenti ogni anno» con tre righe:
+  - **Affiliazione CSEN** — data 31/12/2026, categoria «Affiliazione EPS»;
+  - **Approvazione del rendiconto** — data 30/04/2027, categoria «Assemblea»;
+  - **Polizza RC** — data 31/07/2027, categoria «Polizze Assicurative».
+- Per ogni riga: lo stato in grigio «tra N giorni» (quanti giorni mancano), «Ultimo pagamento» con un trattino «—» (non è ancora stato registrato nulla), «Preavviso» «30 giorni prima», il pulsante «Rinnovata» (per il rendiconto «Fatta», perché non è un pagamento) e la matita.
+- Sotto la tabella: una nota che spiega i colori degli stati e un link alla pagina «Promemoria».
+- Dal telefono: niente scorrimento orizzontale (la pagina non va spostata col dito a destra e sinistra), i pulsanti si toccano bene.
+
+### M3 — Scheda della Polizza RC e finestra «Rinnovata»
+**Scopo:** controllare la scheda di una scadenza e l'aspetto della finestra «Rinnovata».
+**Chi:** Tesoriere.
+**Passi:**
+1. Nello Scadenzario premi la **matita** sulla riga «Polizza RC»: si apre la scheda della scadenza.
+2. Se sulla polizza vera il giorno di scadenza non è il 31/07, correggi il campo «Data» e premi «Salva».
+3. Torna allo Scadenzario e premi «Rinnovata» sulla Polizza RC, solo per guardare la finestra (poi «Annulla»). Ripeti dal telefono.
+**Risultato atteso:**
+- Nella scheda: sotto il titolo il badge colorato dello stato; a destra il riquadro «Storico» con la scritta «Nessuna registrazione.»; **non** c'è il pulsante per eliminare la scadenza (la polizza è usata dal gestionale, quindi si modifica ma non si elimina; lo dice una nota sotto il modulo).
+- Dopo «Salva», la nuova data compare nella scheda e nello Scadenzario.
+- **v0.38.1:** nella finestra «Rinnovata» il riquadro grigio «Categoria» (che non si modifica) è alto esattamente come il campo «Prossima scadenza» accanto, sia dal computer sia dal telefono.
+
+### M4 — Registrare il rinnovo della Polizza RC
+**Scopo:** registrare un pagamento con «Rinnovata» e verificare che finisca in Prima Nota e che la scadenza passi all'anno dopo.
+**Chi:** Tesoriere.
+**Prima:** tieni a portata di mano un PDF qualunque da usare come quietanza.
+**Passi:**
+1. Nello Scadenzario premi «Rinnovata» sulla riga «Polizza RC».
+2. Guarda la finestra «Polizza RC rinnovata» senza toccare nulla.
+3. Prova a scrivere in «Pagata il» una data futura (es. domani).
+4. Rimetti la data di oggi. Lascia spuntata «Registra l'uscita in Prima Nota» e prova a premere «Registra» con l'importo vuoto.
+5. Scrivi un importo (es. `250,00`), allega il PDF come giustificativo e premi «Registra».
+6. Apri la Prima Nota e cerca l'uscita appena creata; poi torna allo Scadenzario.
+**Risultato atteso:**
+- Al passo 2 la finestra propone: data di oggi; importo vuoto con sotto «Primo pagamento registrato qui.»; conto «Banca»; categoria «Polizze Assicurative» (fissa); prossima scadenza un anno dopo quella di adesso, con sotto «Un anno dopo; si può cambiare.».
+- Al passo 3 il campo non accetta una data futura.
+- Al passo 4 il gestionale chiede l'importo (con la spunta l'importo è obbligatorio).
+- Al passo 5 compare il messaggio verde «… rinnovata: prossima scadenza il …, uscita n. … in Prima Nota».
+- In Prima Nota c'è un'uscita «Polizza RC, scadenza del …», soggetto «Unipol, tramite CSEN», con il giustificativo dal nome `PN2026-<numero>-01.pdf`.
+- Nello Scadenzario la riga della polizza ha la data spostata di un anno e, in «Ultimo pagamento», «Pagata il … · 250,00 €» con il link all'uscita.
+- **Se la spunta «Registra l'uscita» non c'è o è spenta** (manca l'anno contabile 2026 di prova): toglierla è l'unica possibilità; il pagamento si registra lo stesso e l'importo resta nello storico della scadenza, senza uscita.
+
+### M5 — Errori nella finestra «Rinnovata»
+**Scopo:** controllare che i casi sbagliati vengano fermati e che dopo un errore non si perda quanto scritto.
+**Chi:** Tesoriere.
+**Passi e risultati attesi:**
+1. **Doppio rinnovo.** Apri lo Scadenzario in due schede del browser. In tutte e due premi «Rinnovata» sulla stessa scadenza. Registra nella prima scheda, poi prova a registrare anche nella seconda. → Nella seconda compare «già rinnovata (ora scade il …): ricarica la pagina» e la data **non** si sposta di due anni.
+2. **Prossima scadenza uguale a quella di adesso.** Nella finestra metti in «Prossima scadenza» la stessa data della scadenza attuale e premi «Registra». → Errore nella finestra.
+3. **I dati restano dopo un errore.** Scrivi l'importo `12,50`, allega un file e provoca un errore (es. quello del punto 2). → La finestra si riapre da sola con l'importo scritto all'italiana («12,50», non «12.50») e il file indicato come «già caricato».
+
+### M6 — Annullare l'ultima registrazione della Polizza RC
+**Scopo:** correggere un rinnovo registrato per errore.
+**Chi:** Tesoriere.
+**Prima:** la Polizza RC deve avere il rinnovo registrato in M4.
+**Passi:**
+1. Apri la scheda della Polizza RC (matita).
+2. Guarda il riquadro «Storico».
+3. Premi «Annulla l'ultima registrazione», scrivi una motivazione corta (meno di 15 caratteri, es. `errore`) e conferma con «Annulla la registrazione».
+4. Scrivi una motivazione vera (es. `Registrata sulla scadenza sbagliata`) e conferma.
+5. Controlla la Prima Nota e l'Audit Log.
+6. Rifai M4, così la polizza ha di nuovo un rinnovo per le prove seguenti.
+**Risultato atteso:**
+- Al passo 2 lo storico mostra «Pagata il …», «scadenza del … → …» (dalla data vecchia alla nuova), chi l'ha registrata e il link «uscita n. …».
+- Al passo 3 la finestra resta aperta con l'errore sulla motivazione.
+- Al passo 4: messaggio «Ultima registrazione annullata: «Polizza RC» torna a scadere il …»; la scadenza torna alla data di prima.
+- In Prima Nota l'uscita e il suo giustificativo non ci sono più.
+- Nell'Audit Log una riga «SCADENZA_RINNOVO_ANNULLATO»; aprendola, la motivazione è nei valori «Dopo» e **non** nel testo del dettaglio.
+- **v0.38.1:** in tutta la scheda e nella finestra la dicitura è «Annulla l'ultima registrazione» (non più «rinnovo»).
+
+### M7 — «Fatta» sull'Approvazione del rendiconto
+**Scopo:** registrare un adempimento (una scadenza senza pagamento) e poi annullarlo.
+**Chi:** Tesoriere o Presidente.
+**Passi:**
+1. Nello Scadenzario premi «Fatta» sulla riga «Approvazione del rendiconto».
+2. Premi «Registra».
+3. Apri la scheda (matita) e annulla l'ultima registrazione come in M6.
+**Risultato atteso:**
+- La finestra ha solo la data, la prossima scadenza e le note: niente importo, conto o uscita in Prima Nota.
+- Dopo «Registra» la scadenza passa al 30/04/2028.
+- Dopo l'annullamento torna al 30/04/2027.
+
+### M8 — Scadenza una tantum creata dal Segretario
+**Scopo:** creare una scadenza che non si ripete, segnarla come fatta, ed eliminarne una.
+**Chi:** Segretario.
+**Passi:**
+1. Nello Scadenzario premi «Nuova scadenza».
+2. Compila: Titolo `Prova una tantum`; Ripetizione «una tantum»; Data fra 10 giorni; Preavviso (giorni) `30`; nessuna «Pagamento: categoria dell'uscita». Premi «Aggiungi la scadenza».
+3. Guarda lo Scadenzario e la Dashboard.
+4. Premi «Fatta» sulla nuova scadenza e registra.
+5. Apri la scheda della scadenza.
+6. Crea un'altra scadenza una tantum qualsiasi e, senza segnarla fatta, aprila e premi «Elimina la scadenza».
+7. Infine apri «Rinnovata» su una scadenza con pagamento (es. Polizza RC), solo per guardare.
+**Risultato atteso:**
+- Al passo 3 la scadenza compare in un riquadro «Una tantum», con lo stato giallo «in scadenza» (mancano 10 giorni, meno del preavviso di 30), e compare anche nella Dashboard.
+- Dopo «Fatta» lo stato diventa «Fatta il …» e il pulsante «Fatta» sparisce.
+- Nella scheda **non** c'è «Elimina la scadenza» (ha una registrazione), mentre c'è «Annulla l'ultima registrazione»: serve a riaprire la scadenza se «Fatta» è stato premuto per errore (v0.38.1: dicitura generica, perché una una tantum non è un rinnovo).
+- Al passo 6 la scadenza senza registrazioni si elimina dopo la conferma «Eliminare la scadenza?».
+- Al passo 7 la spunta «Registra l'uscita in Prima Nota» è spenta, con sotto la spiegazione che l'uscita la registra il Tesoriere: il Segretario può segnare il rinnovo, ma senza uscita.
+
+### M9 — Riquadri Affiliazione e Polizza in Impostazioni › Ente
+**Scopo:** controllare i due riquadri che riassumono affiliazione e polizza, e chi li può modificare.
+**Passi:**
+1. Entra come **Tesoriere** e apri *Impostazioni › Ente*.
+2. Entra come **Presidente**, stessa pagina; premi «Modifica» sul riquadro «Affiliazione all'EPS», poi su «Polizza RC».
+3. Riapri la pagina dal telefono.
+**Risultato atteso:**
+- **Tesoriere:** avviso «Sola lettura»; due riquadri affiancati, «Affiliazione all'EPS» e «Polizza RC». In ciascuno: «Stato» con il badge verde **«Valida»** (v0.38.1: solo lo stato, senza «tra N giorni»; la data è nella riga «Scadenza»), la scadenza, l'ultimo rinnovo (se c'è, «movimento PN» porta all'uscita in Prima Nota) e il pulsante «Vai alla scadenza». Nessun pulsante «Modifica».
+- **Presidente:** su ciascun riquadro c'è «Modifica». La finestra ha in alto l'avviso «La scadenza non si scrive qui.» (la data si cambia solo dallo Scadenzario). Scrivi codice di affiliazione, comitato/referente e contatto (affiliazione) e numero di polizza (polizza), salva: i dati compaiono nei riquadri. Nell'Audit Log una riga «PROFILO_ENTE_MODIFICATO».
+- **Telefono:** dentro ogni riquadro i dati restano su due colonne; i pulsanti sono a tutta larghezza.
+
+### M10 — Affiliazione scaduta o in scadenza
+**Scopo:** controllare gli avvisi quando l'affiliazione CSEN è scaduta o sta per scadere. L'avviso **non** blocca le tessere (decisione di Paolo dell'11/10/2026).
+**Chi:** Tesoriere (e uno sguardo da Presidente).
+**Passi:**
+1. In phpMyAdmin rendi l'affiliazione scaduta da 3 giorni:
+   ```sql
+   UPDATE gl_scadenzario SET data_scadenza = DATE_SUB(CURDATE(), INTERVAL 3 DAY) WHERE chiave = 'affiliazione_eps';
+   ```
+2. Guarda: Dashboard, Scadenzario, *Impostazioni › Ente*, pagina Tessere.
+3. Portala a 10 giorni da oggi:
+   ```sql
+   UPDATE gl_scadenzario SET data_scadenza = DATE_ADD(CURDATE(), INTERVAL 10 DAY) WHERE chiave = 'affiliazione_eps';
+   ```
+4. Guarda di nuovo Dashboard, Scadenzario e *Impostazioni › Ente*.
+5. Rimetti la data vera:
+   ```sql
+   UPDATE gl_scadenzario SET data_scadenza = '2026-12-31' WHERE chiave = 'affiliazione_eps';
+   ```
+**Risultato atteso:**
+- Al passo 2: avviso **rosso** «Affiliazione CSEN scaduta il …» nella Dashboard (con il pulsante «Vai alla scadenza»), nello Scadenzario (con «Rinnovata»), in *Impostazioni › Ente* (badge «Scaduta») e nella pagina Tessere. Le tessere si possono comunque emettere.
+- Al passo 4: avviso **giallo** «Affiliazione CSEN: tra 10 giorni» in Dashboard e Scadenzario; nel riquadro di *Impostazioni › Ente* il badge **«In scadenza»** (v0.38.1).
+- Al passo 5 tutto torna normale (nessun avviso).
+
+### M11 — Promemoria delle scadenze e delle tessere
+**Scopo:** controllare la pagina dei promemoria, l'email di prova e l'invio vero.
+**Chi:** Tesoriere (o Presidente).
+**Prima:** un utente **Tesoriere attivo** (vedi «Prima di cominciare»).
+**Parte 1 — la pagina.**
+1. Apri *Governance › Promemoria*.
+   - Atteso: due funzioni nuove. «Scadenze dell'associazione» con due promemoria («Scadenza in arrivo», 30 giorni prima; «Ultimi giorni», 7 giorni prima), destinatari Presidente e Tesoriere, e il prossimo invio con la scadenza più vicina (es. «01/12/2026 09:00 · Affiliazione CSEN»). «Tessere in scadenza» con «Tessere da rinnovare», 15 giorni prima, «Solo il Tesoriere».
+2. Apri «Scadenza in arrivo».
+   - Atteso: «Data fissa ogni anno» spenta (questa funzione lavora solo «prima o dopo una data»); Giorni `30`, «Prima della data»; a destra il riquadro «Destinatari» e l'anteprima dell'email con i valori al posto dei segnaposti.
+3. Premi «Invia una prova a me».
+   - Atteso: arriva un'email con oggetto che comincia con «[Prova]» e i dati veri della prima scadenza.
+4. **v0.38.1** — apri «Tessere da rinnovare» quando nessuna tessera scade fra 15 giorni.
+   - Atteso: riquadro «Anteprima con dati d'esempio» con nomi inventati (Rossi Mario, Verdi Anna) e una nota che lo spiega. «Invia una prova a me» manda un'email con oggetto «[Prova, dati d'esempio] …» e testo leggibile: **mai** `[saluto]`, `[data]`, `[elenco]`.
+   - Se nessun utente attivo ha il ruolo scelto in «Destinatari», compare l'avviso giallo «Nessun utente attivo con il ruolo scelto.».
+
+**Parte 2 — invio vero della scadenza, senza aspettare.** Da fare dopo le 9:00.
+1. Porta la Polizza RC a 30 giorni da oggi:
+   ```sql
+   UPDATE gl_scadenzario SET data_scadenza = DATE_ADD(CURDATE(), INTERVAL 30 DAY) WHERE chiave = 'polizza_rc';
+   ```
+2. Nel Terminale di cPanel, dentro `~/gestionale-asd`: `php artisan promemoria:invia`
+3. Lancia lo stesso comando una seconda volta.
+4. Riapri «Scadenza in arrivo» e guarda lo «Storico».
+- Atteso: al passo 2 il comando scrive quante email ha inviato e arrivano due email, una al Presidente e una al Tesoriere. Al passo 3 non parte nulla e il comando scrive «Nessun promemoria da inviare adesso…» (v0.38.1: prima non scriveva niente). Nello storico la riga «scadenza del …».
+
+**Parte 3 — invio vero delle tessere.**
+1. Scegli il numero di una tessera caricata dal CSV nel blocco L, di un socio attivo, e portala a 15 giorni da oggi:
+   ```sql
+   UPDATE gl_tesseramenti SET scadenza = DATE_ADD(CURDATE(), INTERVAL 15 DAY) WHERE numero_tessera_csen = 'NUMERO';
+   ```
+2. Lancia `php artisan promemoria:invia`.
+- Atteso: un'email al Tesoriere con l'elenco delle tessere in scadenza e, per ciascun socio, la situazione della quota.
+- **Se non arriva nulla:** lancia `php artisan promemoria:invia --prova`. Per ogni promemoria dice quanti avviserebbe adesso, quanti destinatari ci sono in tutto e quando parte il prossimo invio, oppure il motivo: «Nessun utente attivo con il ruolo scelto» o «Nessun destinatario per nessuna data». La tessera deve essere di un socio con stato «attivo», avere la data di rilascio ed essere l'ultima tessera di quel socio.
+
+**Alla fine:** rimetti la data vera della Polizza RC (con il giorno giusto) e quella della tessera modificata.
+
+### M12 — Azzeramento prima dell'apertura
+**Quando:** solo alla fine del collaudo, prima dell'apertura del 2027, insieme a J12, K11, L12 e N12. I rinnovi annullati in M6 non lasciano nulla.
+**Passi:**
+1. In phpMyAdmin:
+   ```sql
+   DELETE FROM gl_scadenzario_rinnovi;
+   DELETE FROM gl_scadenzario WHERE chiave IS NULL;
+   ALTER TABLE gl_scadenzario_rinnovi AUTO_INCREMENT = 1;
+   ```
+   (La seconda riga cancella le scadenze create a mano nel collaudo; le tre pronte hanno una chiave e restano.)
+2. Nello Scadenzario controlla le date delle tre scadenze pronte: affiliazione 31/12, polizza con il giorno vero, rendiconto 30/04.
+**Attenzione:** non registrare con «Rinnovata» i pagamenti già fatti per le scadenze in corso, perché «Rinnovata» sposta la data all'anno dopo. Il primo «Rinnovata» vero sarà, per esempio, l'affiliazione 2027 a dicembre: l'importo scritto quella volta verrà poi proposto negli anni seguenti.
 
 ## N. Scontrini dal telefono con OCR (v0.39.0)
-Dettaglio in `docs/specifiche/scontrini.md`, tavole SN-1…SN-8. Prima: migration, `RuoloSeeder`, `SezioneSeeder` (LEGGIMI); nel `.env` locale `OCR_SPACE_KEY=` (la chiave di `gestionale-acv`) e, con Avast, l'eccezione `https://api.ocr.space/*`. Un utente Consigliere di prova da tinker (`'ruolo' => 'consigliere'`). **Dati di prova**: serve l'anno contabile 2026 di prova (blocco J; la contabilità vera parte dal 2027); si azzerano con N12. Le prove dal telefono vanno fatte dal telefono vero (fotocamera), le altre anche dal computer.
-- N1 Menu del Consigliere: Dashboard, «Prima Nota» e «Scontrini» (Contabilità). Prima Nota: avviso «Il tuo ruolo (Consigliere) vede la Prima Nota e carica gli scontrini…», niente «Nuovo movimento» né «Giroconto», c'è «Nuovo scontrino»; niente invito a scrivere i saldi di apertura. Il Segretario uguale (più le sue sezioni); il Revisore vede «Scontrini» in sola lettura, senza «Nuovo scontrino».
-- N2 Passo 1 dal telefono (Consigliere): «Fotografa lo scontrino» apre la fotocamera posteriore; dopo lo scatto si vede la foto nel riquadro con nome e peso; «Leggi lo scontrino» resta spento senza foto o senza nota (nota vuota → errore «Scrivi che cosa hai comprato»). Con «Scegli un file» un PDF o una foto dalla galleria. iPhone con formato HEIC: messaggio con «Impostazioni › Fotocamera › Formati › Più compatibile».
-- N3 Lettura: «Sto leggendo lo scontrino…» per 2–5 secondi, poi il passo 2 con «Letti dalla foto: controllali», totale e data letti (sotto il totale «Dalla riga «TOTALE COMPLESSIVO»»), pagato con proposto (contanti → Cassa, carta → Banca), «Righe lette: N» con le righe. Con uno scontrino di un negozio nuovo: «Nessun fornitore simile», «Nuovo fornitore» scelto con ragione sociale, partita IVA, indirizzo e comune letti, da correggere (es. «IL FORVAIO» → «Il Fornaio»). Partita IVA con una cifra cambiata → errore «la cifra di controllo è sbagliata».
-- N4 «Registra»: si va a «I miei scontrini» con «Scontrino n. 1 registrato · 14,50 € · … · banca. È in Prima Nota su «Uscite da classificare»: lo verifica il Tesoriere», lo scontrino «Da verificare»; aprendolo: scheda in sola lettura («Verificano, dividono e correggono gli scontrini il Presidente e il Tesoriere»). In Prima Nota il movimento con l'icona dello scontrino, «Da classificare», documento «Scontrino SC2026-001»; nella scheda del movimento l'avviso con il link alla scheda dello scontrino e la foto `SC2026-001.jpg` tra i giustificativi.
-- N5 Stesso negozio una seconda volta: «È la partita IVA di un fornitore in elenco», fornitore già scelto con «già in elenco». Fornitore in elenco senza partita IVA e nome uguale (es. creato dalla Prima Nota): «C'è già un fornitore con questo nome» e «Le aggiungo la partita IVA letta»; dopo «Registra» in Fornitori ha la partita IVA. «Scegli dalla lista dei fornitori»: finestra con ricerca (nome o partita IVA), toccando un fornitore diventa la scelta («scelto dalla lista»).
-- N6 Foto non letta: con `OCR_SPACE_KEY` vuota (o rete staccata) → avviso rosso «Foto non letta», campi vuoti; si registra scrivendo tutto a mano. Data futura → errore; data del 2025 → «prima dell'avvio della contabilità…». «Annulla» o «Rifai la foto» tornano al passo 1 senza registrare nulla.
-- N7 Elenco `/scontrini` da Tesoriere a 1440 e 375 px: riquadri Da verificare, Da quadrare, Verificati, Spesa 2026 (cliccabili come filtri), avviso «da sistemare prima della chiusura», filtri per stato, chi ha caricato, testo; miniature; sotto, «Lettura automatica delle foto: attiva; ultima lettura il …».
-- N8 Scheda (Tesoriere): foto ingrandibile, «Testo letto dalla foto», righe con «Scegli…» come categoria, quadratura «Torna: righe … su …». Dividere uno scontrino di ferramenta: «Aggiungi una riga», importi e categorie diverse, una riga di sconto negativa (−1,00); la barra diventa rossa finché non torna, «Registra la divisione» spento finché non tornano al centesimo e non hanno tutte la categoria; «Aggiungi la differenza» aggiunge la riga che manca. Il piano mostra un movimento per categoria («n. …» per quello riusato, «nuovo» per gli altri) e «Sostituisce il movimento n. … «Uscite da classificare»». Registrata → «Divisione registrata: 3 movimenti in Prima Nota», stato «Verificato», in Prima Nota tre movimenti con le descrizioni delle righe; Audit Log «SCONTRINO_DIVISO».
-- N9 Righe lette che non tornano (es. un Eurospin): nella scheda una riga col totale e «Riprendi le N righe lette»; «Unisci le righe selezionate» su due righe → una sola con la somma; «Tutte nella stessa categoria…». Rifare la divisione tutta in una categoria → «1 movimento in Prima Nota, 2 tolti».
-- N10 «Salva i dati»: con un solo movimento il totale passa al movimento; dopo una divisione, cambiare il totale → «Il totale non torna più con i movimenti: rifai la divisione», stato «Da quadrare»; in Prima Nota › Anni e saldi il controllo «Nessuno scontrino da quadrare» non è spuntato. Rifare la divisione → «Verificato». La data non esce dall'anno dello scontrino. Dalla Prima Nota, «Modifica» del movimento: importo, data e conto spenti con l'avviso; cambiare la categoria → nella scheda dello scontrino cambia la riga e lo stato.
-- N11 «Aggiungi una foto» (PDF) → `SC2026-00N-02.pdf` nell'elenco dei file. «Elimina lo scontrino» → finestra, poi spariscono scontrino, movimenti e foto; Audit Log «SCONTRINO_ELIMINATO» (HIGH) con i movimenti tolti. Fornitori (`/scontrini/fornitori`): creare a mano «FERRAMENTA X S.N.C.» e «Ferramenta X snc» → «Possibili doppioni», «Unisci» sceglie quello che resta, i movimenti passano a lui (Audit Log «FORNITORI_UNITI»); «Modifica» il nome → cambia anche nei movimenti; togliere «In elenco» → non compare più nelle scelte del passo 2 né nel campo Fornitore della Prima Nota; «Elimina» solo per un fornitore mai usato. Il Consigliere vede la pagina senza pulsanti.
-- N12 Azzeramento prima dell'apertura (con J12, K11, L12, M12): dalla scheda «Elimina lo scontrino» per ognuno, oppure in SQL (poi cancellare la cartella `storage/app/private/scontrini`):
+
+Riscritto per esteso il 12/10/2026, su richiesta di Paolo. Dettaglio tecnico in `docs/specifiche/scontrini.md`, tavole SN-1…SN-8.
+
+**Che cosa si prova.** I membri del Consiglio Direttivo fotografano uno scontrino dal telefono e scrivono che cosa hanno comprato. Il gestionale manda la foto al servizio OCR.space, che ne «legge» il testo, e propone totale, data, fornitore e righe. Chi carica controlla, corregge e registra: lo scontrino entra in Prima Nota come un'uscita in «Uscite da classificare». Poi il Tesoriere (o il Presidente) lo verifica dalla scheda: assegna le categorie e, se le righe sono di categorie diverse, lo divide in più movimenti. Chi ha caricato lo scontrino non può più modificarlo.
+
+**Prima di cominciare (una volta sola).**
+1. Installazione della v0.39.0 completa (LEGGIMI): migration, `RuoloSeeder`, `SezioneSeeder`; nel `.env` del server `OCR_SPACE_KEY=` con la chiave di `gestionale-acv`, poi `php artisan config:cache`; in cPanel estensioni PHP **gd** ed **exif** attive.
+2. In locale con Avast: eccezione per `https://api.ocr.space/*`.
+3. Un utente **Consigliere** di prova (da tinker, `'ruolo' => 'consigliere'`), più gli utenti Tesoriere, Segretario e Revisore.
+4. L'anno contabile 2026 di prova (blocco J): la contabilità vera parte dal 2027, quindi senza l'anno di prova gli scontrini del 2026 non si registrano.
+5. Alcuni scontrini veri a portata di mano: uno di un negozio mai usato, uno di ferramenta con articoli diversi, uno di un supermercato con molte righe (es. Eurospin).
+6. Le prove con la fotocamera vanno fatte dal **telefono vero**; le altre anche dal computer. Tutto si cancella con N12.
+
+### N1 — Chi vede gli scontrini
+**Scopo:** controllare menu e permessi dei ruoli coinvolti.
+**Passi:** entra con un ruolo alla volta.
+**Risultato atteso:**
+- **Consigliere:** nel menu solo Dashboard e, sotto *Contabilità*, «Prima Nota» e «Scontrini». In Prima Nota un avviso «Il tuo ruolo (Consigliere) vede la Prima Nota e carica gli scontrini…»; non ci sono «Nuovo movimento» né «Giroconto», c'è «Nuovo scontrino»; nessun invito a scrivere i saldi di apertura.
+- **Segretario:** come il Consigliere, più le sue sezioni di sempre.
+- **Revisore:** vede «Scontrini» in sola lettura, senza «Nuovo scontrino».
+
+### N2 — Passo 1: la foto dal telefono
+**Scopo:** controllare la scelta della foto e della nota.
+**Chi:** Consigliere, dal telefono.
+**Passi:**
+1. Apri «Scontrini» e premi «Nuovo scontrino».
+2. Premi «Fotografa lo scontrino» e scatta.
+3. Prova a premere «Leggi lo scontrino» senza scrivere la nota.
+4. Prova invece con un file: un PDF o una foto dalla galleria.
+5. (Solo iPhone) Prova con una foto in formato HEIC.
+**Risultato atteso:**
+- Al passo 2 si apre la fotocamera posteriore; dopo lo scatto la foto compare nel riquadro con nome e peso del file.
+- «Leggi lo scontrino» resta spento finché mancano foto o nota; con la nota vuota compare l'errore «Scrivi che cosa hai comprato».
+- Al passo 4 un PDF o una foto della galleria vanno bene.
+- Al passo 5 compare un messaggio che spiega come passare al formato compatibile: *Impostazioni › Fotocamera › Formati › Più compatibile*.
+
+### N3 — Lettura della foto e passo 2
+**Scopo:** controllare che i dati letti siano proposti correttamente e si possano correggere.
+**Chi:** Consigliere, dal telefono.
+**Prima:** lo scontrino di un negozio mai registrato.
+**Passi:**
+1. Foto, nota (es. `Colla per le frecce`), «Leggi lo scontrino».
+2. Guarda la pagina del passo 2.
+3. Nel riquadro «Fornitore» scegli «+ Nuovo fornitore» e correggi i dati letti (es. «IL FORVAIO» → «Il Fornaio»).
+4. Cambia una cifra della partita IVA e prova a registrare; poi rimettila giusta.
+**Risultato atteso:**
+- Per 2–5 secondi compare «Sto leggendo lo scontrino…».
+- Poi il passo 2 con l'avviso «Letti dalla foto: controllali.»: totale e data letti (sotto il totale la riga da cui è stato preso, es. «Dalla riga «TOTALE COMPLESSIVO»»); «Pagato con» proposto (contanti → Cassa, carta → Banca); «Righe lette: N» con l'elenco delle righe.
+- Fornitore: «Nessun fornitore simile»; con «+ Nuovo fornitore» la ragione sociale, la partita IVA, l'indirizzo e il comune sono già compilati con quanto letto, da correggere se serve.
+- Con una cifra sbagliata nella partita IVA: errore «la cifra di controllo è sbagliata».
+
+### N4 — Registrare lo scontrino
+**Scopo:** controllare cosa succede dopo «Registra», per chi carica e in Prima Nota.
+**Chi:** Consigliere; poi Tesoriere per la Prima Nota.
+**Passi:**
+1. Dal passo 2 di N3 premi «Registra».
+2. Apri lo scontrino appena registrato.
+3. Come Tesoriere apri la Prima Nota e il movimento dello scontrino.
+**Risultato atteso:**
+- Si arriva a «I miei scontrini» con il messaggio «Scontrino n. 1 registrato · 14,50 € · … · banca. È in Prima Nota su «Uscite da classificare»: lo verifica il Tesoriere» (importo e conto quelli dello scontrino); lo scontrino ha lo stato «Da verificare».
+- La scheda è in sola lettura, con la nota «Verificano, dividono e correggono gli scontrini il Presidente e il Tesoriere.».
+- In Prima Nota: il movimento ha l'icona dello scontrino, la categoria «Da classificare» e il documento «Scontrino SC2026-001». Nella scheda del movimento un avviso con il link alla scheda dello scontrino, e tra i giustificativi la foto `SC2026-001.jpg`.
+
+### N5 — Fornitore già conosciuto
+**Scopo:** controllare che il gestionale riconosca un fornitore già in elenco.
+**Chi:** Consigliere.
+**Passi e risultati attesi:**
+1. Carica un secondo scontrino **dello stesso negozio** di N3. → Nel riquadro Fornitore: «È la partita IVA di un fornitore in elenco», fornitore già scelto con «· già in elenco».
+2. Carica lo scontrino di un fornitore che esiste già in elenco **senza partita IVA** e con lo stesso nome (es. creato a mano dalla Prima Nota). → «C'è già un fornitore con questo nome» e «Le aggiungo la partita IVA letta»; dopo «Registra», nella pagina Fornitori quel fornitore ha la partita IVA.
+3. In un nuovo scontrino premi «Scegli dalla lista dei fornitori». → Si apre una finestra con la ricerca (per nome o partita IVA); toccando un fornitore diventa la scelta, con «· scelto dalla lista».
+
+### N6 — Foto non letta e controlli sulla data
+**Scopo:** controllare che si possa registrare anche quando la lettura non riesce, e che le date sbagliate siano fermate.
+**Chi:** Consigliere (per il punto 1 serve accesso al `.env`).
+**Passi e risultati attesi:**
+1. Svuota temporaneamente `OCR_SPACE_KEY` nel `.env` (poi `php artisan config:cache`), oppure stacca la rete, e leggi uno scontrino. → Avviso rosso «Foto non letta.», campi vuoti: si registra scrivendo tutto a mano. **Ricordati di rimettere la chiave** e rifare `config:cache`.
+2. Scrivi una data futura. → Errore.
+3. Scrivi una data del 2025. → Errore «prima dell'avvio della contabilità…».
+4. Premi «Annulla» oppure «Rifai la foto». → Si torna al passo 1 e non viene registrato nulla.
+
+### N7 — Elenco degli scontrini (Tesoriere)
+**Scopo:** controllare la pagina d'elenco, da computer e da telefono.
+**Chi:** Tesoriere.
+**Passi:** apri *Contabilità › Scontrini* dal computer, poi dal telefono; prova i riquadri e i filtri.
+**Risultato atteso:**
+- In alto quattro riquadri: «Da verificare», «Da quadrare», «Verificati», «Spesa 2026»; cliccandoli l'elenco si filtra.
+- Un avviso «Anno 2026: N scontrini da sistemare prima della chiusura».
+- Filtri per stato, per chi ha caricato («Caricato da») e per testo; le miniature delle foto.
+- In fondo: «Lettura automatica delle foto: attiva; ultima lettura il …».
+- Dal telefono nessuno scorrimento orizzontale.
+
+### N8 — Verificare e dividere uno scontrino di ferramenta
+**Scopo:** dividere uno scontrino con articoli di categorie diverse in più movimenti di Prima Nota.
+**Chi:** Tesoriere.
+**Prima:** uno scontrino di ferramenta registrato (N4) con almeno tre articoli diversi.
+**Passi:**
+1. Apri la scheda dello scontrino dall'elenco.
+2. Guarda la foto (si ingrandisce), «Testo letto dalla foto», le righe e la barra di quadratura.
+3. Con «+ Aggiungi una riga» prepara tre righe con importi e categorie diverse, e una riga di sconto con importo negativo (`-1,00`).
+4. Lascia le righe che non tornano col totale, poi premi «Aggiungi la differenza».
+5. Leggi il riquadro «Divisione: un movimento per categoria» e premi «Registra la divisione».
+6. Controlla la Prima Nota e l'Audit Log.
+**Risultato atteso:**
+- Ogni riga ha «Scegli…» come categoria finché non la scegli; la barra dice «Torna: righe … su …» quando la somma delle righe è uguale al totale.
+- Finché le righe non tornano al centesimo la barra è rossa («Non torna: righe …»), e «Registra la divisione» resta spento finché le righe non tornano **e** non hanno tutte la categoria.
+- «Aggiungi la differenza» aggiunge la riga che manca per far tornare il totale.
+- Il piano mostra un movimento per categoria: «n. …» per quello già esistente che viene riusato, «nuovo» per gli altri, e la frase «Sostituisce il movimento n. … «Uscite da classificare»».
+- Dopo la registrazione: messaggio «Divisione registrata: 3 movimenti in Prima Nota», stato «Verificato»; in Prima Nota tre movimenti con le descrizioni delle righe; nell'Audit Log una riga «SCONTRINO_DIVISO».
+
+### N9 — Supermercato con righe che non tornano
+**Scopo:** gestire uno scontrino lungo dove le righe lette non coincidono col totale.
+**Chi:** Tesoriere.
+**Prima:** uno scontrino con molte righe (es. Eurospin) registrato dal Consigliere.
+**Passi:**
+1. Apri la scheda.
+2. Premi «Riprendi le N righe lette».
+3. Seleziona due righe e premi «Unisci le righe selezionate».
+4. Usa «Tutte nella stessa categoria…» e registra la divisione.
+**Risultato atteso:**
+- Al passo 1 c'è una sola riga col totale (le righe lette non tornavano) e il pulsante «Riprendi le N righe lette».
+- Al passo 3 le due righe diventano una sola con la somma degli importi.
+- Al passo 4, con tutte le righe in una categoria: «1 movimento in Prima Nota, 2 tolti».
+
+### N10 — Correggere i dati dopo la verifica
+**Scopo:** controllare cosa succede cambiando i dati di uno scontrino già verificato, e i blocchi dalla Prima Nota.
+**Chi:** Tesoriere.
+**Passi e risultati attesi:**
+1. Su uno scontrino con **un solo** movimento cambia il totale e premi «Salva i dati». → Il nuovo totale passa anche al movimento in Prima Nota.
+2. Sullo scontrino diviso in N8 cambia il totale e salva. → Messaggio «Il totale non torna più con i movimenti: rifai la divisione», stato «Da quadrare».
+3. Apri *Prima Nota › Anni e saldi*. → Nella lista di controllo della chiusura la voce «Nessuno scontrino da quadrare» **non** è spuntata.
+4. Rifai la divisione dello scontrino. → Stato di nuovo «Verificato».
+5. Prova a mettere una data di un altro anno. → Non è accettata: la data resta nell'anno dello scontrino.
+6. Dalla Prima Nota apri un movimento nato da uno scontrino e premi «Modifica». → Importo, data e conto sono spenti, con un avviso che rimanda alla scheda dello scontrino. Cambia la categoria e salva: nella scheda dello scontrino cambia la categoria della riga (e lo stato, se serve).
+
+### N11 — Foto aggiuntive, eliminazione e Fornitori
+**Scopo:** provare le altre azioni della scheda e la pagina Fornitori.
+**Chi:** Tesoriere; alla fine il Consigliere.
+**Passi e risultati attesi:**
+1. Nella scheda di uno scontrino premi «Aggiungi una foto», scegli un PDF e premi «Carica». → Compare nell'elenco dei file come `SC2026-00N-02.pdf`.
+2. Premi «Elimina lo scontrino» e conferma nella finestra «Eliminare lo scontrino?». → Spariscono lo scontrino, i suoi movimenti in Prima Nota e le foto; nell'Audit Log «SCONTRINO_ELIMINATO» con rischio Alto e l'elenco dei movimenti tolti.
+3. Apri la pagina Fornitori (dal pulsante «Fornitori» in Scontrini) e crea a mano due fornitori: `FERRAMENTA X S.N.C.` e `Ferramenta X snc`. → Compaiono in «Possibili doppioni».
+4. Premi «Unisci» e scegli quale dei due resta. → I movimenti dell'altro passano a quello che resta; nell'Audit Log «FORNITORI_UNITI».
+5. Con la matita cambia il nome di un fornitore usato. → Il nome cambia anche nei suoi movimenti.
+6. Togli la spunta «In elenco» a un fornitore. → Non compare più tra le scelte del passo 2 degli scontrini né nel campo Fornitore della Prima Nota.
+7. Prova a eliminare un fornitore usato e uno mai usato. → Si può eliminare solo quello mai usato.
+8. Entra come Consigliere e apri Fornitori. → La pagina si vede, ma senza pulsanti.
+
+### N12 — Azzeramento prima dell'apertura
+**Quando:** solo alla fine del collaudo, insieme a J12, K11, L12 e M12.
+**Passi:** per ogni scontrino di prova «Elimina lo scontrino» dalla scheda, oppure in phpMyAdmin:
 ```sql
 DELETE FROM gl_prima_nota WHERE scontrino_id IS NOT NULL;
 DELETE FROM gl_prima_nota_scontrini;
@@ -263,7 +587,7 @@ ALTER TABLE gl_prima_nota_scontrini AUTO_INCREMENT = 1;
 ALTER TABLE gl_prima_nota_scontrini_righe AUTO_INCREMENT = 1;
 ALTER TABLE gl_prima_nota_scontrini_file AUTO_INCREMENT = 1;
 ```
-I fornitori di prova si eliminano da Fornitori (quelli veri restano).
+Poi cancella la cartella `storage/app/private/scontrini`. I fornitori di prova si eliminano dalla pagina Fornitori (quelli veri restano).
 
 ## CD di prova (SQL)
 Controllo dei soci:
