@@ -183,7 +183,8 @@ quello scelto; i dati mancanti si prendono dall'altro); «Modifica» (anche
   codice, nel database o nella chat.
 - Una foto di scontrino di solito non contiene dati personali; su quelli di
   un negozio individuale compare il codice fiscale del titolare, che **non
-  si salva** (resta solo nel testo letto della scheda). OCR.space (a9t9
+  si salva**: `ServizioOcr` lo toglie anche dal testo letto («[codice
+  fiscale]») prima che vada in sessione o nel database. OCR.space (a9t9
   software GmbH, Germania) tratta le foto, che riguardano negozi e non
   soci: da valutare se citarlo tra i fornitori di servizi nel registro dei
   trattamenti (`da-riportare-gestionale-aps.md` D12).
@@ -212,7 +213,7 @@ quello scelto; i dati mancanti si prendono dall'altro); «Modifica» (anche
   riquadri dell'elenco); «Annulla» del passo 2 torna al passo 1; in più
   «Aggiungi la differenza» e «Riprendi le righe lette» nella scheda.
 
-**Tre giri di revisione critica** (12/10/2026), 15 difetti corretti prima
+**Tre giri di revisione critica** (12/10/2026), 16 difetti corretti prima
 della consegna:
 
 1. *Correttezza e sicurezza*:
@@ -225,24 +226,27 @@ della consegna:
       su Safari) → due campi «foto», si invia quello usato;
    4. attesa di OCR.space fino a 25 secondi, vicino al limite PHP di 30 →
       15 secondi, come `gestionale-acv`;
-   5. bozze in sessione senza limite → al più 5 per persona.
+   5. bozze in sessione senza limite → al più 5 per persona;
+   6. codice fiscale del titolare (negozi individuali) conservato nel testo
+      letto, contro la decisione dell'11/10/2026 → tolto dal testo
+      appena arriva da OCR.space (e dai testi di prova).
 2. *Aderenza a tavole e decisioni*:
-   6. nomi di categoria sbagliati nel piano della divisione (le chiavi
+   7. nomi di categoria sbagliati nel piano della divisione (le chiavi
       numeriche si rinumeravano) → corretti;
-   7. Prima Nota del Consigliere con l'avviso generico e l'invito a
+   8. Prima Nota del Consigliere con l'avviso generico e l'invito a
       scrivere i saldi di apertura → avviso della tavola SN-8, invito solo a
       chi modifica;
-   8. righe lette che non tornano: non si potevano riprendere → «Riprendi
+   9. righe lette che non tornano: non si potevano riprendere → «Riprendi
       le N righe lette»;
-   9. stato della lettura automatica non visibile (analisi §3.9) → riga
+   10. stato della lettura automatica non visibile (analisi §3.9) → riga
       sotto l'elenco;
-   10. fornitori tolti dalla lista ancora proposti nella Prima Nota → solo
+   11. fornitori tolti dalla lista ancora proposti nella Prima Nota → solo
        quelli in elenco.
 3. *Bordi e telefono* (verifica a 1440 e 375 px):
-   11. tabelle del piano e dei movimenti fuori schermo sul telefono → righe
+   12. tabelle del piano e dei movimenti fuori schermo sul telefono → righe
        a blocchi;
-   12. riquadri della scheda attaccati tra loro → spaziatura;
-   13. «Righe scritte a mano» fuorviante → spiega la riga unica col totale;
-   14. il Tesoriere che carica dal computer finiva su «I miei scontrini» →
+   13. riquadri della scheda attaccati tra loro → spaziatura;
+   14. «Righe scritte a mano» fuorviante → spiega la riga unica col totale;
+   15. il Tesoriere che carica dal computer finiva su «I miei scontrini» →
        va alla scheda;
-   15. fonte del totale in minuscolo → come sullo scontrino.
+   16. fonte del totale in minuscolo → come sullo scontrino.

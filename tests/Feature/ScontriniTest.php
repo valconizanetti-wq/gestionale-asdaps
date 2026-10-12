@@ -210,8 +210,9 @@ class ScontriniTest extends TestCase
 
         $s = PrimaNotaScontrino::with('righe')->sole();
         $this->assertSame(['3.00', '4.40', '1.80'], $s->righe->pluck('importo')->map(fn ($i) => (string) $i)->all());
-        // Il codice fiscale del titolare stampato sullo scontrino non si salva
-        $this->assertStringNotContainsString('MGLNRC', (string) json_encode(Soggetto::sole()->toArray()));
+        // Il codice fiscale del titolare stampato sullo scontrino non si salva, nemmeno nel testo letto
+        $this->assertStringNotContainsString('[codice fiscale]', (string) json_encode(Soggetto::sole()->toArray()));
+        $this->assertSame('C.F. [codice fiscale]', \App\Scontrini\ServizioOcr::senzaCodiciFiscali('C.F. RSSMRA80A01H501U'));
     }
 
     public function test_fornitore_riconosciuto_per_partita_iva_e_per_nome(): void

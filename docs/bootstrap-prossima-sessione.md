@@ -47,7 +47,7 @@ Prima Nota in lettura; uguale il Segretario), movimenti di scontrino con
 importo, data e conto bloccati in Prima Nota, controllo «Nessuno scontrino
 da quadrare» alla chiusura. Migration `2026_10_12_000102`. CSS sezione 17.
 - 135 test (nuovi `ScontriniTest`, test del testo vero in
-  `LettoreScontrinoTest`); tre giri di revisione (15 difetti, `scontrini.md`
+  `LettoreScontrinoTest`); tre giri di revisione (16 difetti, `scontrini.md`
   §7). Importi in centesimi interi (`Importo::centesimi`): bcmath non c'è.
 - Docs: `scontrini.md`, `prima-nota.md`, `permessi.md`, `deploy.md` §6
   (chiave, gd/exif, Avast), `ui.md`, `MANUALE-ASD.md` (tutte e due le

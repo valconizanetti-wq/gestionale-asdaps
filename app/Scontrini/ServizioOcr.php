@@ -17,6 +17,16 @@ use Illuminate\Support\Facades\Log;
  */
 class ServizioOcr
 {
+    /**
+     * Il codice fiscale del titolare stampato sugli scontrini dei negozi
+     * individuali non si conserva (Paolo, 11/10/2026): si toglie dal testo
+     * letto prima che finisca in sessione o nel database.
+     */
+    public static function senzaCodiciFiscali(string $testo): string
+    {
+        return preg_replace('/\b[A-Z]{6}\s?\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]\b/u', '[codice fiscale]', $testo);
+    }
+
     /** @return array{esito: string, testo: ?string, ms: ?int, messaggio: ?string} */
     public function leggi(string $contenuto, string $mime): array
     {
@@ -55,7 +65,7 @@ class ServizioOcr
 
                 return ['esito' => 'errore', 'testo' => null, 'ms' => $ms, 'messaggio' => 'Il servizio di lettura ha dato un errore.'];
             }
-            $testo = trim(implode("\n", array_map(fn ($p) => (string) ($p['ParsedText'] ?? ''), (array) ($j['ParsedResults'] ?? []))));
+            $testo = self::senzaCodiciFiscali(trim(implode("\n", array_map(fn ($p) => (string) ($p['ParsedText'] ?? ''), (array) ($j['ParsedResults'] ?? [])))));
 
             return $testo === ''
                 ? ['esito' => 'non_letto', 'testo' => null, 'ms' => $ms, 'messaggio' => 'Nella foto non si legge testo.']

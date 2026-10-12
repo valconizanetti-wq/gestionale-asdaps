@@ -457,4 +457,4 @@ questa analisi restano, con queste precisazioni:
 - attesa massima di OCR.space 15 secondi; senza chiave o senza risposta si
   scrive a mano;
 - nel menu nessun contatore (come negli altri moduli).
-Tre giri di revisione: `scontrini.md` §7 (15 difetti corretti).
+Tre giri di revisione: `scontrini.md` §7 (16 difetti corretti).
