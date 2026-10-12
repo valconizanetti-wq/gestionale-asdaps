@@ -8,8 +8,14 @@
    §7 (CD registra dal telefono: ruolo «Consigliere»; anticipi dopo; nota e
    fornitore obbligatori; partita IVA sì; una foto), divisione per righe e
    categorie in §8; CD con Prima Nota in lettura e fornitore riconosciuto,
-   scelto o creato in §9. Prossimo passo: tavole SN-1…SN-5 sulla tela (aspettando
-   le foto di scontrini veri di Paolo), poi codice.
+   scelto o creato in §9. Tavole SN-1…SN-8 sulla tela (§10, PDF in
+   `docs/mockup/Tavole-scontrini.pdf`), da approvare. Prova sui 14 scontrini
+   veri: testo pulito §11, **OCR.space vero §12** (totale, data, pagamento
+   14/14, partita IVA 13/14, solo `isTable=true`, una richiesta per foto;
+   in locale serve l'eccezione Avast per `api.ocr.space`). Lettore
+   `App\Scontrini\LettoreScontrino` con test; script di prova in
+   `docs/strumenti/prova-ocr.php`. Prossimo passo: approvazione delle
+   tavole, poi codice del modulo.
 3. Poi, in ordine da concordare: anticipi e note di
    rimborso, Verbali (servono per le decadenze e la chiusura dell'anno),
    Rendiconto, procedura di azzeramento; tecnici e tesserino tecnico in

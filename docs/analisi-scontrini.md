@@ -376,5 +376,66 @@ legname). Che cosa insegnano:
   usato solo per mettere alla prova le regole: OCR.space da qui non è
   raggiungibile): totale 9/14, data 9/14, partita IVA 4/14. Dove l'OCR
   sbaglia, il lettore non inventa: lascia vuoto o avvisa.
-- Da fare con la chiave vera: provare gli stessi 14 su OCR.space (motore 2,
-  `isTable`) e confrontare.
+- sul **testo vero di OCR.space**: vedi §12.
+
+## 12. Prova con OCR.space vero (12/10/2026, 09:58)
+
+Paolo ha lanciato `prova-ocr.php` in Laragon sulle 14 foto: copia ridotta
+(lato lungo 1600 px, JPEG 75; da 250–1200 KB a 104–349 KB), motore 2,
+italiano, due letture per foto. Testo salvato in
+`tests/Fixtures/scontrini-ocrspace/risultati-ocr.json` (solo testo, niente
+chiave né foto). 28 richieste, nessun errore, 2,3–4,6 secondi ciascuna.
+
+**Prima di partire**: in locale PHP rifiutava il certificato di OCR.space
+(«unable to get local issuer certificate»). Causa: lo Scudo Web di **Avast**
+controlla le connessioni HTTPS con un suo certificato. Risolto con
+l'eccezione `https://api.ocr.space/*` in Avast (verifica del certificato
+sempre accesa). Sul server non serve. Da scrivere in `deploy.md` quando
+arriva il modulo.
+
+**Quale lettura**: solo `isTable=true`. Con il testo semplice OCR.space mette
+le etichette in un blocco e gli importi in un altro: totale 0/14. Con
+`isTable` ogni riga tiene insieme etichetta e importo, separati da
+tabulazioni → **una richiesta per foto**, non due.
+
+**Risultato del lettore** (dopo le correzioni sotto):
+
+| Campo | Testo vero OCR.space | Note |
+|---|---|---|
+| Totale | **14/14** | sempre «sicuro» (almeno due righe concordano) |
+| Data | **14/14** | Eurospin 26,48: giorno tagliato dalla foto → vuota, giusto |
+| Pagamento (cassa/banca) | **14/14** | |
+| Partita IVA | **13/14** | Eurospin 26,48: letta «PJ. 84788841003» (vera 04766841003), tre cifre sbagliate: non si recupera |
+| Fornitore | 14/14 riconoscibile | errori di lettura da correggere a mano: «IL FORVAIO», «ELETIRONICA» |
+| Righe che tornano col totale | 9/14 | non tornano: Eurospin 26,48 (due prezzi sulla stessa riga), ferramenta e vivaio (quantità e prezzi sparsi), articoli casa (prezzi non letti) |
+
+**Correzioni al lettore** suggerite dal testo vero:
+- celle separate da tabulazione: nell'intestazione diventano righe (al
+  vivaio «DI TIBERI EMANUELE ⇥ VIA DELLA RESISTENZA ⇥ GEAFLOR S.N.C. & C.»);
+  negli articoli e nei totali restano sulla stessa riga;
+- la forma giuridica vince anche se viene dopo la via («GEAFLOR S.N.C. & C.»);
+- «4, 41» → 4,41 (spazio dopo la virgola: al Lidl faceva perdere il totale)
+  e «4-00» in una cella da sola → 4,00 (il bar);
+- «IVA 01452300567» senza «P.» (ferramenta): accettata solo se la cifra di
+  controllo torna;
+- senza ragione sociale leggibile, il nome viene dal sito stampato
+  («www.eurospin.it» → «Eurospin»).
+
+**Che cosa ne viene per il modulo**:
+1. una sola richiesta per foto, `isTable=true`; il testo grezzo si conserva
+   (per rileggerlo se il lettore migliora);
+2. **riconoscimento del fornitore**: prima la partita IVA esatta, poi una
+   partita IVA **quasi uguale** (al più 3 cifre diverse) di un fornitore già
+   in elenco, poi il nome; al primo Eurospin (partita IVA letta bene) il
+   secondo scontrino si aggancia lo stesso;
+3. **righe**: se le righe lette sommano al totale si propongono divise; se
+   non tornano si propone **una riga sola** con il totale e l'avviso «righe
+   non lette bene». Chi carica divide a mano se serve (SN-2). Le righe lette
+   restano visibili come aiuto;
+4. tempo di attesa: 2–5 secondi, da mostrare con «Sto leggendo lo
+   scontrino…» (SN-1 → SN-2), non bloccante;
+5. errore di rete o chiave: lo scontrino si registra lo stesso con i campi
+   vuoti, da compilare a mano.
+
+Test: `test_testo_vero_di_ocr_space` (14 foto) in
+`tests/Unit/LettoreScontrinoTest.php`; 120 test in tutto.

@@ -76,4 +76,44 @@ class LettoreScontrinoTest extends TestCase
         // Niente totale riconoscibile: nessuna proposta
         $this->assertNull($l->leggi("foto sfocata\n???", $oggi)['totale']);
     }
+    /**
+     * Testo vero di OCR.space (motore 2, italiano, isTable=true), letto da
+     * Paolo con prova-ocr.php il 12/10/2026 sulle stesse 14 foto ridotte.
+     * Eurospin 26,48: la partita IVA esce «PJ. 84788841003» (tre cifre
+     * sbagliate), non si recupera; il fornitore arriva dal sito stampato.
+     */
+    public function test_testo_vero_di_ocr_space(): void
+    {
+        $j = json_decode(file_get_contents(__DIR__ . '/../Fixtures/scontrini-ocrspace/risultati-ocr.json'), true);
+        $oggi = new \DateTimeImmutable('2026-10-12');
+        $attesi = [
+            'Bar Tiracorrendo 9 euro.jpg' => ['9.00', '2026-09-08', '01622870556', 'cassa', 'MB BAR TIRACORRENDO'],
+            'Euro Spin 26,48 euro.jpg' => ['26.48', null, null, 'banca', 'Eurospin'],
+            'Euro Spin 27,43.jpg' => ['27.43', '2026-10-05', '04766841003', 'banca', 'Eurospin Lazio S.p.A'],
+            'Ferramenta Banella Franco 14,50 euro.jpg' => ['14.50', '2026-10-03', '01452300567', 'banca', 'FERRAMENTA BANELLA FRANCO'],
+            'Geaflor 9 euro.jpg' => ['9.00', '2026-09-28', '01440890554', 'cassa', 'GEAFLOR S.N.C'],
+            'IN BELLA COPIA 10 euro.jpg' => ['10.00', '2026-09-03', '01539950558', 'cassa', 'IN BELLA COPIA'],
+            'Il Fornaio 22,20 euro.jpg' => ['22.20', '2020-06-06', '12999500155', 'cassa', 'IL FORVAIO'],
+            'Lidl 4,41 euro.jpg' => ['4.41', '2026-09-18', '02275030233', 'cassa', 'Lidl Italia S.r.l'],
+            'Rasel Telefonia Elettronica 10 euro.jpg' => ['10.00', '2026-09-04', '13122851002', 'cassa', 'RASEL TELEFONIA'],
+            'Sottosopra 14,10 euro.jpg' => ['14.10', '2026-09-12', '01625930555', 'cassa', 'SOTTOSOPRA S.R.L'],
+            'Tabaccheria Chiasso 3 euro.jpg' => ['3.00', '2026-09-07', '00460930555', 'cassa', 'TABACCHERIA CHIASSO ROBERTO'],
+            'Toxon Sport 9 euro.jpg' => ['9.00', '2026-09-25', '01930680549', 'cassa', 'TOXON SPORT'],
+            'Toxon Sport 9,20 euro.jpg' => ['9.20', '2026-09-17', '01930680549', 'cassa', 'TOXON SPORT'],
+            'Tutto Legno Pacifici  31,22 euro.jpg' => ['31.22', '2026-09-01', '01689730552', 'banca', 'TUTTO LEGNO PACIFICI SRLS'],
+        ];
+        foreach ($attesi as $foto => [$totale, $data, $piva, $conto, $fornitore]) {
+            $r = (new LettoreScontrino())->leggi($j[$foto]['tabella']['testo'], $oggi);
+            $this->assertSame($totale, $r['totale'], $foto);
+            $this->assertSame($data, $r['data'], $foto);
+            $this->assertSame($piva, $r['partita_iva'], $foto);
+            $this->assertSame($conto, $r['conto'], $foto);
+            $this->assertStringStartsWith($fornitore, (string) $r['fornitore'], $foto);
+        }
+        // Righe: dove tornano col totale si propongono, altrimenti avviso
+        $lidl = (new LettoreScontrino())->leggi($j['Lidl 4,41 euro.jpg']['tabella']['testo'], $oggi);
+        $this->assertSame('4.41', $lidl['righe_somma']);
+        $sotto = (new LettoreScontrino())->leggi($j['Sottosopra 14,10 euro.jpg']['tabella']['testo'], $oggi);
+        $this->assertNotEmpty($sotto['avvisi']);
+    }
 }

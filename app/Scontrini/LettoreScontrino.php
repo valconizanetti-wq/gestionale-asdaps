@@ -27,7 +27,7 @@ class LettoreScontrino
     public function leggi(string $testo, ?\DateTimeInterface $oggi = null): array
     {
         $oggi ??= new \DateTimeImmutable('today');
-        $righe = array_values(array_filter(array_map(fn ($r) => trim(preg_replace('/\s+/u', ' ', $r)), preg_split('/\R/u', $testo)), fn ($r) => $r !== ''));
+        $righe = array_values(array_filter(array_map(fn ($r) => trim(preg_replace('/[ \x{00A0}]+/u', ' ', $r)), self::normalizza($testo)), fn ($r) => $r !== ''));
         $maiuscole = array_map(fn ($r) => mb_strtoupper($r), $righe);
         $avvisi = [];
 
@@ -60,6 +60,38 @@ class LettoreScontrino
             'righe' => $articoli, 'righe_somma' => $somma,
             'avvisi' => $avvisi,
         ];
+    }
+
+    // ── Testo di OCR.space ───────────────────────────────────────────────
+
+    /**
+     * Testo di OCR.space con isTable=true (analisi-scontrini.md §11): le
+     * celle di una riga sono separate da tabulazioni. Nell'intestazione
+     * (prima di «DOCUMENTO COMMERCIALE» / «DESCRIZIONE») le celle sono pezzi
+     * diversi (ragione sociale, via, telefono) e diventano righe; negli
+     * articoli e nei totali restano sulla stessa riga (descrizione, IVA,
+     * importo). Più due errori tipici: «4, 41» → «4,41» e «4-00» → «4,00».
+     *
+     * @return list<string>
+     */
+    private static function normalizza(string $testo): array
+    {
+        $fuori = [];
+        $testa = true;
+        foreach (preg_split('/\R/u', $testo) as $r) {
+            $r = preg_replace('/(\d),\s(\d{2})(?!\d)/u', '$1,$2', $r);
+            $r = preg_replace('/(^|\t)(\d{1,4})-(\d{2})(?=\t|\s*$)/u', '$1$2,$3', $r);
+            if ($testa && preg_match('/DOCUMENTO|COMMERCIAL|DESCRIZ/iu', $r)) {
+                $testa = false;
+            }
+            if ($testa) {
+                array_push($fuori, ...array_map('trim', explode("\t", $r)));
+            } else {
+                $fuori[] = trim(str_replace("\t", ' ', $r));
+            }
+        }
+
+        return $fuori;
     }
 
     // ── Importi ──────────────────────────────────────────────────────────
@@ -168,6 +200,12 @@ class LettoreScontrino
                 $candidata ??= $n;
             }
         }
+        // «IVA 01452300567» (la «P.» persa): solo se la cifra di controllo torna
+        foreach ($maiuscole as $r) {
+            if (preg_match('/\bIVA\s*[.:]?\s*(\d{11})\b/u', $r, $m) && self::partitaIvaValida($m[1])) {
+                return [$m[1], true];
+            }
+        }
 
         return [$candidata, false];
     }
@@ -236,8 +274,9 @@ class LettoreScontrino
                 $nome[] = $r;
             }
         }
-        // Una forma giuridica in testa vince (loghi come «EURO Spin» davanti)
-        foreach ($nome as $r) {
+        // Una forma giuridica in testa vince (loghi come «EURO Spin» davanti),
+        // anche se OCR.space l'ha messa dopo la via («GEAFLOR S.N.C. & C.»)
+        foreach (array_merge($nome, $testa) as $r) {
             if (preg_match(self::FORME, $r) && ! preg_match('/\b(VIA|CORSO)\b/iu', $r)) {
                 $nome = [preg_replace('/^(EURO\s+|SPIN\s+)/iu', '', $r)];
                 break;
@@ -248,6 +287,15 @@ class LettoreScontrino
             $nome = [$nome[0]];
         }
         $nome = $nome ? trim(implode(' ', $nome)) : null;
+        // Ultima risorsa: il sito stampato («www.eurospin.it» → «Eurospin»)
+        if ($nome === null) {
+            foreach ($righe as $r) {
+                if (preg_match('/www\.([a-z0-9-]{3,})\./iu', $r, $m)) {
+                    $nome = mb_convert_case($m[1], MB_CASE_TITLE);
+                    break;
+                }
+            }
+        }
 
         return [
             'nome' => $nome ? mb_substr(rtrim(preg_replace('/\s+a\s+socio\s+unico$/iu', '', $nome), ' .'), 0, 200) : null,
