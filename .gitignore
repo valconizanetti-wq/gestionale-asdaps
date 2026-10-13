@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Tavole e tela (PDF/HTML pesanti): fuori dal repository, conservate da Paolo
+/docs/mockup/
+/Test_Domande.pdf
