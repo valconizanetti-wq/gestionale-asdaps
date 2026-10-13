@@ -1,68 +1,64 @@
-# Bootstrap — Gestionale ASD, prossima sessione: più ruoli per utente e importazione dei soci
+# Bootstrap — Gestionale ASD, prossima sessione
 
-## Passo zero: repository su GitHub (Paolo, 13/10/2026, 13:56)
-Per non caricare più il bundle a ogni sessione:
-1. Paolo crea un repository **privato e vuoto** su GitHub (senza README),
-   per esempio `gestionale-asd`;
-2. collega GitHub in claude.ai (Impostazioni › Connettori) dando accesso a
-   quel repository;
-3. nella sessione: `add_repo` con accesso «push», `git push` dal bundle di
-   partenza (tutta la storia), poi a fine di ogni sessione push dei
-   commit. Dalla sessione dopo si clona da GitHub e il bundle non serve
-   più.
+## Repository su GitHub (fatto il 13/10/2026)
+- Codice su **GitHub**: `valconizanetti-wq/gestionale-asdaps` (privato), ramo
+  `master`, tutta la storia (push del 13/10/2026 dal bundle `65ece88`).
+- Il bundle non serve più. A inizio sessione: `add_repo` (accesso «push»)
+  e clone da GitHub; a fine sessione push dei commit.
+- Controllato prima del primo push: niente `.env`, chiavi o password nella
+  storia; codici fiscali solo di fantasia nei test.
+- Tavole fuori dal repository: le conserva Paolo (ultime:
+  `Tavole-utenti-importazione.pdf`).
 
-Verificato prima del primo push: `.env` è nel `.gitignore`; nessuna
-password o chiave nel codice; dati personali reali mai nel repository.
+## Stato al 13/10/2026 (sera): v0.40.0 consegnata
+Più ruoli per utente, pagina Utenti, password con il link, avvisi delle
+operazioni delicate, importazione dei soci da Excel. Dettaglio in
+`docs/analisi-ruoli-utenti.md` e `docs/analisi-importazione-soci.md`
+(§7 decisioni, §8 realizzazione e tre giri di revisione), collaudo nel
+blocco **O** (`docs/test/collaudo-O-utenti-importazione.md`, copia
+`claude/…`). 155 test verdi.
 
-## Prossima sessione (decisa da Paolo il 13/10/2026, 13:48)
-Si apre la **Fase 0** del piano (`docs/piano-2027.md` §2 e §2-ter, copia
-`claude/piano-2027.md`): entro il 31/12/2026 vanno **attivate** iscrizioni
-online, rinnovo delle quote, link privacy a tutti i soci e dominio
-definitivo (funzioni già costruite). In questa sessione i primi due lavori:
+- **Da installare** sul server (LEGGIMI-v0.40.0):
+  - una migration (ruoli nella tabella ponte, sezione Utenti);
+  - `npm run build`;
+  - niente Composer, niente seeder.
 
-1. **Più ruoli per utente.** Oggi `gl_users.ruolo` è una colonna sola
-   (FK `gl_ruoli.codice`); Paolo è Segretario **e** Tesoriere con una sola
-   email, e lo statuto lo ammette (art. 16.2). Serve una tabella ponte con
-   i permessi come unione dei ruoli (la scrittura prevale sulla sola
-   lettura: `User::permessiSezioni()`), le email «al ruolo» (es. tessere al
-   Tesoriere, promemoria, scadenzario, Audit Log) lette dalla tabella
-   ponte, la gestione degli utenti e i test. Vale per il modello unico
-   (Dante compreso). Verificare ogni uso di `->ruolo` e
-   `where('ruolo', …)` nel codice.
-2. **Importazione dei soci da Excel.** Modello consegnato il 13/10/2026,
-   `importazione-soci-modello.xlsx`: foglio «Istruzioni» e foglio «Soci».
-   Colonne (dalla A):
-   - Cognome*, Nome*, Codice fiscale*, Indirizzo*, CAP*, Comune*,
-     Provincia*;
-   - Email e Telefono (obbligatori per i maggiorenni);
-   - Data di ammissione*, Fondatore (Sì/No), Quota valida fino al;
-   - Genitore: cognome e nome, codice fiscale, relazione, telefono,
-     email (obbligatori per i minorenni);
-   - Note.
+  Poi collaudo O.
+- **Decisioni di Paolo del 13/10/2026**:
+  - tolta `gl_users.ruolo`;
+  - password con il link per email;
+  - pagina Utenti: modificano Presidente e Segretario, legge il CD; limiti
+    del Segretario (non tocca il ruolo né l'utente del Presidente, né i
+    propri ruoli);
+  - quote del vecchio gestionale dal 2027 senza ricevuta né movimento;
+  - importano Presidente e Segretario;
+  - avvisi per email delle operazioni delicate a chi non le ha fatte.
+- **Rimandato al modulo GDPR**: lettera di incarico ai membri del CD
+  (`gl_gdpr_incaricati` c'è già, con `user_id`).
+- **Niente PhpSpreadsheet**: Packagist non raggiungibile dalla sessione;
+  lettore `.xlsx` proprio (`App\Support\LettoreXlsx`).
+- In locale: database `asd_test` per i test (RefreshDatabase lo svuota) e
+  `asd_demo` per provare le pagine (`.env`).
 
-   La riga 2 è un esempio da scartare. Funzione come «Carica tessere già
-   emesse»:
-   - anteprima con gli errori riga per riga (codice fiscale, doppioni,
-     dati mancanti), dati di nascita dal codice fiscale, conferma;
-   - file cancellato dopo; soci `importato`; Audit Log;
-   - privacy e foto/video non si importano (arrivano con il link);
-   - il Dante ha già `SociImportController` (allegato il 13/10/2026 in
-     `Controllers_SDA.zip`): leggerlo prima.
+## Prossima sessione: resto della Fase 0
+Dal piano (`docs/piano-2027.md` §2 e §2-ter):
+1. collaudo O di Paolo e correzioni;
+2. comando di azzeramento (`php artisan …` con prova a vuoto, al posto di
+   J12…O14 a mano);
+3. dominio definitivo con i dati di prova:
+   - SSL, `APP_URL`, cron;
+   - SPF, DKIM e DMARC per arciericastello.it;
+   - reindirizzamento del vecchio indirizzo;
+4. informativa senza segnaposto (hosting e consulente fiscale) **prima**
+   dei link privacy;
+5. **dopo l'Assemblea della B.A.S. (circa il 16/11/2026)**: azzeramento,
+   soci veri con l'importazione, CD vero (utenti dalla pagina Utenti, ruoli
+   sotto), tessere dal CSV;
+6. a dicembre: link privacy, apertura delle iscrizioni, quote 2027.
 
-Primo passo: **analisi e tavole** (regola di Paolo), poi codice, tre giri
-di revisione, lista di collaudo in un file nuovo
-(`docs/test/collaudo-O-…`, forma estesa).
-
-Poi, nella Fase 0:
-- comando di azzeramento (`php artisan …` con prova a vuoto, al posto di
-  J12…N12 a mano);
-- dominio definitivo con i dati di prova (SSL, `APP_URL`, cron, SPF, DKIM
-  e DMARC per arciericastello.it, reindirizzamento del vecchio indirizzo);
-- informativa senza segnaposto (hosting e consulente fiscale) **prima**
-  dei link privacy;
-- **dopo l'Assemblea della B.A.S. (circa il 16/11/2026)**, che adotta lo
-  statuto: azzeramento, soci veri, CD vero, tessere dal CSV;
-- a dicembre: link privacy, apertura delle iscrizioni, quote 2027.
+Primo passo di ogni lavoro nuovo: **analisi e tavole** (regola di Paolo),
+poi codice, tre giri di revisione, lista di collaudo in un file nuovo
+(`docs/test/collaudo-<lettera>-…`, forma estesa).
 
 CD vero (Paolo, 13/10/2026; email solo sul server, mai nei documenti né
 nel codice):
@@ -118,19 +114,21 @@ nel codice):
 
 **Repository leggero (13/10/2026)**: tavole e tela (`docs/mockup/`, circa 36 MB) e `Test_Domande.pdf` tolti da tutta la storia e messi nel `.gitignore`; il bundle passa da 24,5 a 1,9 MB e gli hash dei commit sono cambiati. Le tavole le conserva Paolo: si allegano solo quando servono; quelle nuove si consegnano come file a parte, non nel repository.
 
-Codice di partenza: `gestionale-asd-<commit>.bundle` (ultimo consegnato:
-quello con questo bootstrap). Si ricostruisce con
-`git clone gestionale-asd-<commit>.bundle /home/claude/gestionale-asd`;
-poi:
-- `cp .env.example .env`, credenziali del database `asd_test` nel `.env`;
+Codice di partenza: GitHub `valconizanetti-wq/gestionale-asdaps` (vedi in
+cima; niente più bundle). Dopo il clone:
+- `cp .env.example .env`, `APP_ENV=local`, database `asd_demo` nel `.env`
+  (i test usano `asd_test`, da `phpunit.xml`);
 - `composer install` (se i download da GitHub cadono, rilanciarlo:
   riprende da dove era);
 - `npm ci`, `npm run build`, `php artisan key:generate`;
 - MariaDB (`apt-get install mariadb-server`, `service mariadb start`,
-  database `asd_test` e utente);
-- `php artisan test` (139 test verdi).
+  database `asd_test` e `asd_demo`, utente);
+- `php artisan test` (155 test verdi).
+- Composer: se Packagist è bloccato dal proxy, `composer install` scarica
+  comunque dal `composer.lock` (archivi da GitHub); `composer require` di
+  pacchetti nuovi invece non funziona.
 
-## Stato al 12/10/2026 (23:17)
+## Stato al 12/10/2026 (23:17) — storico
 - Sul server: **v0.39.1 installata** (cumulativa, con la v0.38.1).
   Collaudi K e L superati il 07/10/2026, **M e N superati il 12/10/2026**
   (Paolo).

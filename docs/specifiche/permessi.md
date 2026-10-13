@@ -100,7 +100,8 @@ modifica.
 | Rinnovi quota, Bilancio, Progetti | ✓ | | ✓ | ✓ (sola lettura) | |
 | Promemoria | ✓ | ✓ | ✓ | ✓ (sola lettura) | |
 | Audit Log | ✓ | | | ✓ (sola lettura) | |
-| Impostazioni (incl. Utenti/Ruoli; profilo dell'ente in lettura dalla v0.38.0) | ✓ | ✓ (sola lettura) | ✓ (sola lettura) | | |
+| Impostazioni (profilo dell'ente in lettura dalla v0.38.0) | ✓ | ✓ (sola lettura) | ✓ (sola lettura) | | |
+| Utenti (v0.40.0; il Segretario con i limiti di `App\Services\Utenti`) | ✓ | ✓ | ✓ (sola lettura) | | ✓ (sola lettura) |
 | Erogazioni/Collaboratori | | | | | |
 
 ## 5. Conformità e sicurezza
@@ -178,3 +179,17 @@ modifica.
   carica non modifica dopo «Registra» (Paolo, 12/10/2026). Gli utenti
   Consigliere si creano come gli altri (tinker, `deploy.md` §7). Da
   rilanciare `RuoloSeeder` e `SezioneSeeder`.
+
+- **Più ruoli per utente e sezione Utenti** (v0.40.0, 13/10/2026,
+  `analisi-ruoli-utenti.md`):
+  - i ruoli di un utente stanno in `gl_users_ruoli` (tolta
+    `gl_users.ruolo`);
+  - `permessiSezioni()` fa l'**unione**: una sezione è in sola lettura solo
+    se lo è per tutti i ruoli che la vedono, la scrittura prevale
+    (`MIN(sola_lettura)`);
+  - nei controlli «solo il Presidente» si usa `haRuolo('presidente')`.
+  - Sezione nuova `utenti`: Presidente e Segretario modificano, Tesoriere e
+    Consigliere leggono, il Revisore no. La gestione degli utenti non
+    «ricade» più in Impostazioni.
+  - Combinazioni: Revisore da solo, Consigliere senza cariche.
+  - Migration `000103` (permessi compresi); `SezioneSeeder` aggiornato.

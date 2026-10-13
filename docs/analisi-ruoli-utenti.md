@@ -181,7 +181,7 @@ vieta). Vincoli di gestione:
 «Segretario e Tesoriere» in una riga. Il voto del CD funziona comunque
 (conta il membro, non la carica). Va ripresa con Governance CD (Fase 1).
 
-## 6. Da decidere
+## 6. Da decidere (risolto in §7)
 
 - **D1**: togliere `gl_users.ruolo` (consigliato) o tenerla come ruolo
   principale.
@@ -189,3 +189,96 @@ vieta). Vincoli di gestione:
   dimenticata?» (b, consigliato).
 - **D3**: pagina Utenti solo per il Presidente (consigliato) o anche in
   lettura per Segretario e Tesoriere.
+
+## 7. Decisioni di Paolo (13/10/2026)
+
+- **D1** (15:35, «procedi»): tolta `gl_users.ruolo`, una sola fonte dei
+  ruoli.
+- **D2** (15:35): link per email, con «Password dimenticata?».
+- **D3** (15:16, la proposta «solo il Presidente» era troppo restrittiva):
+  - modificano **Presidente e Segretario**, in lettura **tutto il CD**
+    (Tesoriere e Consigliere; il Revisore no, non è nel CD);
+  - **limiti del Segretario** (15:35): non dà né toglie il ruolo di
+    Presidente, non modifica l'utente del Presidente, non cambia i propri
+    ruoli; ogni cambio di ruoli fatto da lui arriva al Presidente.
+- **Lettera di incarico al CD** (15:35): la tabella `gl_gdpr_incaricati`
+  c'è già (utente, testo, data di nomina, lettera firmata, revoca), ma si fa
+  **con il modulo GDPR**, non adesso.
+- **Avvisi delle operazioni** (15:16, idea di Paolo; 15:35, elenco
+  approvato):
+  - nelle modifiche condivise fra Presidente, Segretario e Tesoriere,
+    un'email a chi non ha fatto l'operazione;
+  - solo per le operazioni delicate: importazione dei soci, ruoli e stato
+    degli utenti, schede eliminate e ripristinate, ricevute annullate,
+    correzioni e riapertura degli anni chiusi, movimenti eliminati.
+
+## 8. Realizzazione (v0.40.0, 13/10/2026)
+
+- Migration `2026_10_13_000103_ruoli_multipli_utenti`:
+  - `gl_users_ruoli`, copia del ruolo, via `gl_users.ruolo`;
+  - sezione `utenti` con i permessi (anche in `SezioneSeeder`).
+- `User`: `ruoli()`, `codiciRuoli()`, `haRuolo()`, `etichettaRuoli()`,
+  `ruoliInBreve()` (barra in alto), `assegnaRuoli()`, scope `conRuolo()`;
+  `permessiSezioni()` con `MIN(sola_lettura)`. Tutti i 31 usi di §2
+  sostituiti.
+- `App\Services\Utenti`: regole di §3.3 e dei limiti del Segretario,
+  controllo dell'ultimo Presidente dentro la transazione, `UTENTE_RUOLI`
+  HIGH con prima e dopo.
+- `UtentiController` e viste `utenti/index`, `utenti/form` (tavole UT-1,
+  UT-2); la finestra «Link per la password» (UT-3).
+- `PasswordController`, viste `auth/password-dimenticata`,
+  `auth/password-scegli` (UT-3b):
+  - broker di Laravel sulla tabella `gl_password_reset_tokens` (c'era già),
+    24 ore;
+  - email `LinkPassword` registrata in `gl_email_log`;
+  - minimo 12 caratteri;
+  - stessa risposta per ogni email, link solo agli utenti attivi;
+  - limiti: 5 richieste l'ora per indirizzo, 10 al minuto sulle pagine;
+  - `UTENTE_PASSWORD` (MEDIUM) nell'Audit Log.
+- `App\Services\AvvisiOperazioni`:
+  - parte da ogni riga HIGH di `AuditLogService::scrivi` fatta da un utente
+    collegato;
+  - dopo il commit raccoglie le righe fino alla fine della richiesta e manda
+    **una email per persona** con tutte le righe (es. una ricevuta annullata
+    su un anno chiuso scrive tre righe);
+  - destinatari: Presidente, Segretario e Tesoriere attivi che vedono la
+    sezione, escluso chi ha eseguito;
+  - operazioni di sistema: solo il Presidente, come prima.
+
+  Ha preso il posto di `AuditObserver::notificaHigh` (testo semplice al
+  Presidente, anche quando l'aveva fatta lui).
+- `UserFactory::conRuoli()`; 13 file di test adeguati; nuovo `UtentiTest`
+  (10 prove).
+- CSS sezione 18 (`ut-*`).
+
+### Tre giri di revisione critica (13/10/2026)
+
+1. **Primo giro** (lettura del codice e prove nel browser a 1440 e 375 px):
+   - le finestre «Link per la password» stavano nel corpo della pagina e
+     lasciavano un buco sopra il riquadro «Come funzionano i ruoli»:
+     spostate nello stack `modals`;
+   - l'avviso «Avviso al Presidente» dell'observer e il nuovo servizio
+     avrebbero mandato due email per la stessa riga: tolta `notificaHigh`
+     (anche dal `SociController`);
+   - una sola operazione può scrivere più righe HIGH (annullamento di una
+     ricevuta su anno chiuso: rinnovo, correzione, movimento eliminato):
+     senza raccolta sarebbero partite tre email; ora una sola per persona.
+2. **Secondo giro** (casi limite):
+   - un utente nuovo creato **non attivo** riceveva il link ma poi non
+     poteva usarlo: il link parte solo agli utenti attivi, anche dalla
+     pagina Utenti;
+   - le pagine pubbliche della password non avevano un limite sulle
+     richieste: `throttle:10,1`;
+   - la coda degli avvisi era legata a un flag statico che nei test (e nei
+     processi lunghi) poteva restare «già registrato» da un'app precedente:
+     ora la registrazione è per istanza dell'app.
+3. **Terzo giro** (coerenza con il resto):
+   - `RiskMatrix` parlava ancora di «notifica al Presidente» e del cambio di
+     `ruolo` come campo: commenti aggiornati;
+   - il modale di annullamento delle ricevute aveva cambiato titolo per
+     tutte («Annullare la ricevuta n. …»): ripristinato il titolo di prima
+     per le ricevute vere (lo controllava `RinnoviQuotaTest`);
+   - `permessi.md`, `auth.md` e `audit-log.md` aggiornati (matrice,
+     password, avvisi).
+
+Test: 155 verdi (139 + 16 nuovi, compresi quelli dell'importazione).

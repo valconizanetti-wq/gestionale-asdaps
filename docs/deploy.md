@@ -212,13 +212,14 @@ con i dati reali della Compagnia (`AssociazioneSeeder`, con `firstOrCreate`).
 php artisan tinker
 ```
 ```php
-App\Models\User::create(['name' => 'Paolo', 'email' => 'indirizzo@reale.it', 'password' => 'password-lunga-e-unica', 'ruolo' => 'presidente', 'attivo' => true]);
+$u = App\Models\User::create(['name' => 'Paolo', 'email' => 'indirizzo@reale.it', 'password' => 'password-lunga-e-unica', 'attivo' => true]);
+$u->assegnaRuoli(['presidente']);
 exit
 ```
-Gli altri utenti (segretario, tesoriere, revisore e, dalla v0.39.0, i
-consiglieri con `'ruolo' => 'consigliere'`, che caricano gli scontrini) si
-creano allo stesso modo, finché non ci sarà la gestione utenti nelle
-Impostazioni.
+Dalla v0.40.0 i ruoli stanno nella tabella `gl_users_ruoli` (un utente può
+averne più d'uno). Solo il primo Presidente si crea con tinker: gli altri
+utenti li crea il Presidente (o il Segretario) dalla pagina **Utenti**, e
+ognuno sceglie la propria password con il link che riceve per email.
 
 ### 3.9 Permessi e ottimizzazione (Terminale)
 
@@ -364,6 +365,19 @@ non vengono toccati.
   prima di ogni rilascio con migration conviene comunque un dump manuale.
 
 ## 7. Storia ed evoluzione
+
+- v0.40.0 (13/10/2026):
+  - migration `000103`: ruoli nella tabella `gl_users_ruoli`, tolta
+    `gl_users.ruolo`, sezione «Utenti» con i permessi; nessun seeder da
+    rilanciare;
+  - §3.8 riscritto: dopo il primo Presidente gli utenti si creano dalla
+    pagina Utenti;
+  - il link per la password usa `gl_password_reset_tokens` (c'era già) e
+    la posta del server;
+  - l'importazione dei soci legge l'Excel senza librerie nuove (estensioni
+    zip e xml, già richieste da Laravel e DomPDF): nessun `composer require`;
+  - `tessere:pulisci` toglie anche i file dell'importazione rimasti più di
+    un giorno.
 
 - v0.37.0 (07/10/2026): comando giornaliero `tessere:pulisci`; controllo
   dei numeri di tessera nella migration (§6).

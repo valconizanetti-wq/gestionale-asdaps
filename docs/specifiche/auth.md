@@ -120,8 +120,8 @@ Nessuna modifica di schema. Usa `gl_users` (`email`, `password`,
 - **Permessi** (`permessi.md`): `permesso:` e la sidebar usano gli
   helper di `User`.
 - **UI** (`ui.md`): layout e login usano solo classi di `app.css`.
-- **Impostazioni** (futuro): gestione utenti, inclusa la reimpostazione
-  della password, finché non c'è il recupero via email.
+- **Utenti** (v0.40.0): pagina Utenti per creare, modificare e
+  disattivare; la password si sceglie con il link per email.
 - **Tutti i moduli**: seguono le convenzioni di §3.
 
 ## 7. Storia ed evoluzione
@@ -137,3 +137,18 @@ Nessuna modifica di schema. Usa `gl_users` (`email`, `password`,
   (pagina con token non più valido), da cui la gestione del 419 in §3;
   aggiunti il pulsante mostra/nascondi password e il link "Password
   dimenticata?" verso l'indirizzo dell'amministratore.
+
+- **v0.40.0 (13/10/2026)**: «Password dimenticata?» non è più un link
+  email all'amministratore, ma una pagina (`PasswordController`, tavola
+  UT-3b):
+  - si chiede l'email; la risposta è sempre la stessa e il link parte solo
+    a un utente attivo;
+  - il link vale 24 ore e una volta sola (broker di Laravel, tabella
+    `gl_password_reset_tokens`, `config/auth.php`);
+  - password di almeno 12 caratteri, poi si entra subito;
+  - limiti: 5 richieste l'ora per indirizzo, `throttle:10,1` sulle due
+    pagine.
+
+  Lo stesso link lo manda la pagina Utenti a un utente nuovo o a chi l'ha
+  persa: nessuno sceglie la password di un altro. Dettaglio in
+  `analisi-ruoli-utenti.md` §8.

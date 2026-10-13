@@ -4,7 +4,7 @@ Lista di collaudo manuale su arco.valconi.it. Collaudo della v0.30.3
 concluso il 30/09/2026: blocchi A–F superati, pulizia fatta. Collaudo della
 v0.32.0 (blocco G, A11–A13) del 05/10/2026: superato, con la sola richiesta
 sulla disposizione dei dati fissi (G3), fatta nella v0.32.1 (installata).
-Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: superato il 07/10/2026, dopo le correzioni della v0.37.1 e v0.37.2), dalla v0.37.0 blocco L (Tessere CSEN: superato il 07/10/2026, con la v0.37.2 installata), dalla v0.38.0 blocco M, in `collaudo-M-scadenzario.md` (Scadenze dell'associazione e promemoria «N giorni prima»; primo giro del 12/10/2026, correzioni nella v0.38.1: voci «v0.38.1»), dalla v0.39.0 blocco N, in `collaudo-N-scontrini.md` (Scontrini dal telefono con OCR). Copia viva,
+Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: superato il 07/10/2026, dopo le correzioni della v0.37.1 e v0.37.2), dalla v0.37.0 blocco L (Tessere CSEN: superato il 07/10/2026, con la v0.37.2 installata), dalla v0.38.0 blocco M, in `collaudo-M-scadenzario.md` (Scadenze dell'associazione e promemoria «N giorni prima»; primo giro del 12/10/2026, correzioni nella v0.38.1: voci «v0.38.1»), dalla v0.39.0 blocco N, in `collaudo-N-scontrini.md` (Scontrini dal telefono con OCR), dalla v0.40.0 blocco O, in `collaudo-O-utenti-importazione.md` (utenti con più ruoli e importazione dei soci). Copia viva,
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.
@@ -226,6 +226,7 @@ I tipi restano (Silver Base, Gold Base con i loro prezzi).
 Dal 12/10/2026 ogni blocco nuovo ha un suo file in `docs/test/` (e una copia in `claude/` nel progetto), scritto per esteso: scopo, chi, prima, passi numerati, risultato atteso.
 - **M** — Scadenze dell'associazione e promemoria «N giorni prima» (v0.38.0, correzioni v0.38.1): `collaudo-M-scadenzario.md`. Azzeramento: M12.
 - **N** — Scontrini dal telefono con OCR (v0.39.0): `collaudo-N-scontrini.md`. Azzeramento: N12.
+- **O** — Più ruoli per utente, pagina Utenti, password con il link, avvisi delle operazioni e importazione dei soci da Excel (v0.40.0): `collaudo-O-utenti-importazione.md`. Azzeramento: O14.
 
 ## CD di prova (SQL)
 Controllo dei soci:

@@ -473,3 +473,14 @@ Revisione (tre giri): oggetto proposto che non sovrascrive quello scritto
 in caso di errore (`old()`); pulsanti spenti con il motivo nel
 suggerimento; 49 test, pagine a 1440 e 375 px senza scorrimento.
 
+- **v0.40.0 (13/10/2026), avvisi delle operazioni delicate**:
+  - ogni riga HIGH scritta da un utente collegato fa partire, dopo il
+    commit, un'email agli altri fra Presidente, Segretario e Tesoriere che
+    vedono la sezione dell'operazione (`App\Services\AvvisiOperazioni`);
+  - una sola email per persona e per richiesta, con tutte le righe;
+  - non arriva a chi ha eseguito;
+  - per le operazioni di sistema arriva solo al Presidente.
+
+  Sostituisce `AuditObserver::notificaHigh`. Eventi nuovi: `UTENTE_RUOLI`
+  (HIGH), `UTENTE_LINK_PASSWORD` (LOW), `UTENTE_PASSWORD` (MEDIUM),
+  `IMPORT_SOCI` (HIGH).

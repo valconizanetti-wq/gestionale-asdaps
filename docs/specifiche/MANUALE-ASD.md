@@ -929,6 +929,27 @@ tesoriere, revisore).
   (`puoAccedere()`, `puoModificare()`, `soloLettura()`, v0.18.0), che
   leggono anche il flag `sola_lettura` con una sola query per richiesta.
 
+**Più ruoli per utente e pagina Utenti** (v0.40.0, 13/10/2026,
+`analisi-ruoli-utenti.md`):
+- un utente può avere più ruoli (tabella `gl_users_ruoli`, tolta
+  `gl_users.ruolo`): vede l'unione delle sezioni e dove un ruolo scrive e
+  l'altro legge, scrive. Serve per Paolo, Segretario e Tesoriere con una
+  sola email (statuto art. 15.2);
+- sezione nuova **Utenti**: modificano Presidente e Segretario (il
+  Segretario non tocca il Presidente né i propri ruoli), il resto del CD
+  consulta, il Revisore no;
+- il Revisore non ha altri ruoli (art. 20.1); il Consigliere solo senza
+  cariche; resta sempre almeno un Presidente attivo;
+- la password la sceglie ognuno con un link per email (anche «Password
+  dimenticata?»);
+- le operazioni delicate arrivano per email agli altri fra Presidente,
+  Segretario e Tesoriere che vedono quella parte (`AvvisiOperazioni`).
+
+**Importazione dei soci da Excel** (v0.40.0, `analisi-importazione-soci.md`):
+Soci › «Importa da Excel» dal modello, con anteprima degli errori riga per
+riga e conferma solo senza errori; le quote del vecchio gestionale dal 2027
+entrano senza ricevuta né movimento.
+
 ## 7. Correzioni da riportare su `MANUALE-CORE.md`
 
 Le modifiche da riportare sul **Gestionale APS** sono tutte in un

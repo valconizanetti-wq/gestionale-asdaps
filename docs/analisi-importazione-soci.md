@@ -203,10 +203,82 @@ conferma.
 - Collaudo: blocco **O**, con un foglio di prova con dati di fantasia
   (codici fiscali validi inventati) in `tests/fixtures/`, mai dati veri.
 
-## 5. Da decidere
+## 5. Da decidere (risolto in §7)
 
 - **D4**: quota oltre il 2026, righe senza ricevuta (a, consigliata) o
   solo `quota_scadenza` (b).
 - **D5**: importano Presidente e Segretario (chi modifica Soci,
   consigliato) o solo il Presidente, come «percorso eccezionale» del
   Dante.
+
+## 7. Decisioni di Paolo (13/10/2026)
+
+- **D4** (15:16): per la quota oltre il 2026, una riga in Rinnovi quota per
+  il 2027 **senza ricevuta né movimento**.
+- **D5** (15:16): importano **Presidente e Segretario**.
+- Riga d'esempio riconosciuta dal contenuto, «Quota valida fino al» senza
+  ricevuta, PhpSpreadsheet (14:35): approvati. Per PhpSpreadsheet vedi però
+  §8.
+
+## 8. Realizzazione (v0.40.0, 13/10/2026)
+
+- **Niente PhpSpreadsheet.** Dalla sessione di sviluppo Packagist non è
+  raggiungibile (il proxy lo blocca), e sul server sarebbe servito un
+  pacchetto in più. Al suo posto `App\Support\LettoreXlsx`, un lettore
+  minimo:
+  - un `.xlsx` è uno ZIP di file XML, quindi bastano ZipArchive e SimpleXML,
+    già presenti per Laravel e DomPDF;
+  - legge un foglio per nome, le stringhe condivise, il testo in linea, i
+    numeri, le date in numero di serie (sistema 1900 e 1904) e in ISO;
+  - massimo 20 MB per parte decompressa, XML senza rete.
+
+  Nessun `composer` da lanciare sul server.
+- `App\Services\ImportazioneSoci`: `leggi()` (anteprima) e `importa()`
+  (rilettura, ricontrollo, transazione, `IMPORT_SOCI` HIGH):
+  - **Prima di leggere le righe**: intestazioni confrontate senza asterischi,
+    riga d'esempio scartata, righe con il solo «Fondatore» ignorate (es.
+    «No» copiato giù per la colonna).
+  - **Pulizia dei valori**: CAP numerico riportato a 5 cifre, telefono
+    numerico senza «.0».
+  - **Controlli** come in §3.3.
+- **Quote**: `quota_scadenza` = «Quota valida fino al».
+  - Per ogni anno dall'avvio della contabilità (2027) una riga in
+    `gl_rinnovi` senza numero di ricevuta, `metodo_pagamento = altro`, con la
+    nota «Quota incassata nel vecchio gestionale (importazione dei soci)…».
+    Importo della categoria, data di pagamento uguale alla data di
+    ammissione (al più presto il 1° ottobre dell'anno prima).
+  - `Rinnovo::senzaRicevuta()` e `riferimento()`. Elenco dei rinnovi, quote
+    nella scheda, finestra di annullamento e situazione della tessera
+    mostrano «quota 2027 del vecchio gestionale», senza scaricare né inviare
+    ricevute (`rinnovi.invia` risponde 422).
+  - Annullare una quota importata la toglie. In `aggiornaScadenza`, per un
+    socio importato senza altre quote valide, resta la quota del vecchio
+    gestionale, al più fino al 31/12 dell'anno prima dell'avvio.
+- `SociImportaController`, viste `soci/importa` (IS-1, IS-2) e
+  `soci/importa-fatto` (IS-3). Pulsante «Importa da Excel» nell'elenco dei
+  soci. Filtro `importati=AAAA-MM-GG` per «Vedi i soci importati».
+- Modello scaricabile: `resources/modelli/importazione-soci-modello.xlsx`
+  (il file di Paolo del 13/10/2026, con la riga d'esempio).
+- File in `storage/app/private/tmp/soci-import/`, cancellato a conferma o
+  annullamento; `tessere:pulisci` toglie anche questi dopo un giorno.
+- Test: `ImportazioneSociTest` (6 prove) con `tests/fixtures/soci-buoni.xlsx`
+  e `soci-errati.xlsx` (dati e codici fiscali inventati).
+
+### Tre giri di revisione critica (13/10/2026)
+
+1. **Primo giro**:
+   - `mimes:xlsx` rifiuta i file veri quando il server riconosce il .xlsx
+     come «zip»: si controlla l'estensione e il contenuto lo verifica il
+     lettore;
+   - nel riepilogo «1 minorenni»: singolare e plurale.
+2. **Secondo giro**:
+   - una riga con soli spazi o con il solo «No» in Fondatore diventava un
+     socio pieno di errori: ora è ignorata;
+   - annullare la quota 2027 importata azzerava anche la quota 2026 del
+     vecchio gestionale (`aggiornaScadenza` guardava solo i rinnovi):
+     corretto.
+3. **Terzo giro**:
+   - i file salvati da un vecchio Excel per Mac usano le date dal 1904
+     (sarebbero risultate spostate di quattro anni): il lettore lo
+     riconosce dal file;
+   - aggiunte le celle data in formato ISO.

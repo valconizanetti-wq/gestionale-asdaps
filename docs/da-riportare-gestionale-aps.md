@@ -359,6 +359,39 @@ non riportare".
   centesimi interi (`Importo::centesimi`, `daCentesimi`). Da controllare
   nel Gestionale APS (`grep bc`). *(anche nel core)*
 
+- [ ] **D14. Più ruoli per utente** (v0.40.0). Nel Gestionale APS
+  `gs_users.ruolo` è una colonna sola e Configurazioni › Utenti sceglie un
+  ruolo.
+  - Qui: tabella ponte `gl_users_ruoli`, permessi come unione dei ruoli (la
+    scrittura prevale), `haRuolo()` al posto di `->ruolo ===`, email «al
+    ruolo» una per persona.
+  - Regole: Revisore da solo; ultimo Presidente non rimovibile; il
+    Segretario gestisce gli utenti senza toccare il Presidente né i propri
+    ruoli.
+  - Alla migrazione del Dante nel modello unico i ruoli passano nella tabella
+    ponte (`analisi-ruoli-utenti.md`).
+- [ ] **D15. Password scelta dall'utente con un link** (v0.40.0). Nel
+  Gestionale APS la password la scrive l'amministratore
+  (`ConfigurazioniController::storeUtente`, `resetPassword`). Qui: link
+  monouso di 24 ore per email, «Password dimenticata?» con risposta uguale
+  per tutti, minimo 12 caratteri.
+- [ ] **D16. Avvisi delle operazioni delicate a chi non le ha fatte**
+  (v0.40.0). Nel Gestionale APS la notifica HIGH arriva solo al Presidente
+  (anche se l'ha fatta lui), in testo semplice. Qui `AvvisiOperazioni`:
+  - Presidente, Segretario e Tesoriere che vedono la sezione, escluso chi
+    ha eseguito;
+  - una email per persona con tutte le righe, dopo il commit.
+- [ ] **D17. Importazione dei soci con controlli prima della conferma**
+  (v0.40.0). Il `SociImportController` del Dante:
+  - importa e mostra le anomalie solo dopo;
+  - legge il foglio attivo (non per nome);
+  - lascia il file nella cartella temporanea;
+  - richiede PhpSpreadsheet (con il ripiego sul CSV).
+
+  Qui: anteprima con errori bloccanti riga per riga, rilettura e ricontrollo
+  alla conferma, tutto o niente, file cancellato, lettore `.xlsx` senza
+  librerie (`LettoreXlsx`).
+
 ## E. PDF ed email
 
 - [ ] **E1. Larghezze delle colonne nei PDF messe su `<col>`**: DomPDF le
@@ -384,3 +417,4 @@ non riportare".
 - 07/10/2026 (v0.37.1): aggiunte D8 e D9 dal collaudo K.
 - 11/10/2026 (v0.38.0): aggiunte D10 e D11 da Scadenzario e Promemoria.
 - 12/10/2026 (v0.39.0): aggiunte D12 e D13 dagli Scontrini.
+- 13/10/2026 (v0.40.0): aggiunte D14–D17 da ruoli multipli, password, avvisi e importazione dei soci.

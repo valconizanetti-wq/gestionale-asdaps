@@ -548,3 +548,20 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   («Valida», «In scadenza», «Scaduta»). Promemoria: «Anteprima con dati
   d'esempio» con la nota `pr-anteprima-nota`, avviso giallo se nessun utente
   ha il ruolo scelto. Verificato a 1440 e 375 px.
+- v0.40.0 (13/10/2026): sezione 18 di `app.css` «Utenti e importazione dei
+  soci» (tavole UT-1…UT-4 e IS-1…IS-3, `Tavole-utenti-importazione.pdf`,
+  approvate da Paolo il 13/10/2026).
+  - Utenti: ruoli come badge (`ut-ruoli`; blu le cariche, grigio
+    Consigliere e Revisore); scelta dei ruoli a caselle grandi con
+    descrizione (`ut-scelta-ruoli`, `ut-ruolo`, stati `scelto` e
+    `spento`, una colonna su telefono); `ut-intero` per i campi a tutta
+    larghezza nel `form-grid`.
+  - Le finestre «Link per la password» vanno nello stack `modals`: dentro
+    la pagina lasciavano spazio vuoto.
+  - Pagine «Password dimenticata» e «Scegli la password» nello stile
+    dell'accesso, con la testa comune `auth/_testa`.
+  - Sotto il nome, in alto: i ruoli separati da « · ».
+  - Importazione: messaggi riga per riga `is-msg ko|warn`; righe pronte
+    nascoste finché non si spunta «Mostra anche le righe pronte»
+    (`is-riga-ok`, `is-tutte`); passi successivi in `is-passi`.
+  - Verificato a 1440 e 375 px.

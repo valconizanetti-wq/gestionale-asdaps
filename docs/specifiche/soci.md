@@ -322,3 +322,16 @@ Paolo:
   l'unico modo era reinserire il codice fiscale in «Nuovo socio»); CSV e
   libro soci non escono mai con quel filtro. Colonna «Tessera CSEN» con il
   badge della tessera (v0.37.0).
+
+- **Importazione dei soci da Excel** (v0.40.0, 13/10/2026,
+  `analisi-importazione-soci.md`):
+  - pagina Soci › «Importa da Excel» (Presidente e Segretario), dal modello
+    di Paolo;
+  - anteprima con errori e avvisi riga per riga; conferma solo senza errori
+    (tutto o niente);
+  - soci `importato`, dati di nascita dal codice fiscale, genitore nei
+    campi `tutore_*` per i minorenni;
+  - privacy, foto e video e tessere non si importano;
+  - quote del vecchio gestionale: dal 2027 in `gl_rinnovi` senza ricevuta.
+
+  Filtro `importati` nell'elenco.
