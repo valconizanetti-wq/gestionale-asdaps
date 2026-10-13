@@ -35,6 +35,9 @@ class ImportazioneSociTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        if (! class_exists(\ZipArchive::class)) {
+            $this->fail("Manca l'estensione PHP «zip»: attivala (Laragon: menu PHP › Extensions › zip; deploy.md §6) e rilancia i test.");
+        }
         $this->withoutVite();
         Carbon::setTestNow('2026-11-20 10:00:00');
         $this->seed([RuoloSeeder::class, SezioneSeeder::class, ImpostazioneSeeder::class, AssociazioneSeeder::class, PrimaNotaCategoriaSeeder::class]);

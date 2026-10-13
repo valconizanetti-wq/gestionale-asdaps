@@ -226,8 +226,10 @@ conferma.
   raggiungibile (il proxy lo blocca), e sul server sarebbe servito un
   pacchetto in più. Al suo posto `App\Support\LettoreXlsx`, un lettore
   minimo:
-  - un `.xlsx` è uno ZIP di file XML, quindi bastano ZipArchive e SimpleXML,
-    già presenti per Laravel e DomPDF;
+  - un `.xlsx` è uno ZIP di file XML, quindi bastano ZipArchive e SimpleXML
+    (correzione del 13/10/2026, sera: ZipArchive richiede l'estensione PHP
+    «zip», che in Laragon non era attiva; ora l'importazione lo dice con un
+    messaggio chiaro e `deploy.md` §6 spiega come attivarla);
   - legge un foglio per nome, le stringhe condivise, il testo in linea, i
     numeri, le date in numero di serie (sistema 1900 e 1904) e in ISO;
   - massimo 20 MB per parte decompressa, XML senza rete.

@@ -3,7 +3,13 @@ Piu' ruoli per utente, pagina Utenti, password con il link, avvisi delle operazi
 importazione dei soci da Excel
 
 Da applicare sopra la v0.39.1. UNA migration; nessun seeder; nessun pacchetto Composer nuovo;
-CSS nuovo (npm run build).
+CSS nuovo (npm run build). SERVE L'ESTENSIONE PHP "zip" (importazione da Excel): vedi sotto.
+
+ESTENSIONE PHP "zip" (aggiunto il 13/10/2026 sera, dopo i test in Laragon)
+  - Laragon: menu PHP > Extensions > zip (spunta), riavviare Laragon; controllo: php -m
+  - Server, PRIMA dell'installazione: cPanel > Select PHP Version > Extensions > zip spuntata;
+    controllo da Terminale: php -m | grep -i zip
+  Senza: l'importazione dei soci risponde "Manca l'estensione PHP zip..." e 4 test falliscono.
 Dettaglio: docs/analisi-ruoli-utenti.md e docs/analisi-importazione-soci.md (par. 7 decisioni,
 par. 8 realizzazione con i tre giri di revisione). Collaudo: docs/test/collaudo-O-utenti-importazione.md.
 

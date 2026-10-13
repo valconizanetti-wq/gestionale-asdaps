@@ -9,7 +9,8 @@ namespace App\Support;
  * Perché non PhpSpreadsheet: dalla sessione di sviluppo Packagist non è
  * raggiungibile, e sul server servirebbe un «composer install» in più. Un
  * .xlsx è uno ZIP di file XML (Office Open XML): bastano ZipArchive e
- * SimpleXML, già usati da Laravel e DomPDF. Analisi-importazione-soci.md §2.
+ * SimpleXML. ZipArchive richiede l'estensione PHP «zip», che non sempre è
+ * attiva (in Laragon non lo era): deploy.md §6.
  *
  * Sicurezza:
  * - dimensione massima di ogni parte decompressa (difesa dagli «ZIP bomb»);
@@ -41,6 +42,11 @@ class LettoreXlsx
     /** @throws \RuntimeException con un messaggio per l'utente */
     public function __construct(string $percorso)
     {
+        // L'estensione zip di PHP non è sempre attiva (Laragon, 13/10/2026):
+        // messaggio chiaro invece dell'errore 500.
+        if (! class_exists(\ZipArchive::class)) {
+            throw new \RuntimeException("Manca l'estensione PHP «zip», che serve per leggere i file Excel: va attivata nella configurazione di PHP (deploy.md §6).");
+        }
         $this->zip = new \ZipArchive();
         if ($this->zip->open($percorso, \ZipArchive::RDONLY) !== true) {
             throw new \RuntimeException('Il file non è un foglio Excel (.xlsx) leggibile.');

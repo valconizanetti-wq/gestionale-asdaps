@@ -281,6 +281,19 @@ non vengono toccati.
 
 ## 6. Interazioni e punti aperti
 
+- **Estensione PHP «zip»** (dalla v0.40.0, importazione dei soci da Excel):
+  serve a leggere i file `.xlsx` (`App\Support\LettoreXlsx`).
+  - **Non è sempre attiva**: in Laragon mancava (13/10/2026: «Class
+    "ZipArchive" not found» nei test).
+  - **In locale**: Laragon › menu PHP › Extensions › spunta `zip`, oppure in
+    `php.ini` togliere il `;` da `extension=zip`; poi riavviare Laragon e
+    controllare con `php -m`.
+  - **Sul server**, prima di installare la v0.40.0: cPanel › «Select PHP
+    Version» › Extensions › `zip` spuntata (con CloudLinux), oppure da
+    Terminale `php -m | grep -i zip`.
+  - Senza l'estensione l'importazione risponde «Manca l'estensione PHP «zip»…»
+    invece di un errore 500.
+
 - **Lettura degli scontrini** (dalla v0.39.0, `scontrini.md` §4): nel
   `.env` del server `OCR_SPACE_KEY=` con la chiave di OCR.space (la stessa
   di `gestionale-acv`, `conta_impostazioni.ocr_space_api_key`), poi
@@ -374,8 +387,9 @@ non vengono toccati.
     pagina Utenti;
   - il link per la password usa `gl_password_reset_tokens` (c'era già) e
     la posta del server;
-  - l'importazione dei soci legge l'Excel senza librerie nuove (estensioni
-    zip e xml, già richieste da Laravel e DomPDF): nessun `composer require`;
+  - l'importazione dei soci legge l'Excel senza librerie nuove (nessun
+    `composer require`), ma con l'estensione PHP **zip** da attivare se manca
+    (§6; in Laragon mancava);
   - `tessere:pulisci` toglie anche i file dell'importazione rimasti più di
     un giorno.
 
