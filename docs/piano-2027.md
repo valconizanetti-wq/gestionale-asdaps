@@ -150,6 +150,58 @@ Cosa deve essere pronto e quando:
 Il vecchio gestionale del Dante resta acceso in sola lettura per tutto il
 2028, come `gestionale-acv` per la Compagnia nel 2027.
 
+## 2-ter. Decisioni di Paolo (13/10/2026, 13:42) e conseguenze
+
+1. **Soci veri da un foglio Excel.** Modello preparato:
+   `importazione-soci-modello.xlsx`, con un foglio «Istruzioni» e un
+   foglio «Soci» con le colonne e una riga d'esempio. Colonne:
+   - cognome, nome, codice fiscale (data e luogo di nascita e sesso si
+     ricavano dal codice fiscale);
+   - residenza, email, telefono;
+   - data di ammissione (libro soci), fondatore, quota valida fino al;
+   - genitore per i minorenni (nome, codice fiscale, relazione, telefono,
+     email);
+   - note.
+
+   Privacy e foto/video non si importano: arrivano con il link. Funzione da
+   costruire: **importazione con anteprima, errori riga per riga e
+   conferma**, come «Carica tessere già emesse»; il file non resta sul
+   server; soci segnati `importato`, Audit Log. Il foglio compilato non va
+   nel progetto né nel codice (dati personali).
+2. **Assemblea della B.A.S. che adotta lo statuto: entro novembre,
+   indicativamente il 16/11/2026.** Le iscrizioni online si aprono dopo.
+3. **CD vero** (le email non si scrivono nei documenti né nel codice: si
+   inseriscono sul server):
+   - Presidente: Andrea Papini;
+   - Segretario e Tesoriere: Paolo Zanetti, una sola email;
+   - Consiglieri: Massimo Papini, Luigi Tascio.
+
+   **Difetto trovato**: oggi un utente ha **un solo ruolo** (`gl_users.ruolo`),
+   quindi la stessa persona non può essere insieme Segretario e Tesoriere
+   con la stessa email. Lo statuto lo ammette espressamente (art. 16.2).
+   Correzione necessaria prima della Fase 0, valida per il modello unico:
+   **più ruoli per utente** (tabella ponte), con i permessi che sono
+   l'unione dei ruoli (la scrittura prevale sulla sola lettura). Anche
+   le email «al ruolo» (es. tessere al Tesoriere) devono leggere la
+   tabella ponte. Nel CD per il voto (`gl_governance_cd`) Paolo resta una
+   sola persona con un solo voto.
+
+Ordine della Fase 0 aggiornato:
+1. più ruoli per utente;
+2. importazione dei soci;
+3. comando di azzeramento;
+4. dominio definitivo (con i dati di prova);
+5. informativa definitiva;
+6. dopo il 16/11:
+   - azzeramento;
+   - importazione dei soci veri;
+   - CD e utenti veri;
+   - tessere dal CSV;
+7. dicembre:
+   - link privacy a tutti;
+   - apertura delle iscrizioni;
+   - quote 2027.
+
 ## 3. Rischi
 
 1. **Carico del 2027** (attenuato dalla migrazione al passaggio d'anno, §2-bis). Fasi 2 e 3 portano nel modello circa 25
@@ -172,7 +224,7 @@ Il vecchio gestionale del Dante resta acceso in sola lettura per tutto il
 1. ~~Scadenze del Dante~~: risposto (§2-bis).
 2. ~~Dominio definitivo~~: sì, entro il 31/12 (Fase 0).
 3. ~~Contenuto della Fase 0~~: le quattro attivazioni di Paolo.
-4. **Soci veri**: da dove si caricano (circa 30)? Il Gestionale ASD non
+4. ~~Soci veri~~ (risposto: foglio Excel, §2-ter). Da dove si caricano (circa 30)? Il Gestionale ASD non
    ha un'importazione dei soci (il Dante sì, `SociImportController`).
    Possibilità:
    - (a) a mano dalla scheda;
@@ -180,7 +232,5 @@ Il vecchio gestionale del Dante resta acceso in sola lettura per tutto il
      anagrafici, residenza, email, telefono, data di ammissione,
      fondatore;
    - il CSV del portale CSEN non basta: mancano email e residenza.
-5. **Data dell'Assemblea della B.A.S.** che adotta lo statuto: le
-   iscrizioni online si aprono dopo.
-6. **Utenti veri del CD**: nomi, ruoli ed email per sostituire il CD di
-   prova.
+5. ~~Data dell'Assemblea~~: entro novembre, circa il 16/11 (§2-ter).
+6. ~~CD vero~~: §2-ter.
