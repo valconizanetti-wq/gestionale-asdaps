@@ -1,48 +1,123 @@
-# Bootstrap — Gestionale ASD, dopo la v0.38.1 (correzioni dal collaudo M, 12/10/2026)
+# Bootstrap — Gestionale ASD, prossima sessione: più ruoli per utente e importazione dei soci
 
-## Prossima sessione
-1. **Collaudo M**, in corso (primo giro del 12/10/2026 fino a M11, sulla
-   v0.39.0 installata): correzioni nella **v0.38.1** (sotto), da installare
-   sopra la v0.39.0 e ricontrollare (voci «v0.38.1» di M3, M8, M9, M10, M11),
-   poi M12. L'email delle tessere non partiva perché sul server non
-   c'era un utente Tesoriere attivo (risolto da Paolo il 12/10/2026).
-2. **Scontrini con OCR**: v0.39.0 consegnata e **installata** da Paolo il
-   12/10/2026 (`docs/specifiche/scontrini.md`, tavole SN-1…SN-8, analisi
-   `docs/analisi-scontrini.md` §13). Collaudo: blocco N, in `docs/test/collaudo-N-scontrini.md`,
-   iniziato il 12/10/2026: errore 500 in N2 corretto nella **v0.39.1**
-   (sotto), da installare; poi riprendere da N2.
-3. Poi, nell'ordine deciso da Paolo il 12/10/2026 (obiettivo: in uso dal
-   01/01/2027):
-   1. **anticipi e note di rimborso** (il «pagato di tasca mia» degli
-      scontrini);
-   2. **rendiconto e preventivo** (prima dei Verbali, per decisione di
-      Paolo): l'approvazione va collegata a un verbale, quindi va
-      progettata in modo che il collegamento si faccia quando ci saranno i
-      Verbali (`gl_bilancio.verbale_approvazione_id` c'è già);
-   3. **Verbali** (servono a rendiconto e preventivo, alle decadenze e alla
-      chiusura dell'anno contabile);
-   4. **azzeramento e apertura** a fine dicembre (dati di prova J–N, saldi
-      di cassa e banca al 31/12/2026, `APP_DEBUG=false`).
-   Tecnici e tesserino tecnico in standby finché Paolo non ha approfondito
-   (`analisi-tessere-scadenze.md` §5). OCR.space nel registro dei
-   trattamenti: da valutare.
+## Prossima sessione (decisa da Paolo il 13/10/2026, 13:48)
+Si apre la **Fase 0** del piano (`docs/piano-2027.md` §2 e §2-ter, copia
+`claude/piano-2027.md`): entro il 31/12/2026 vanno **attivate** iscrizioni
+online, rinnovo delle quote, link privacy a tutti i soci e dominio
+definitivo (funzioni già costruite). In questa sessione i primi due lavori:
 
-Decisioni di Paolo (11/10/2026, 22:48): affiliazione scaduta = **solo
-avviso** (nessun blocco delle tessere); polizza RC al **31/07**.
+1. **Più ruoli per utente.** Oggi `gl_users.ruolo` è una colonna sola
+   (FK `gl_ruoli.codice`); Paolo è Segretario **e** Tesoriere con una sola
+   email, e lo statuto lo ammette (art. 16.2). Serve una tabella ponte con
+   i permessi come unione dei ruoli (la scrittura prevale sulla sola
+   lettura: `User::permessiSezioni()`), le email «al ruolo» (es. tessere al
+   Tesoriere, promemoria, scadenzario, Audit Log) lette dalla tabella
+   ponte, la gestione degli utenti e i test. Vale per il modello unico
+   (Dante compreso). Verificare ogni uso di `->ruolo` e
+   `where('ruolo', …)` nel codice.
+2. **Importazione dei soci da Excel.** Modello consegnato il 13/10/2026,
+   `importazione-soci-modello.xlsx`: foglio «Istruzioni» e foglio «Soci».
+   Colonne (dalla A):
+   - Cognome*, Nome*, Codice fiscale*, Indirizzo*, CAP*, Comune*,
+     Provincia*;
+   - Email e Telefono (obbligatori per i maggiorenni);
+   - Data di ammissione*, Fondatore (Sì/No), Quota valida fino al;
+   - Genitore: cognome e nome, codice fiscale, relazione, telefono,
+     email (obbligatori per i minorenni);
+   - Note.
 
-Codice di partenza: `gestionale-asd-<commit>.bundle` (l'intero repository
-git, storia compresa, in un file solo; il commit è nel nome). Si
-ricostruisce con `git clone gestionale-asd-<commit>.bundle
-/home/claude/gestionale-asd` e si verifica con `git log -1`; poi
-`cp .env.example .env`, `composer install`, `npm ci`, `php artisan
-key:generate`, MariaDB (`service mariadb start`, se manca `apt-get install
-mariadb-server`, database `asd_test`) e `php artisan test` (139 test verdi; nessuna chiave OCR serve: i test
-fingono OCR.space col testo vero in `tests/Fixtures/scontrini-ocrspace`).
+   La riga 2 è un esempio da scartare. Funzione come «Carica tessere già
+   emesse»:
+   - anteprima con gli errori riga per riga (codice fiscale, doppioni,
+     dati mancanti), dati di nascita dal codice fiscale, conferma;
+   - file cancellato dopo; soci `importato`; Audit Log;
+   - privacy e foto/video non si importano (arrivano con il link);
+   - il Dante ha già `SociImportController` (allegato il 13/10/2026 in
+     `Controllers_SDA.zip`): leggerlo prima.
 
-## Stato al 12/10/2026 (sera)
-- Sul server: **v0.39.0 installata** (Paolo, 12/10/2026); collaudi K e L
-  superati il 07/10/2026, **collaudo M in corso** (correzioni nella v0.38.1,
-  consegnata, da installare), **collaudo N da fare**.
+Primo passo: **analisi e tavole** (regola di Paolo), poi codice, tre giri
+di revisione, lista di collaudo in un file nuovo
+(`docs/test/collaudo-O-…`, forma estesa).
+
+Poi, nella Fase 0:
+- comando di azzeramento (`php artisan …` con prova a vuoto, al posto di
+  J12…N12 a mano);
+- dominio definitivo con i dati di prova (SSL, `APP_URL`, cron, SPF, DKIM
+  e DMARC per arciericastello.it, reindirizzamento del vecchio indirizzo);
+- informativa senza segnaposto (hosting e consulente fiscale) **prima**
+  dei link privacy;
+- **dopo l'Assemblea della B.A.S. (circa il 16/11/2026)**, che adotta lo
+  statuto: azzeramento, soci veri, CD vero, tessere dal CSV;
+- a dicembre: link privacy, apertura delle iscrizioni, quote 2027.
+
+CD vero (Paolo, 13/10/2026; email solo sul server, mai nei documenti né
+nel codice):
+- Presidente: Andrea Papini;
+- Segretario e Tesoriere: Paolo Zanetti;
+- Consiglieri: Massimo Papini, Luigi Tascio.
+
+## Quadro deciso il 13/10/2026 (leggere prima di tutto)
+- `docs/analisi-impianto-asd-aps.md` (copia nel progetto):
+  - nel 2027 la B.A.S. si gestisce come un'A.S.D.;
+  - il Gestionale ASD diventa il **modello unico** per A.S.D. e
+    APS/RUNTS, con le specificità di entrambi e i **moduli da accendere e
+    spegnere** (§7: obbligatori per legge dal profilo dell'ente,
+    facoltativi da Impostazioni, base sempre accesi);
+  - **Modello D** anche per l'A.S.D., con le categorie libere che portano
+    il codice della riga;
+  - rendiconto e preventivo **come il Dante** con quattro aggiunte;
+  - Verbali e Assemblee dal Dante;
+  - riconciliazione, cassa e Progetti restano.
+- `docs/piano-2027.md`:
+  - Fasi 0–3;
+  - scadenze del Dante (CU 16/03, rendiconto 30/04, RUNTS 30/06, 770
+    31/10);
+  - **migrazione del Dante al passaggio d'anno 2027/2028** con catena
+    dell'audit sigillata, numerazioni e documenti intatti.
+- `docs/analisi-rendiconto-preventivo.md`:
+  - analisi del 12–13/10, superata in parte dall'impianto;
+  - **preventivo 2027 approvato fuori** entro il 31/12/2026, da
+    registrare nel 2027 con «Registra un preventivo già approvato» (Fase
+    1).
+- Da chiedere a CSEN: adempimenti dell'art. 16 D.Lgs. 39/2021 (statuto
+  artt. 17.1.8 e 28). Paolo ritiene bastino le tessere: punto aperto.
+- Materiale del Dante allegato il 13/10/2026 (da riallegare se serve):
+  `Controllers_SDA.zip`, `Models_SDA.zip`, `Services_SDA.zip`,
+  `views_SDA.zip`, `Middleware_SDA.zip`, `bilancio-consuntivo.md_SDA.zip`;
+  di `gestionale-acv`: `contabilita.zip` (preventivo e consuntivo).
+
+## Ordine dei lavori (13/10/2026)
+- **Fase 0** (entro il 31/12/2026): sopra.
+- **Fase 1** (gennaio–marzo 2027):
+  - registro dei moduli;
+  - anticipi e note di rimborso;
+  - Verbali e Assemblee dal Dante, Governance CD;
+  - mappa delle categorie sul Modello D;
+  - preventivo 2027 registrato.
+- **Fase 2** (aprile–settembre 2027):
+  - Bilancio completo;
+  - moduli del Dante;
+  - unione dei moduli doppi (domande, profilo, tessere);
+  - cassa e riconciliazione.
+- **Fase 3** (ottobre–dicembre 2027): preventivo 2028, migrazione del
+  Dante.
+
+Codice di partenza: `gestionale-asd-<commit>.bundle` (ultimo consegnato:
+quello con questo bootstrap). Si ricostruisce con
+`git clone gestionale-asd-<commit>.bundle /home/claude/gestionale-asd`;
+poi:
+- `cp .env.example .env`, credenziali del database `asd_test` nel `.env`;
+- `composer install` (se i download da GitHub cadono, rilanciarlo:
+  riprende da dove era);
+- `npm ci`, `npm run build`, `php artisan key:generate`;
+- MariaDB (`apt-get install mariadb-server`, `service mariadb start`,
+  database `asd_test` e utente);
+- `php artisan test` (139 test verdi).
+
+## Stato al 12/10/2026 (23:17)
+- Sul server: **v0.39.1 installata** (cumulativa, con la v0.38.1).
+  Collaudi K e L superati il 07/10/2026, **M e N superati il 12/10/2026**
+  (Paolo).
 - Restano l'azzeramento (J12, K11, L12, M12, N12) e `APP_DEBUG=false` prima
   dell'apertura.
 
