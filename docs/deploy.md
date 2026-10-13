@@ -47,8 +47,40 @@ file caricati dai soci non sono mai raggiungibili dal browser.
 
 ### 3.1 Preparazione in locale (PC)
 
-1. Tutto salvato su git: `git status` deve essere pulito (altrimenti
-   commit).
+Il codice sta su GitHub (`valconizanetti-wq/gestionale-asdaps`, privato,
+ramo `master`): la cartella di Laragon è una copia collegata a GitHub e si
+aggiorna con `git pull` (§5). Il codice non si modifica a mano in questa
+cartella.
+
+**Prima volta su un PC** (terminale di Laragon):
+```
+cd C:\laragon\www
+git clone https://github.com/valconizanetti-wq/gestionale-asdaps.git gestionale-asd
+cd gestionale-asd
+copy .env.example .env
+composer install
+npm ci
+php artisan key:generate
+php artisan migrate
+php artisan test
+```
+- Al primo clone Windows chiede l'accesso a GitHub dal browser
+  («Sign in with your browser») e poi lo ricorda.
+- Nel `.env` vanno le credenziali del database locale; se si parte da una
+  cartella già esistente si ricopiano invece `.env`, `storage\app`,
+  `docs\mockup` e `Test_Domande.pdf` (fuori da git).
+- Estensioni PHP necessarie (Laragon › PHP › Extensions): **zip** (§6),
+  gd, exif, pdo_mysql, mbstring, intl.
+
+**A ogni rilascio:**
+1. Aggiornare e controllare:
+   ```
+   git pull
+   php artisan migrate
+   php artisan test
+   ```
+   `git status` deve essere pulito: con modifiche locali `git pull` si
+   ferma.
 2. Compilare CSS e JS:
    ```
    npm run build
@@ -257,31 +289,15 @@ altrimenti Laravel continua a usare la configurazione precedente.
 
 ## 5. Rilasci successivi
 
-1. In locale, nella cartella collegata a GitHub (dal 13/10/2026,
-   `valconizanetti-wq/gestionale-asdaps`, ramo `master`):
-   ```
-   git pull
-   php artisan migrate
-   php artisan test
-   npm run build
-   git archive -o deploy.zip HEAD
-   ```
-   poi `build.zip` da `public\build`. I commit arrivano già fatti da
-   GitHub: in questa cartella non si modifica il codice a mano (un `git
-   pull` successivo si fermerebbe con un conflitto). `.env`, `storage/`,
-   `docs/mockup/` e `Test_Domande.pdf` sono fuori da git e restano.
-
-   **Collegamento la prima volta** (fatto da Paolo il 13/10/2026): la
-   cartella vecchia aveva una storia diversa, quindi si rinomina e si fa
-   `git clone https://github.com/valconizanetti-wq/gestionale-asdaps.git
-   gestionale-asd`. Poi si ricopiano `.env`, `storage\app`, `docs\mockup`
-   e `Test_Domande.pdf`, e si lanciano `composer install`, `npm ci`,
-   `npm run build`, `php artisan migrate` e `php artisan test`. Il
-   repository è privato: al primo clone Windows chiede l'accesso a GitHub
-   dal browser e poi lo ricorda.
-
-   In alternativa, con lo ZIP della versione: estrarlo, `git add -A` e
-   `git commit` (era la procedura fino alla v0.39.1).
+1. In locale: §3.1, «A ogni rilascio» (`git pull`, `php artisan migrate`,
+   `php artisan test`, `npm run build`, `git archive -o deploy.zip HEAD`,
+   `build.zip` da `public\build`). I commit arrivano già fatti da GitHub.
+   Il collegamento della prima volta è in §3.1. Paolo l'ha fatto il
+   13/10/2026: ha rinominato la cartella vecchia, che aveva un'altra
+   storia, ha clonato da GitHub e ha ricopiato `.env`, `storage\app`,
+   `docs\mockup` e `Test_Domande.pdf`. Senza Git (solo con lo ZIP della
+   versione) si estrae lo ZIP nella cartella e si fa un commit, come fino
+   alla v0.39.1.
 2. Sul server: estrarre `deploy.zip` in `~/gestionale-asd`
    (sovrascrivendo) e `build.zip` in `public/` (sostituendo la cartella
    `build` per intero: vecchio manifest e nuovi file non convivono).
