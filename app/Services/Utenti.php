@@ -140,6 +140,6 @@ class Utenti
      */
     public function inviaLink(User $utente): string
     {
-        return Password::broker()->sendResetLink(['email' => $utente->email]);
+        return Password::broker()->sendResetLink(['email' => $utente->email, 'attivo' => true]);
     }
 }

@@ -63,6 +63,7 @@
     </x-card>
 
     @if ($puoModificare)
+        @push('modals')
         @foreach ($utenti as $u)
             @continue(! $u->attivo || Utenti::motivoBlocco(auth()->user(), $u))
             <x-modale :nome="'link-' . $u->id" titolo="Link per la password">
@@ -77,6 +78,7 @@
                 </x-slot:piede>
             </x-modale>
         @endforeach
+        @endpush
     @endif
 
     <x-card titolo="Come funzionano i ruoli" class="pn-aiuto">

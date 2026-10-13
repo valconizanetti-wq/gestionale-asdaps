@@ -81,7 +81,16 @@ class ImportazioneSoci
             $i++;
         }
 
-        // Riga d'esempio: riconosciuta dal contenuto (D, 13/10/2026)
+        // Righe con il solo «Fondatore» (es. «No» copiato giù per la colonna):
+        // non sono soci
+        $colFondatore = array_search('fondatore', array_keys(self::COLONNE), true);
+        foreach ($righe as $n => $celle) {
+            if (array_keys($celle) === [$colFondatore]) {
+                unset($righe[$n]);
+            }
+        }
+
+        // Riga d'esempio: riconosciuta dal contenuto (Paolo, 13/10/2026)
         $esempio = false;
         foreach ($righe as $n => $celle) {
             if (str_contains(mb_strtoupper((string) ($celle[0] ?? '')), 'ESEMPIO')) {

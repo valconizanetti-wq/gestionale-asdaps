@@ -51,7 +51,7 @@ class UtentiController extends Controller
 
         $utente = $this->utenti->salva(null, $dati, $request->user());
 
-        $inviato = $request->boolean('invia_link') && $this->utenti->inviaLink($utente) === Password::RESET_LINK_SENT;
+        $inviato = $request->boolean('invia_link') && $utente->attivo && $this->utenti->inviaLink($utente) === Password::RESET_LINK_SENT;
         if ($inviato) {
             $this->registraLink($utente);
         }

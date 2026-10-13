@@ -10,7 +10,8 @@
     <div class="pn-colonne">
         <x-card titolo="Riepilogo">
             <dl class="dati-griglia">
-                <x-dato label="Soci importati">{{ $esito['soci'] }} · {{ $esito['soci'] - $esito['minorenni'] }} maggiorenni, {{ $esito['minorenni'] }} minorenni</x-dato>
+                <x-dato label="Soci importati">@php $mag = $esito['soci'] - $esito['minorenni']; @endphp
+                    {{ $esito['soci'] }} · {{ $mag }} {{ $mag === 1 ? 'maggiorenne' : 'maggiorenni' }}, {{ $esito['minorenni'] }} {{ $esito['minorenni'] === 1 ? 'minorenne' : 'minorenni' }}</x-dato>
                 <x-dato label="Quote del vecchio gestionale dal {{ \App\Services\RinnoviQuota::annoAvvio() }}">{{ $esito['quote'] }}
                     <span class="norma dato-norma">Registrate senza ricevuta né movimento in Prima Nota</span></x-dato>
                 <x-dato label="Privacy">Da raccogliere per tutti con il link personale</x-dato>

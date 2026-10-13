@@ -187,5 +187,7 @@ class ImportazioneSociTest extends TestCase
         $this->actingAs($tesoriere)->post(route('rinnovi.annulla', $r), ['motivo' => 'Quota caricata per errore nel foglio'])
             ->assertSessionHas('success', 'Quota 2027 del vecchio gestionale annullata.');
         $this->assertTrue($r->fresh()->isAnnullato());
+        // Resta la quota del vecchio gestionale fino al 31/12/2026
+        $this->assertSame('2026-12-31', $luca->fresh()->quota_scadenza->toDateString());
     }
 }

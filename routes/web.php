@@ -50,9 +50,9 @@ Route::middleware('guest')->group(function () {
 // collegato qualcun altro: alla conferma entra l'utente del link).
 Route::controller(PasswordController::class)->group(function () {
     Route::get('/password-dimenticata', 'dimenticata')->name('password.dimenticata');
-    Route::post('/password-dimenticata', 'inviaLink')->name('password.invia');
+    Route::post('/password-dimenticata', 'inviaLink')->middleware('throttle:10,1')->name('password.invia');
     Route::get('/password/scegli/{token}', 'scegli')->name('password.scegli');
-    Route::post('/password/scegli', 'salva')->name('password.salva');
+    Route::post('/password/scegli', 'salva')->middleware('throttle:10,1')->name('password.salva');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])

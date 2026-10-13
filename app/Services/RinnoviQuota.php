@@ -263,7 +263,16 @@ class RinnoviQuota
     public function aggiornaScadenza(Socio $socio): void
     {
         $ultimo = Rinnovo::valido()->where('socio_id', $socio->id)->max('anno');
-        $socio->forceFill(['quota_scadenza' => $ultimo ? Carbon::create((int) $ultimo, 12, 31)->toDateString() : null])->save();
+        $scadenza = $ultimo ? Carbon::create((int) $ultimo, 12, 31)->toDateString() : null;
+        // Socio importato (v0.40.0): le quote prima dell'avvio della
+        // contabilità sono solo in quota_scadenza. Annullata l'ultima quota
+        // del gestionale, resta quella del vecchio gestionale (al più il
+        // 31/12 dell'anno prima dell'avvio), invece di sparire.
+        if (! $scadenza && $socio->importato && $socio->quota_scadenza) {
+            $vecchia = Carbon::create(self::annoAvvio() - 1, 12, 31);
+            $scadenza = $socio->quota_scadenza->copy()->min($vecchia)->toDateString();
+        }
+        $socio->forceFill(['quota_scadenza' => $scadenza])->save();
     }
 
     // ----------------------------------------------------------------

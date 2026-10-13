@@ -111,7 +111,7 @@ class LettoreXlsx
                 $col = isset($c['r']) ? self::colonna((string) $c['r']) : $pos;
                 $pos = $col + 1;
                 $valore = $this->valore($c);
-                if ($valore !== null && $valore !== '') {
+                if ($valore !== null && (! is_string($valore) || trim($valore) !== '')) {
                     $celle[$col] = $valore;
                 }
             }
