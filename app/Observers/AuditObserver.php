@@ -6,7 +6,6 @@ use App\Services\AuditLogService;
 use App\Services\RiskMatrix;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * AuditObserver — registra in gl_audit_log creazione, modifica,
@@ -108,7 +107,7 @@ class AuditObserver
 
             $rischio = RiskMatrix::valuta($modello, $operazione, $dirty);
 
-            $id = AuditLogService::scrivi([
+            AuditLogService::scrivi([
                 'evento'           => strtoupper($modello) . '_' . strtoupper($operazione),
                 'operazione'       => $operazione,
                 'anno'             => $this->anno($model),
@@ -122,42 +121,9 @@ class AuditObserver
                 'livello_rischio'  => $rischio,
             ]);
 
-            if ($rischio === 'HIGH') {
-                $this->notificaHigh($modello, $operazione, $id);
-            }
         } catch (\Throwable $e) {
             // L'audit non deve bloccare l'operazione, ma il fallimento resta nel log.
             Log::error("AuditObserver: scrittura fallita [{$modello}/{$operazione}]: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Email al Presidente: solo riferimenti, nessun dato personale (GDPR).
-     * Pubblica: la usa anche chi scrive l'audit a mano senza eventi del
-     * model (es. eliminazione della scheda del socio, v0.37.1).
-     */
-    public function notificaHigh(string $modello, string $operazione, int $logId): void
-    {
-        try {
-            $presidente = DB::table('gl_users')->where('ruolo', 'presidente')->where('attivo', true)->first();
-            if (! $presidente?->email) {
-                return;
-            }
-
-            $corpo = "Operazione ad alto rischio registrata nel Gestionale ASD.\n\n"
-                . "Oggetto    : {$modello}\n"
-                . 'Operazione : ' . strtoupper($operazione) . "\n"
-                . 'Eseguita da: ' . (auth()->user()?->name ?? 'sistema') . "\n"
-                . "Riga di log: #{$logId}\n"
-                . 'Data e ora : ' . now()->format('d/m/Y H:i:s') . "\n\n"
-                . "I dettagli sono consultabili nel gestionale, sezione Audit Log.\n"
-                . url('/') . "\n";
-
-            Mail::raw($corpo, fn ($m) => $m
-                ->to($presidente->email, $presidente->name)
-                ->subject('[Audit] Operazione ad alto rischio: ' . $modello . ' ' . strtoupper($operazione)));
-        } catch (\Throwable $e) {
-            Log::warning('AuditObserver: notifica HIGH non inviata: ' . $e->getMessage());
         }
     }
 

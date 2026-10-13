@@ -308,7 +308,7 @@ class ImpostazioniEnteController extends Controller
 
     private function ePresidente(): bool
     {
-        return auth()->user()?->ruolo === 'presidente' && auth()->user()->puoModificare('impostazioni');
+        return (bool) auth()->user()?->haRuolo('presidente') && auth()->user()->puoModificare('impostazioni');
     }
 
     private function richiediPresidente(Request $request): void

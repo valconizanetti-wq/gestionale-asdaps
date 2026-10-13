@@ -40,9 +40,9 @@ class AuditLogTest extends TestCase
         $this->seed([RuoloSeeder::class, SezioneSeeder::class, ImpostazioneSeeder::class, AssociazioneSeeder::class]);
         Mail::fake();
         Storage::fake('local');
-        $this->presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true, 'email' => 'pres@esempio.it']);
-        $this->revisore = User::factory()->create(['ruolo' => 'revisore', 'attivo' => true, 'email' => 'rev@esempio.it']);
-        $this->segretario = User::factory()->create(['ruolo' => 'segretario', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['attivo' => true, 'email' => 'pres@esempio.it']);
+        $this->revisore = User::factory()->conRuoli('revisore')->create(['attivo' => true, 'email' => 'rev@esempio.it']);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['attivo' => true]);
     }
 
     private function socio(string $nome = 'Luca'): Socio

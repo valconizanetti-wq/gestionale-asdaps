@@ -32,6 +32,7 @@ class SezioneSeeder extends Seeder
             ['codice' => 'scadenzario', 'label' => 'Scadenzario', 'ordine' => 150],
             ['codice' => 'audit_log', 'label' => 'Audit Log', 'ordine' => 160],
             ['codice' => 'impostazioni', 'label' => 'Impostazioni', 'ordine' => 170],
+            ['codice' => 'utenti', 'label' => 'Utenti', 'ordine' => 175],
             ['codice' => 'erogazioni_collaboratori', 'label' => 'Erogazioni/Collaboratori', 'ordine' => 180],
         ];
 
@@ -104,15 +105,23 @@ class SezioneSeeder extends Seeder
         $this->assegna('presidente', 'audit_log');
         $this->assegna('revisore', 'audit_log', soloLettura: true);
 
-        // Impostazioni: solo presidente. Comprende anche la gestione
-        // Utenti/Ruoli (gl_users, gl_ruoli, gl_ruoli_sezioni), senza una
-        // sezione dedicata.
+        // Impostazioni: solo presidente.
         $this->assegna('presidente', 'impostazioni');
         // Profilo dell'ente in lettura (v0.38.0, tavola SC-2): tesoriere e
         // segretario vedono affiliazione e polizza; le modifiche restano al
         // Presidente (ImpostazioniEnteController::richiediPresidente).
         $this->assegna('tesoriere', 'impostazioni', soloLettura: true);
         $this->assegna('segretario', 'impostazioni', soloLettura: true);
+
+        // Utenti (v0.40.0, analisi-ruoli-utenti.md §3.4, Paolo 13/10/2026):
+        // modificano Presidente e Segretario (il Segretario con i limiti di
+        // App\Services\Utenti: niente ruolo di Presidente, né l'utente del
+        // Presidente, né i propri ruoli); tutto il CD legge. Il Revisore no:
+        // non fa parte del CD.
+        $this->assegna('presidente', 'utenti');
+        $this->assegna('segretario', 'utenti');
+        $this->assegna('tesoriere', 'utenti', soloLettura: true);
+        $this->assegna('consigliere', 'utenti', soloLettura: true);
 
         // Erogazioni/Collaboratori: nessun ruolo assegnato — sezione
         // dormiente, nessun dipendente/collaboratore oggi (vedi

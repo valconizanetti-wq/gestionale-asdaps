@@ -75,11 +75,11 @@ class ScontriniTest extends TestCase
             ]);
         }]);
 
-        $this->presidente = User::factory()->create(['name' => 'Andrea Presidente', 'email' => 'presidente@example.it', 'ruolo' => 'presidente', 'attivo' => true]);
-        $this->tesoriere = User::factory()->create(['name' => 'Paolo Tesoriere', 'email' => 'tesoriere@example.it', 'ruolo' => 'tesoriere', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['name' => 'Luigi Segretario', 'email' => 'segretario@example.it', 'ruolo' => 'segretario', 'attivo' => true]);
-        $this->consigliere = User::factory()->create(['name' => 'Massimo Consigliere', 'email' => 'consigliere@example.it', 'ruolo' => 'consigliere', 'attivo' => true]);
-        $this->revisore = User::factory()->create(['name' => 'Rita Revisore', 'email' => 'revisore@example.it', 'ruolo' => 'revisore', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['name' => 'Andrea Presidente', 'email' => 'presidente@example.it', 'attivo' => true]);
+        $this->tesoriere = User::factory()->conRuoli('tesoriere')->create(['name' => 'Paolo Tesoriere', 'email' => 'tesoriere@example.it', 'attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['name' => 'Luigi Segretario', 'email' => 'segretario@example.it', 'attivo' => true]);
+        $this->consigliere = User::factory()->conRuoli('consigliere')->create(['name' => 'Massimo Consigliere', 'email' => 'consigliere@example.it', 'attivo' => true]);
+        $this->revisore = User::factory()->conRuoli('revisore')->create(['name' => 'Rita Revisore', 'email' => 'revisore@example.it', 'attivo' => true]);
     }
 
     protected function tearDown(): void

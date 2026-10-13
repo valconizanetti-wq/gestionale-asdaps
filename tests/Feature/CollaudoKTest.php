@@ -41,8 +41,8 @@ class CollaudoKTest extends TestCase
             PrimaNotaCategoriaSeeder::class, ProfiloEnteSeeder::class, PromemoriaSeeder::class]);
         Mail::fake();
         Storage::fake('local');
-        $this->presidente = User::factory()->create(['name' => 'Utente Presidente', 'ruolo' => 'presidente', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['name' => 'Utente Segretario', 'ruolo' => 'segretario', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['name' => 'Utente Presidente', 'attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['name' => 'Utente Segretario', 'attivo' => true]);
     }
 
     protected function tearDown(): void

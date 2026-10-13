@@ -48,10 +48,10 @@ class PrimaNotaTest extends TestCase
         $this->seed([RuoloSeeder::class, SezioneSeeder::class, ImpostazioneSeeder::class, AssociazioneSeeder::class, PrimaNotaCategoriaSeeder::class]);
         Mail::fake();
         Storage::fake('local');
-        $this->presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true]);
-        $this->tesoriere = User::factory()->create(['ruolo' => 'tesoriere', 'attivo' => true]);
-        $this->revisore = User::factory()->create(['ruolo' => 'revisore', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['ruolo' => 'segretario', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['attivo' => true]);
+        $this->tesoriere = User::factory()->conRuoli('tesoriere')->create(['attivo' => true]);
+        $this->revisore = User::factory()->conRuoli('revisore')->create(['attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['attivo' => true]);
     }
 
     protected function tearDown(): void

@@ -33,13 +33,13 @@ class PrivacyLinkTest extends TestCase
         $this->withoutVite();
         $this->seed([RuoloSeeder::class, SezioneSeeder::class, ImpostazioneSeeder::class, AssociazioneSeeder::class]);
         Mail::fake();
-        $this->segretario = User::factory()->create(['ruolo' => 'segretario', 'attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['attivo' => true]);
         // Revisore con la sezione Soci in sola lettura: vede, non agisce.
         DB::table('gl_ruoli_sezioni')->updateOrInsert(
             ['ruolo_codice' => 'revisore', 'sezione_id' => DB::table('gl_sezioni')->where('codice', 'soci')->value('id')],
             ['sola_lettura' => true]
         );
-        $this->lettore = User::factory()->create(['ruolo' => 'revisore', 'attivo' => true]);
+        $this->lettore = User::factory()->conRuoli('revisore')->create(['attivo' => true]);
     }
 
     private function socio(array $extra = []): Socio

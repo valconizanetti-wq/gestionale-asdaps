@@ -98,7 +98,7 @@ class DomandeController extends Controller
 
         return view('domande.show', [
             'domanda' => $domanda,
-            'presidente' => auth()->user()->ruolo === 'presidente',
+            'presidente' => auth()->user()->haRuolo('presidente'),
             'puoModificare' => auth()->user()->puoModificare('domande'),
             'metodi' => IscrizioneSocio::METODI,
             'iban' => \App\Models\Associazione::istanza()->iban,
@@ -229,6 +229,6 @@ class DomandeController extends Controller
 
     private function richiediPresidente(Request $request): void
     {
-        abort_unless($request->user()->ruolo === 'presidente', 403, 'Solo il Presidente può farlo (statuto, artt. 6.5 e 16.4).');
+        abort_unless($request->user()->haRuolo('presidente'), 403, 'Solo il Presidente può farlo (statuto, artt. 6.5 e 16.4).');
     }
 }

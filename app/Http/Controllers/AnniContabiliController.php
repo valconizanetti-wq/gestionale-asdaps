@@ -160,7 +160,7 @@ class AnniContabiliController extends Controller
 
     public function riapri(Request $request, int $anno)
     {
-        abort_unless($request->user()->ruolo === 'presidente', 403, "Solo il Presidente può riaprire un anno chiuso.");
+        abort_unless($request->user()->haRuolo('presidente'), 403, "Solo il Presidente può riaprire un anno chiuso.");
         $dati = $request->validate(['motivazione' => ['required', 'string', 'min:15', 'max:1000']],
             ['motivazione.min' => 'La motivazione deve avere almeno 15 caratteri.']);
 

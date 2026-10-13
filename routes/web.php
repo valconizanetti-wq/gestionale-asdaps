@@ -4,6 +4,8 @@ use App\Http\Controllers\AnniContabiliController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\UtentiController;
 use App\Http\Controllers\DomandeController;
 use App\Http\Controllers\ImpostazioniEnteController;
 use App\Http\Controllers\PrimaNotaController;
@@ -40,6 +42,16 @@ require __DIR__ . '/iscrizione.php';
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+});
+
+// Password dimenticata e link «Scegli la password» (v0.40.0, tavola UT-3b):
+// pubbliche anche da collegati (il link si può aprire su un browser dove è
+// collegato qualcun altro: alla conferma entra l'utente del link).
+Route::controller(PasswordController::class)->group(function () {
+    Route::get('/password-dimenticata', 'dimenticata')->name('password.dimenticata');
+    Route::post('/password-dimenticata', 'inviaLink')->name('password.invia');
+    Route::get('/password/scegli/{token}', 'scegli')->name('password.scegli');
+    Route::post('/password/scegli', 'salva')->name('password.salva');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
@@ -148,6 +160,21 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             // Affiliazione e polizza RC (tavole SC-2, SC-3, v0.38.0)
             Route::put('/ente/affiliazione', 'updateAffiliazione')->name('ente.affiliazione');
             Route::put('/ente/polizza', 'updatePolizza')->name('ente.polizza');
+        });
+
+    // Utenti del gestionale (v0.40.0, tavole UT-1…UT-3): Presidente e
+    // Segretario modificano (il Segretario con i limiti di Utenti), il resto
+    // del CD consulta (controllo nel controller).
+    Route::middleware('permesso:utenti')
+        ->prefix('utenti')->name('utenti.')
+        ->controller(UtentiController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/nuovo', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{utente}/modifica', 'edit')->whereNumber('utente')->name('edit');
+            Route::put('/{utente}', 'update')->whereNumber('utente')->name('update');
+            Route::post('/{utente}/link-password', 'linkPassword')->whereNumber('utente')->name('link-password');
         });
 
     // Rinnovi quota (rinnovi-quota.md, v0.36.0): Presidente e Tesoriere

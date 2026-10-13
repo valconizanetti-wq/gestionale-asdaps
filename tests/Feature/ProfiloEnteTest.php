@@ -37,8 +37,8 @@ class ProfiloEnteTest extends TestCase
         Carbon::setTestNow('2026-10-05 10:00:00');
         ProfiloEnte::dimentica();
 
-        $this->presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['ruolo' => 'segretario', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['attivo' => true]);
     }
 
     protected function tearDown(): void

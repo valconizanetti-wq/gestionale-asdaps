@@ -47,7 +47,7 @@
     <div class="topbar-user">
         <div class="topbar-user-testo">
             <div class="topbar-user-nome">{{ $utente->name }}</div>
-            <div class="topbar-user-ruolo">{{ ucfirst($utente->ruolo) }}</div>
+            <div class="topbar-user-ruolo">{{ $utente->ruoliInBreve() }}</div>
         </div>
         <span class="topbar-avatar" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($utente->name, 0, 1)) }}</span>
         <form method="POST" action="{{ route('logout') }}">

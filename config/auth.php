@@ -95,8 +95,10 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
+            // Link «Scegli la password» (v0.40.0, analisi-ruoli-utenti.md §3.5):
+            // valido 24 ore, monouso; un nuovo invio dopo almeno 60 secondi.
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'gl_password_reset_tokens'),
+            'expire' => 1440,
             'throttle' => 60,
         ],
     ],

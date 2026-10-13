@@ -107,7 +107,7 @@ class TessereInScadenza implements Funzione
                     socioId: null,
                     email: $u->email ?: null,
                     nome: $u->name,
-                    etichetta: $u->name . ' (' . ucfirst($u->ruolo) . ") · {$cosa} al " . $data->format('d/m/Y'),
+                    etichetta: $u->name . ' (' . $u->etichettaRuoli() . ") · {$cosa} al " . $data->format('d/m/Y'),
                     valori: [
                         'saluto' => Interni::saluto($u),
                         'data' => $data->format('d/m/Y'),

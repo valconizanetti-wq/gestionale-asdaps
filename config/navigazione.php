@@ -60,6 +60,7 @@ return [
         'gruppo' => null, // in fondo, senza titolo di gruppo
         'voci' => [
             ['label' => 'Impostazioni', 'sezione' => 'impostazioni', 'rotta' => 'impostazioni.index'],
+            ['label' => 'Utenti',       'sezione' => 'utenti',       'rotta' => 'utenti.index'],
         ],
     ],
 ];

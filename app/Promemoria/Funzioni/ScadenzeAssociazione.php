@@ -94,7 +94,7 @@ class ScadenzeAssociazione implements Funzione
                     socioId: null,
                     email: $u->email ?: null,
                     nome: $u->name,
-                    etichetta: $u->name . " (" . ucfirst($u->ruolo) . ") · {$s->titolo}",
+                    etichetta: $u->name . " (" . $u->etichettaRuoli() . ") · {$s->titolo}",
                     valori: ['saluto' => Interni::saluto($u)] + $valori,
                     data: $s->data_scadenza->copy(),
                     periodo: 's' . $s->id . ':' . $s->data_scadenza->toDateString(),

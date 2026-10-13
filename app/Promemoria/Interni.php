@@ -37,8 +37,14 @@ final class Interni
     {
         $ruoli = self::RUOLI[$scelta] ?? self::RUOLI['presidente_tesoriere'];
 
-        return User::where('attivo', true)->whereIn('ruolo', $ruoli)->orderBy('id')->get()
-            ->sortBy(fn (User $u) => array_search($u->ruolo, $ruoli, true))->values();
+        // Una riga per persona anche con più ruoli fra quelli scelti
+        // (analisi-ruoli-utenti.md §3.6); prima chi ha il ruolo che viene
+        // prima nella scelta, a parità l'ordine di creazione.
+        return User::conRuolo(...$ruoli)->where('attivo', true)->orderBy('id')->get()
+            ->sortBy(fn (User $u) => min(array_map(
+                fn ($c) => ($i = array_search($c, $ruoli, true)) === false ? PHP_INT_MAX : $i,
+                $u->codiciRuoli() ?: ['?']
+            )))->values();
     }
 
     /**

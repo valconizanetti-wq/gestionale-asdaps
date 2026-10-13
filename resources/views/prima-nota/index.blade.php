@@ -39,7 +39,7 @@
     @if (! $puoModificare && auth()->user()->puoModificare('scontrini'))
         {{-- Consigliere e Segretario (v0.39.0, tavola SN-8) --}}
         <x-avviso tipo="info" titolo="Sola lettura.">
-            Il tuo ruolo ({{ ucfirst(auth()->user()->ruolo) }}) vede la Prima Nota e carica gli scontrini; movimenti, giroconti e correzioni li fanno Presidente e Tesoriere.
+            {{ count(auth()->user()->codiciRuoli()) > 1 ? 'I tuoi ruoli' : 'Il tuo ruolo' }} ({{ auth()->user()->etichettaRuoli() }}) {{ count(auth()->user()->codiciRuoli()) > 1 ? 'vedono' : 'vede' }} la Prima Nota e carica gli scontrini; movimenti, giroconti e correzioni li fanno Presidente e Tesoriere.
         </x-avviso>
     @else
         <x-sola-lettura sezione="prima_nota" />

@@ -190,7 +190,7 @@ class AuditLogController extends Controller
 
         $uuid = (string) Str::uuid();
         $utente = $request->user();
-        $generatoDa = $utente->name . ' (' . ($utente->ruolo === 'revisore' ? 'Revisore' : 'Presidente') . ')';
+        $generatoDa = $utente->name . ' (' . ($utente->haRuolo('revisore') ? 'Revisore' : 'Presidente') . ')';
 
         $pdf = Pdf::loadView('pdf.audit-certificato', [
             'anno' => $anno,
@@ -340,7 +340,7 @@ class AuditLogController extends Controller
     /** Certificato e attestazione: Presidente e, se c'è, Revisore (audit-log.md §9). */
     private function puoCertificare(Request $request): bool
     {
-        return in_array($request->user()->ruolo, ['presidente', 'revisore'], true);
+        return $request->user()->haRuolo('presidente', 'revisore');
     }
 
     private function richiediCertificazione(Request $request): void

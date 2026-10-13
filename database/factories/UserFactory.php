@@ -28,9 +28,24 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'ruolo' => 'segretario',
             'attivo' => true,
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /** Ruolo predefinito Segretario, se il test non ne sceglie altri con conRuoli(). */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            if (! $user->ruoli()->exists()) {
+                $user->assegnaRuoli(['segretario']);
+            }
+        });
+    }
+
+    /** Ruoli dell'utente (sostituiscono il predefinito). */
+    public function conRuoli(string ...$codici): static
+    {
+        return $this->afterCreating(fn (User $user) => $user->assegnaRuoli($codici));
     }
 }

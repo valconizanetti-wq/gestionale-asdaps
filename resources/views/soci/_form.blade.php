@@ -18,7 +18,7 @@
     @php $r = session('ripristinabile'); @endphp
     <x-avviso tipo="warn" titolo="Scheda eliminata trovata.">
         Il codice fiscale appartiene alla scheda eliminata di {{ $r['nome'] }}.
-        @if (auth()->user()->ruolo === 'presidente')
+        @if (auth()->user()->haRuolo('presidente'))
             Invece di reinserirla puoi ripristinarla con tutti i suoi dati.
             <form method="POST" action="{{ route('soci.ripristina', $r['id']) }}" class="inline-form">
                 @csrf

@@ -150,7 +150,7 @@
                 </x-card>
             @endif
 
-            @if ($daRiaprire && $utente->ruolo === 'presidente')
+            @if ($daRiaprire && $utente->haRuolo('presidente'))
                 <x-card :titolo="'Riapri l\'anno ' . $daRiaprire->anno">
                     <form method="POST" action="{{ route('prima-nota.anni.riapri', $daRiaprire->anno) }}" class="form-modale">
                         @csrf

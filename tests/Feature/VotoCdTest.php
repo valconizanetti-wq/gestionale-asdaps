@@ -48,8 +48,8 @@ class VotoCdTest extends TestCase
         \App\Models\Impostazione::set('iscrizioni_aperte', true, 'boolean');
         Mail::fake();
 
-        $this->presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['ruolo' => 'segretario', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['attivo' => true]);
     }
 
     /** CD di prova: Presidente + consiglieri (email nulla = senza email). */

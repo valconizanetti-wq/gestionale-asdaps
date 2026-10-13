@@ -60,10 +60,10 @@ class ScadenzarioTest extends TestCase
         Mail::fake();
         Storage::fake('local');
         // Nomi fissi (non Faker): niente coincidenze nelle assertDontSee (collaudo K)
-        $this->presidente = User::factory()->create(['name' => 'Andrea Presidente', 'email' => 'presidente@example.it', 'ruolo' => 'presidente', 'attivo' => true]);
-        $this->tesoriere = User::factory()->create(['name' => 'Paolo Tesoriere', 'email' => 'tesoriere@example.it', 'ruolo' => 'tesoriere', 'attivo' => true]);
-        $this->segretario = User::factory()->create(['name' => 'Luigi Segretario', 'email' => 'segretario@example.it', 'ruolo' => 'segretario', 'attivo' => true]);
-        $this->revisore = User::factory()->create(['name' => 'Rita Revisore', 'email' => 'revisore@example.it', 'ruolo' => 'revisore', 'attivo' => true]);
+        $this->presidente = User::factory()->conRuoli('presidente')->create(['name' => 'Andrea Presidente', 'email' => 'presidente@example.it', 'attivo' => true]);
+        $this->tesoriere = User::factory()->conRuoli('tesoriere')->create(['name' => 'Paolo Tesoriere', 'email' => 'tesoriere@example.it', 'attivo' => true]);
+        $this->segretario = User::factory()->conRuoli('segretario')->create(['name' => 'Luigi Segretario', 'email' => 'segretario@example.it', 'attivo' => true]);
+        $this->revisore = User::factory()->conRuoli('revisore')->create(['name' => 'Rita Revisore', 'email' => 'revisore@example.it', 'attivo' => true]);
     }
 
     protected function tearDown(): void

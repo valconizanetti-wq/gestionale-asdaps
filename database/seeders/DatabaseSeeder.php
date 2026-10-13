@@ -24,15 +24,17 @@ class DatabaseSeeder extends Seeder
         // password "password" sarebbe una porta aperta. Gli utenti reali si
         // creano a mano al primo deploy (vedi la scheda del deploy).
         if (app()->environment('local')) {
-            User::firstOrCreate(
+            $utente = User::firstOrCreate(
                 ['email' => 'test@example.com'],
                 [
                     'name' => 'Test User',
                     'password' => Hash::make('password'),
-                    'ruolo' => 'presidente',
                     'attivo' => true,
                 ],
             );
+            if (! $utente->ruoli()->exists()) {
+                $utente->assegnaRuoli(['presidente']);
+            }
         }
 
         $this->call([

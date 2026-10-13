@@ -48,7 +48,7 @@ class AuditLogService
             'livello_rischio'  => $campi['livello_rischio'] ?? 'LOW',
         ];
 
-        return DB::transaction(function () use ($riga) {
+        $id = DB::transaction(function () use ($riga) {
             // Lock sull'ultima riga: due scritture quasi simultanee non
             // possono leggere lo stesso "ultimo hash".
             $previousHash = DB::table('gl_audit_log')
@@ -71,5 +71,12 @@ class AuditLogService
 
             return $id;
         });
+
+        // Operazione delicata: avviso a chi non l'ha eseguita (v0.40.0)
+        if ($riga['livello_rischio'] === 'HIGH') {
+            AvvisiOperazioni::dopoAudit($id, $riga);
+        }
+
+        return $id;
     }
 }

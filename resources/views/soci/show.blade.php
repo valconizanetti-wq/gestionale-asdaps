@@ -366,7 +366,7 @@
         @endif
     </x-card>
 
-    @if ($utente->ruolo === 'presidente' && ! $socio->pseudonimizzato)
+    @if ($utente->haRuolo('presidente') && ! $socio->pseudonimizzato)
         <x-card titolo="Zona riservata al Presidente">
             <div class="zona-pericolo">
                 <p>Eliminare la scheda serve <strong>solo a correggere un inserimento sbagliato</strong>. Per l'uscita di un socio usa «Registra cessazione»: il socio resta nello storico.</p>
@@ -450,7 +450,7 @@
         </x-modale>
     @endif
 
-    @if (auth()->user()->ruolo === 'presidente')
+    @if (auth()->user()->haRuolo('presidente'))
         @php $bagElimina = $errors->getBag('elimina'); @endphp
         <x-modale nome="elimina" titolo="Eliminare la scheda?" :aperta="$bagElimina->any()">
             <form method="POST" action="{{ route('soci.destroy', $socio) }}" id="form-elimina" class="form-modale">

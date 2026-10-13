@@ -62,7 +62,7 @@ class VerificaIntegritaAudit extends Command
         }
 
         if (! $this->option('silenzioso')) {
-            $destinatari = User::whereIn('ruolo', ['presidente', 'revisore'])->where('attivo', true)->whereNotNull('email')->get();
+            $destinatari = User::conRuolo('presidente', 'revisore')->where('attivo', true)->whereNotNull('email')->get();
             if ($destinatari->isEmpty()) {
                 Log::warning('audit:verifica-integrita: nessun Presidente o Revisore con email da avvisare.');
             }

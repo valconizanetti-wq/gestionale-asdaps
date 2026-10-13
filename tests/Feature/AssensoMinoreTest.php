@@ -106,7 +106,7 @@ class AssensoMinoreTest extends TestCase
         $this->assertNotNull($d->ricevuta_path);
 
         // scheda della domanda e verbale
-        $presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true]);
+        $presidente = User::factory()->conRuoli('presidente')->create(['attivo' => true]);
         $this->actingAs($presidente)->get(route('domande.show', $d))->assertOk()
             ->assertSee('Assenso del minore')->assertSee('Prestato il 04/10/2026, 12:00')->assertSee('compresi foto e video');
         $verbale = view('verbali.ammissione-telematica', ['domanda' => $d->load('voti')])->render();
@@ -128,7 +128,7 @@ class AssensoMinoreTest extends TestCase
         $this->assertNull($d->assenso_minore_il);
         $this->assertFalse($d->richiedeAssensoMinore());
 
-        $presidente = User::factory()->create(['ruolo' => 'presidente', 'attivo' => true]);
+        $presidente = User::factory()->conRuoli('presidente')->create(['attivo' => true]);
         $this->actingAs($presidente)->get(route('domande.show', $d))->assertOk()->assertSee('Non richiesto (meno di 14 anni)');
     }
 

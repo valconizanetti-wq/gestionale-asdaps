@@ -65,7 +65,7 @@
                     <option value="sospeso" @selected($filtri['stato'] === 'sospeso')>Sospesi</option>
                     <option value="cancellato" @selected($filtri['stato'] === 'cancellato')>Cancellati</option>
                     <option value="tutti" @selected($filtri['stato'] === 'tutti')>Tutti</option>
-                    @if (auth()->user()->ruolo === 'presidente')
+                    @if (auth()->user()->haRuolo('presidente'))
                         <option value="eliminate" @selected($filtri['stato'] === 'eliminate')>Schede eliminate</option>
                     @endif
                 </select>

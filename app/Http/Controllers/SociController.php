@@ -333,7 +333,7 @@ class SociController extends Controller
         // Una riga di audit, nella stessa transazione dell'eliminazione. Nel
         // dettaglio (che entra nell'hash) niente dati personali: nomi e
         // motivazione, che potrebbe contenerne, stanno nei valori.
-        $rigaAudit = DB::transaction(function () use ($socio, $dati) {
+        DB::transaction(function () use ($socio, $dati) {
             Socio::withoutEvents(fn () => $socio->delete());
 
             return AuditLogService::scrivi([
@@ -347,7 +347,6 @@ class SociController extends Controller
                 'new_values' => ['motivazione' => $dati['motivo']],
             ]);
         });
-        app(\App\Observers\AuditObserver::class)->notificaHigh('Socio', 'deleted', $rigaAudit);
 
         return redirect()->route('soci.index')
             ->with('success', "Scheda di {$socio->cognome} {$socio->nome} eliminata. Si ripristina da Soci › Filtri › Stato «Schede eliminate».");
@@ -393,7 +392,7 @@ class SociController extends Controller
             'tipo'  => (string) $request->query('tipo', ''),
             'quota' => (string) $request->query('quota', ''),
             // «Schede eliminate» (soft delete): solo il Presidente, che le ripristina
-            'stato' => ($s = (string) $request->query('stato', 'attivo')) === 'eliminate' && $request->user()?->ruolo !== 'presidente' ? 'attivo' : $s,
+            'stato' => ($s = (string) $request->query('stato', 'attivo')) === 'eliminate' && ! $request->user()?->haRuolo('presidente') ? 'attivo' : $s,
         ];
     }
 
@@ -498,6 +497,6 @@ class SociController extends Controller
     /** Eliminazione e ripristino: riservati al Presidente (soci.md §3). */
     private function richiediPresidente(Request $request): void
     {
-        abort_unless($request->user()->ruolo === 'presidente', 403, 'Solo il Presidente può eliminare o ripristinare una scheda.');
+        abort_unless($request->user()->haRuolo('presidente'), 403, 'Solo il Presidente può eliminare o ripristinare una scheda.');
     }
 }

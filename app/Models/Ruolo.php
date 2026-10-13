@@ -37,4 +37,10 @@ class Ruolo extends Model
             'id'
         )->withPivot('sola_lettura');
     }
+
+    /** codice => etichetta, nell'ordine; una query per richiesta. @return array<string, string> */
+    public static function etichette(): array
+    {
+        return once(fn () => static::orderBy('ordine')->pluck('label', 'codice')->all());
+    }
 }

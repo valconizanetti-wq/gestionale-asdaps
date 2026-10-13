@@ -60,7 +60,7 @@
     </form>
 
     <p class="login-nota">
-        <a href="mailto:admin@arciericastelviscardo.it?subject=Password%20dimenticata%20-%20Gestionale%20ASD">Password dimenticata?</a>
+        <a href="{{ route('password.dimenticata') }}">Password dimenticata?</a>
     </p>
 </main>
 
