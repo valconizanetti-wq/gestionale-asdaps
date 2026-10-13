@@ -47,24 +47,46 @@ da verificare, non una decisione presa.
 
 ### Fase 0 — entro il 31/12/2026 (partenza della Compagnia)
 
-1. **Registro dei moduli** con gli interruttori (`analisi-impianto` §7),
-   piccolo, perché tutto ciò che arriva dopo vi si innesti senza rami.
-2. **Anticipi e note di rimborso** (dal Dante, con le correzioni).
-3. **Pronti per l'apertura**:
-   - informativa privacy senza segnaposto: hosting SupportHost con
-     datacenter UE e DPA (punto 4), consulente fiscale (punto 5);
-   - IBAN vero, casella info@arciericastello.it attiva;
-   - `APP_DEBUG=false`, cron verificato;
-   - **dominio definitivo**: conviene passarci **prima** dell'apertura,
-     perché i link già inviati per email (privacy, voto del CD, ricevute)
-     contengono l'indirizzo.
-4. **Azzeramento** (J12, K11, L12, M12, N12, registro di audit) e saldi di
-   apertura 2027.
-5. Fuori dal gestionale: Assemblea della B.A.S. che adotta lo statuto e
-   approva il preventivo 2027.
+**Rivista da Paolo (13/10/2026, 13:27)**: entro il 31/12 servono quattro
+cose, tutte già costruite e da **attivare**:
+1. iscrizioni online;
+2. rinnovo delle quote;
+3. link privacy inviato a tutti i soci;
+4. migrazione sul dominio definitivo.
+
+Nel database ci sono ancora solo dati di prova, che si possono
+cancellare. Registro dei moduli e anticipi passano a gennaio (Fase 1).
+
+Cosa serve per attivarle, in quest'ordine (dettaglio nel §2-bis):
+1. collaudi residui chiusi e **procedura di azzeramento scritta come
+   comando** (`php artisan …` con prova a vuoto), non a mano;
+2. **dominio definitivo**, ancora con i dati di prova:
+   - certificato SSL, `APP_URL`, cron;
+   - posta: SPF, DKIM e DMARC per arciericastello.it (oggi sono su
+     valconi.it);
+   - indirizzo vecchio reindirizzato al nuovo;
+3. **testi definitivi**:
+   - informativa senza segnaposto (hosting SupportHost con DPA,
+     consulente fiscale), **prima** di inviare i link privacy, altrimenti
+     servirà una nuova versione;
+   - statuto adottato dall'Assemblea della B.A.S. **prima** di aprire le
+     iscrizioni, perché la domanda dichiara di averlo letto;
+4. **azzeramento**, poi **utenti veri del CD** (oggi sono tutti
+   `valconi@usa.net`) e **soci veri** (vedi domanda 4), poi tessere dal
+   CSV CSEN;
+5. **dicembre**:
+   - invio del link privacy a tutti;
+   - apertura delle iscrizioni;
+   - quote 2027 (fino al 31/12 con ricevuta e senza movimento, già
+     previsto);
+   - promemoria del 15/12.
+
+Gennaio 2027: saldi di apertura dal 31/12/2026 di `gestionale-acv`.
 
 ### Fase 1 — gennaio–marzo 2027 (prima Assemblea nel gestionale)
 
+0. **Registro dei moduli** e **anticipi e note di rimborso** (spostati
+   dalla Fase 0).
 1. **Verbali e Assemblee dal Dante**, con convocazione email ai soci e
    risposte (RSVP); verbali del CD e dell'Assemblea; collegamento con le
    domande (verbale di ammissione) e con la chiusura dell'anno.
@@ -98,9 +120,39 @@ da verificare, non una decisione presa.
    - prova completa su una copia, con confronto automatico dei totali;
    - collaudo di Paolo, poi passaggio.
 
+## 2-bis. Scadenze del Dante (Paolo, 13/10/2026) e finestra di migrazione
+
+| Data | Adempimento del Dante | Cosa serve nel modello unico |
+|---|---|---|
+| 16/03 | Certificazione Unica dei collaboratori occasionali pagati l'anno prima | Collaborazioni con i compensi e le ritenute dell'anno |
+| 30/04 | Approvazione del rendiconto per cassa in Assemblea | Bilancio Modello D, Verbali, Assemblee |
+| 30/06 (29/06 indicato) | Deposito del rendiconto per cassa (Modello D) al RUNTS | Modello D in PDF, Compliance RUNTS |
+| 30/06 | Aggiornamento RUNTS: numero di soci e volontari al 31/12 | Libro soci, **registro dei volontari** (obbligatorio per l'APS, art. 17 CTS) |
+| 31/10 | Modello 770 (se ci sono ritenute con F24) | F24 e ritenute dell'anno prima |
+
+Conseguenza: **migrare il Dante al passaggio d'anno** (dicembre 2027,
+partenza 01/01/2028) è la scelta più pulita. Ogni scadenza del 2028
+riguarda l'anno 2027 e si fa tutta con il gestionale nuovo, sui dati
+migrati; nessun anno fiscale resta diviso tra due sistemi. Una migrazione
+a metà 2027 (dopo il 30/06) dividerebbe il 2027 a metà: da evitare.
+
+Cosa deve essere pronto e quando:
+- **entro il 31/12/2027** (uso quotidiano dal 01/01/2028): soci, quote e
+  ricevute, Prima Nota, Verbali e Assemblee, Governance CD, Collaborazioni
+  e F24 per i pagamenti, Comunicazioni, il resto dei moduli in uso al
+  Dante;
+- **entro marzo 2028**: dati per la CU 2027 dalle Collaborazioni migrate;
+- **entro aprile 2028**: rendiconto Modello D 2027 del Dante;
+- **entro giugno 2028**: pacchetto per il RUNTS (Modello D, numero di soci
+  e volontari al 31/12/2027);
+- **entro ottobre 2028**: dati per il 770.
+
+Il vecchio gestionale del Dante resta acceso in sola lettura per tutto il
+2028, come `gestionale-acv` per la Compagnia nel 2027.
+
 ## 3. Rischi
 
-1. **Carico del 2027.** Fasi 2 e 3 portano nel modello circa 25
+1. **Carico del 2027** (attenuato dalla migrazione al passaggio d'anno, §2-bis). Fasi 2 e 3 portano nel modello circa 25
    controller del Dante e la migrazione, mentre la Compagnia usa il
    gestionale. Serve conoscere le **scadenze fiscali del Dante** che
    fissano la fine del 2027: se una cade prima (per esempio a metà
@@ -117,8 +169,18 @@ da verificare, non una decisione presa.
 
 ## 4. Domande a Paolo
 
-1. Quali sono le **scadenze fiscali del Dante** che fissano la migrazione
-   entro fine 2027, e cadono a fine anno o prima?
-2. **Dominio definitivo** prima dell'apertura del 01/01/2027: sì?
-3. Fase 0 limitata a registro dei moduli, anticipi, apertura e
-   azzeramento: va bene?
+1. ~~Scadenze del Dante~~: risposto (§2-bis).
+2. ~~Dominio definitivo~~: sì, entro il 31/12 (Fase 0).
+3. ~~Contenuto della Fase 0~~: le quattro attivazioni di Paolo.
+4. **Soci veri**: da dove si caricano (circa 30)? Il Gestionale ASD non
+   ha un'importazione dei soci (il Dante sì, `SociImportController`).
+   Possibilità:
+   - (a) a mano dalla scheda;
+   - (b) importazione da un foglio (CSV) con codice fiscale, dati
+     anagrafici, residenza, email, telefono, data di ammissione,
+     fondatore;
+   - il CSV del portale CSEN non basta: mancano email e residenza.
+5. **Data dell'Assemblea della B.A.S.** che adotta lo statuto: le
+   iscrizioni online si aprono dopo.
+6. **Utenti veri del CD**: nomi, ruoli ed email per sostituire il CD di
+   prova.
