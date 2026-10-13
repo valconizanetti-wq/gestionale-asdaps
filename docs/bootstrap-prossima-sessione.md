@@ -1,5 +1,19 @@
 # Bootstrap — Gestionale ASD, prossima sessione: più ruoli per utente e importazione dei soci
 
+## Passo zero: repository su GitHub (Paolo, 13/10/2026, 13:56)
+Per non caricare più il bundle a ogni sessione:
+1. Paolo crea un repository **privato e vuoto** su GitHub (senza README),
+   per esempio `gestionale-asd`;
+2. collega GitHub in claude.ai (Impostazioni › Connettori) dando accesso a
+   quel repository;
+3. nella sessione: `add_repo` con accesso «push», `git push` dal bundle di
+   partenza (tutta la storia), poi a fine di ogni sessione push dei
+   commit. Dalla sessione dopo si clona da GitHub e il bundle non serve
+   più.
+
+Verificato prima del primo push: `.env` è nel `.gitignore`; nessuna
+password o chiave nel codice; dati personali reali mai nel repository.
+
 ## Prossima sessione (decisa da Paolo il 13/10/2026, 13:48)
 Si apre la **Fase 0** del piano (`docs/piano-2027.md` §2 e §2-ter, copia
 `claude/piano-2027.md`): entro il 31/12/2026 vanno **attivate** iscrizioni
