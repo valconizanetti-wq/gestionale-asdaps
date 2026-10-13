@@ -35,6 +35,9 @@ class LettoreXlsx
     /** @var array<string, string> nome del foglio => percorso nello ZIP */
     private array $fogli = [];
 
+    /** File salvato con il sistema di date del 1904 (vecchio Excel per Mac). */
+    private bool $date1904 = false;
+
     /** @throws \RuntimeException con un messaggio per l'utente */
     public function __construct(string $percorso)
     {
@@ -48,6 +51,9 @@ class LettoreXlsx
         if (! $workbook || ! $rels) {
             throw new \RuntimeException('Il file non è un foglio Excel (.xlsx) leggibile.');
         }
+
+        $pr = $workbook->workbookPr ?? null;
+        $this->date1904 = $pr !== null && in_array((string) ($pr['date1904'] ?? ''), ['1', 'true'], true);
 
         $target = [];
         foreach ($rels->children() as $rel) {
@@ -123,6 +129,12 @@ class LettoreXlsx
         return $righe;
     }
 
+    /** Data di una cella numerica di questo file (sistema 1900 o 1904). */
+    public function data(float $serie): ?\Illuminate\Support\Carbon
+    {
+        return self::dataExcel($this->date1904 ? $serie + 1462 : $serie);
+    }
+
     /** Numero di serie di Excel (sistema 1900) → data, o null se fuori misura. */
     public static function dataExcel(float $serie): ?\Illuminate\Support\Carbon
     {
@@ -155,6 +167,7 @@ class LettoreXlsx
             'inlineStr' => $this->testo($c->is),
             'str' => (string) $c->v,
             'b' => (string) $c->v === '1',
+            'd' => substr((string) $c->v, 0, 10),   // data ISO 8601 (raro)
             'e' => null,
             default => isset($c->v) && is_numeric((string) $c->v) ? (float) (string) $c->v : (isset($c->v) ? (string) $c->v : null),
         };

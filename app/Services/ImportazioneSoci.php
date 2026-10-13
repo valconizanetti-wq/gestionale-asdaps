@@ -49,6 +49,9 @@ class ImportazioneSoci
 
     public const RELAZIONI = ['padre' => 'Padre', 'madre' => 'Madre', 'tutore' => 'Tutore'];
 
+    /** File in lettura (serve per le date: sistema 1900 o 1904). */
+    private ?LettoreXlsx $lettore = null;
+
     /**
      * @return array{errore: ?string, righe: list<array>, esempio: bool, conteggi: array{pronte: int, avvisi: int, errori: int}}
      */
@@ -63,6 +66,7 @@ class ImportazioneSoci
                 return ['errore' => 'Il file non è il modello dei soci: manca il foglio «' . self::FOGLIO . '».'] + $vuoto;
             }
             $righe = $lettore->righe(self::FOGLIO);
+            $this->lettore = $lettore;
         } catch (\RuntimeException $e) {
             return ['errore' => $e->getMessage()] + $vuoto;
         }
@@ -313,7 +317,7 @@ class ImportazioneSoci
 
         // Date
         foreach (self::DATE as $campo) {
-            [$r[$campo], $err] = self::data($v[$campo]);
+            [$r[$campo], $err] = $this->data($v[$campo]);
             if ($err) {
                 $errori[] = ($campo === 'ammissione' ? 'Data di ammissione' : 'Quota valida fino al') . ': ' . $err;
             }
@@ -418,13 +422,13 @@ class ImportazioneSoci
     }
 
     /** @return array{0: ?string, 1: ?string} data Y-m-d e messaggio d'errore */
-    private static function data(mixed $x): array
+    private function data(mixed $x): array
     {
         if ($x === null || $x === '') {
             return [null, null];
         }
         if (is_float($x)) {
-            $d = LettoreXlsx::dataExcel($x);
+            $d = $this->lettore ? $this->lettore->data($x) : LettoreXlsx::dataExcel($x);
 
             return $d && $d->year >= 1900 ? [$d->toDateString(), null] : [null, 'non è una data.'];
         }

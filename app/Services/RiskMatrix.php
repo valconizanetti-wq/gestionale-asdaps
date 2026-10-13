@@ -6,7 +6,8 @@ namespace App\Services;
  * RiskMatrix — livello di rischio di ogni operazione registrata
  * (audit-log.md). Ripreso dal Gestionale APS e adattato ai model ASD.
  *
- * HIGH   : operazioni critiche, con notifica al Presidente.
+ * HIGH   : operazioni critiche, con avviso agli altri del CD che vedono la
+ *          sezione (AvvisiOperazioni, v0.40.0; prima: email al Presidente).
  * MEDIUM : operazioni operative rilevanti (stati, importi, soci).
  * LOW    : operazioni ordinarie.
  */
@@ -31,8 +32,10 @@ class RiskMatrix
      */
     public static function valuta(string $modello, string $operazione, array $dirty = []): string
     {
-        // Utenti: la creazione è MEDIUM, eliminazione e cambio di ruolo,
-        // email, password, nome o stato attivo sono HIGH.
+        // Utenti: la creazione è MEDIUM, eliminazione e cambio di email,
+        // nome o stato attivo sono HIGH. I ruoli stanno in gl_users_ruoli dalla
+        // v0.40.0: il loro cambio lo registra Utenti::salva (UTENTE_RUOLI, HIGH);
+        // 'ruolo' resta qui per le righe scritte prima.
         if ($modello === 'User') {
             return match (true) {
                 $operazione === 'deleted' => 'HIGH',
