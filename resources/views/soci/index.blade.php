@@ -21,6 +21,9 @@
                 </button>
             @endif
             @if ($puoModificare)
+                <a href="{{ route('soci.importa') }}" class="btn btn-secondary">
+                    <x-icona nome="documento" width="14" height="14" /> Importa da Excel
+                </a>
                 <a href="{{ route('soci.create') }}" class="btn btn-primary">
                     <x-icona nome="piu" width="14" height="14" /> Nuovo socio
                 </a>
@@ -42,6 +45,12 @@
                :href="route('soci.index', ['quota' => 'da_versare'])" :attivo="$filtri['quota'] === 'da_versare'" />
         <x-kpi label="Minorenni" :valore="$kpi['minorenni']" sub="Calcolati dalla data di nascita" />
     </div>
+
+    @if ($filtri['importati'] !== '')
+        <x-avviso tipo="info" titolo="Soci importati il {{ \Illuminate\Support\Carbon::parse($filtri['importati'])->format('d/m/Y') }}.">
+            <a href="{{ route('soci.index') }}">Mostra tutti i soci</a>
+        </x-avviso>
+    @endif
 
     {{-- Filtri: su telefono resta visibile solo la ricerca, il resto si apre con "Filtri" --}}
     <form method="GET" action="{{ route('soci.index') }}" class="filter-bar" x-data="{ aperti: false }">

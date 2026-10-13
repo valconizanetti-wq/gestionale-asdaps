@@ -391,6 +391,9 @@ class SociController extends Controller
             'q'     => trim((string) $request->query('q', '')),
             'tipo'  => (string) $request->query('tipo', ''),
             'quota' => (string) $request->query('quota', ''),
+            // Soci entrati con l'importazione di quel giorno (v0.40.0, link
+            // «Vedi i soci importati» della pagina di esito)
+            'importati' => preg_match('/^\d{4}-\d{2}-\d{2}$/', $d = (string) $request->query('importati', '')) ? $d : '',
             // «Schede eliminate» (soft delete): solo il Presidente, che le ripristina
             'stato' => ($s = (string) $request->query('stato', 'attivo')) === 'eliminate' && ! $request->user()?->haRuolo('presidente') ? 'attivo' : $s,
         ];
@@ -415,6 +418,7 @@ class SociController extends Controller
             ->when($filtri['stato'] === 'eliminate', fn ($q) => $q->onlyTrashed())
             ->when(! in_array($filtri['stato'], ['tutti', 'eliminate'], true), fn ($q) => $q->where('stato', $filtri['stato']))
             ->when(array_key_exists($filtri['tipo'], self::TIPI), fn ($q) => $q->where('tipo', $filtri['tipo']))
+            ->when(($filtri['importati'] ?? '') !== '', fn ($q) => $q->where('importato', true)->whereDate('created_at', $filtri['importati']))
             ->when($filtri['quota'] === 'versata', fn ($q) => $q->whereDate('quota_scadenza', '>=', $oggi))
             ->when($filtri['quota'] === 'da_versare', fn ($q) => $q->where(fn ($w) => $w
                 ->whereNull('quota_scadenza')->orWhereDate('quota_scadenza', '<', $oggi)))

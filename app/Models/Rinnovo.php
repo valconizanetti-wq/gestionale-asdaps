@@ -94,6 +94,22 @@ class Rinnovo extends Model
         return $this->annullata_il !== null;
     }
 
+    /**
+     * Quota del vecchio gestionale caricata con l'importazione dei soci
+     * (v0.40.0, analisi-importazione-soci.md §3.6, D4): niente ricevuta né
+     * movimento, serve solo a dire che l'anno è pagato.
+     */
+    public function senzaRicevuta(): bool
+    {
+        return $this->numero_ricevuta === null;
+    }
+
+    /** «ricevuta n. 3/2027» oppure «quota 2027 del vecchio gestionale». */
+    public function riferimento(): string
+    {
+        return $this->senzaRicevuta() ? "quota {$this->anno} del vecchio gestionale" : "ricevuta n. {$this->numero_ricevuta}";
+    }
+
     public function metodoLabel(): string
     {
         return self::METODI[$this->metodo_pagamento] ?? (string) $this->metodo_pagamento;

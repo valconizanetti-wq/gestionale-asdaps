@@ -61,7 +61,7 @@
                                     @if (! $r->isAnnullato())
                                         <span class="td-sub">{{ $r->ricevuta_stato === 'inviata' ? 'inviata il ' . $r->ricevuta_inviata_il?->format('d/m/Y') : ($r->ricevuta_stato === 'errore' ? 'invio non riuscito' : 'da inviare') }}</span>
                                     @endif
-                                @else — @endif
+                                @else — <span class="td-sub">vecchio gestionale</span>@endif
                             </td>
                             <td data-label="Note" @class(['td-solo-desktop' => ! $r->note && ! $r->isAnnullato()])>
                                 <span class="td-sub">
@@ -77,11 +77,13 @@
                                     <a href="{{ route('rinnovi.ricevuta', [$r, 'scarica' => 1]) }}" class="action-btn" aria-label="Scarica la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="download" /></a>
                                 @endif
                                 @if ($puoQuote && ! $r->isAnnullato())
-                                    <form method="POST" action="{{ route('rinnovi.invia', $r) }}">
-                                        @csrf
-                                        <button type="submit" class="action-btn" aria-label="Invia la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="mail" /></button>
-                                    </form>
-                                    <button type="button" class="action-btn" aria-label="Annulla la ricevuta {{ $r->numero_ricevuta }}"
+                                    @unless ($r->senzaRicevuta())
+                                        <form method="POST" action="{{ route('rinnovi.invia', $r) }}">
+                                            @csrf
+                                            <button type="submit" class="action-btn" aria-label="Invia la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="mail" /></button>
+                                        </form>
+                                    @endunless
+                                    <button type="button" class="action-btn" aria-label="Annulla la {{ $r->riferimento() }}"
                                             @click="$dispatch('apri-modale', 'annulla-{{ $r->id }}')"><x-icona nome="cestino" /></button>
                                 @endif
                             </td>

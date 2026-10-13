@@ -53,7 +53,7 @@
 
             @if ($socio && $giaVersata)
                 <x-avviso tipo="info" titolo="Quota {{ $anno }} già registrata.">
-                    Ricevuta n. {{ $giaVersata->numero_ricevuta }} del {{ $giaVersata->data_pagamento->format('d/m/Y') }}. Per correggerla si annulla dalla scheda del socio e si registra di nuovo.
+                    {{ ucfirst($giaVersata->riferimento()) }} del {{ $giaVersata->data_pagamento->format('d/m/Y') }}. Per correggerla si annulla dalla scheda del socio e si registra di nuovo.
                 </x-avviso>
             @elseif ($socio)
                 <form method="POST" action="{{ route('rinnovi.store') }}" class="pn-colonna" x-data="{ metodo: @js($metodo), inviato: false }" x-on:submit="inviato = true">

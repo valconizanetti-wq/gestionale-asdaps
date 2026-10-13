@@ -165,7 +165,9 @@
                                     @if ($r){{ $r->data_pagamento->format('d/m/Y') }} <span class="td-sub">{{ $r->metodoLabel() }} · {{ \App\Models\PrimaNota::CONTI[Rinnovo::contoPer($r->metodo_pagamento)] }}</span>@else — @endif
                                 </td>
                                 <td data-label="Ricevuta" @class(['td-solo-desktop' => ! $r])>
-                                    @if ($r)
+                                    @if ($r && $r->senzaRicevuta())
+                                        — <span class="td-sub">vecchio gestionale</span>
+                                    @elseif ($r)
                                         <a href="{{ route('rinnovi.ricevuta', $r) }}" target="_blank" rel="noopener" class="rq-numero">{{ $r->numero_ricevuta }}</a>
                                         <span class="td-sub">{{ $r->ricevuta_stato === 'inviata' ? 'inviata' : ($r->ricevuta_stato === 'errore' ? 'invio non riuscito' : 'da inviare') }}</span>
                                     @else — @endif
@@ -173,14 +175,18 @@
                                 <td data-label="Tessera CSEN"><x-badge :variante="$tessere[$s->id]['variante']">{{ $tessere[$s->id]['testo'] }}</x-badge></td>
                                 <td class="td-azioni">
                                     @if ($r)
-                                        <a href="{{ route('rinnovi.ricevuta', [$r, 'scarica' => 1]) }}" class="action-btn" aria-label="Scarica la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="download" /></a>
+                                        @unless ($r->senzaRicevuta())
+                                            <a href="{{ route('rinnovi.ricevuta', [$r, 'scarica' => 1]) }}" class="action-btn" aria-label="Scarica la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="download" /></a>
+                                        @endunless
                                         @if ($puoModificare)
-                                            <form method="POST" action="{{ route('rinnovi.invia', $r) }}">
-                                                @csrf
-                                                <button type="submit" class="action-btn" aria-label="Invia la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="mail" /></button>
-                                            </form>
+                                            @unless ($r->senzaRicevuta())
+                                                <form method="POST" action="{{ route('rinnovi.invia', $r) }}">
+                                                    @csrf
+                                                    <button type="submit" class="action-btn" aria-label="Invia la ricevuta {{ $r->numero_ricevuta }}"><x-icona nome="mail" /></button>
+                                                </form>
+                                            @endunless
                                             {{-- Annullamento anche da qui: il Tesoriere non accede alla scheda del socio --}}
-                                            <button type="button" class="action-btn" aria-label="Annulla la ricevuta {{ $r->numero_ricevuta }}"
+                                            <button type="button" class="action-btn" aria-label="Annulla la {{ $r->riferimento() }}"
                                                     @click="$dispatch('apri-modale', 'annulla-{{ $r->id }}')"><x-icona nome="cestino" /></button>
                                         @endif
                                     @elseif ($puoModificare)

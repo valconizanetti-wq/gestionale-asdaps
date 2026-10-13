@@ -15,6 +15,7 @@ use App\Http\Controllers\PromemoriaController;
 use App\Http\Controllers\RinnoviController;
 use App\Http\Controllers\ScadenzarioController;
 use App\Http\Controllers\SociController;
+use App\Http\Controllers\SociImportaController;
 use App\Http\Controllers\SocioDocumentiController;
 use App\Http\Controllers\TessereController;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,21 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::middleware(['auth', 'attivo'])->group(function () {
 
     Route::view('/dashboard', 'dashboard')->name('dashboard');
+
+    // Importazione dei soci da Excel (v0.40.0, tavole IS-1…IS-3): chi
+    // modifica i Soci (controllo nel controller). Prima del gruppo Soci, che
+    // ha la rotta /soci/{socio}.
+    Route::middleware('permesso:soci')
+        ->prefix('soci/importa')->name('soci.importa')
+        ->controller(SociImportaController::class)
+        ->group(function () {
+            Route::get('/', 'index');
+            Route::get('/modello', 'modello')->name('.modello');
+            Route::post('/', 'leggi')->name('.leggi');
+            Route::post('/conferma', 'conferma')->name('.conferma');
+            Route::post('/annulla', 'annulla')->name('.annulla');
+            Route::get('/fatto', 'fatto')->name('.fatto');
+        });
 
     // Soci (soci.md)
     Route::middleware('permesso:soci')

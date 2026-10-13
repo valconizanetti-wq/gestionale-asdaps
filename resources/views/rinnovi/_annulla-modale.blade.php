@@ -1,11 +1,15 @@
 {{-- Finestra di annullamento di una ricevuta (tavola RQ-5), dalla scheda del socio e dall'elenco dei rinnovi. Variabile: $r. --}}
 @use('App\Support\Importo')
 @php $bag = $errors->getBag('annulla' . $r->id); @endphp
-            <x-modale nome="annulla-{{ $r->id }}" :titolo="'Annullare la ricevuta ' . $r->numero_ricevuta . '?'" :aperta="$bag->any()">
+            <x-modale nome="annulla-{{ $r->id }}" :titolo="$r->senzaRicevuta() ? 'Annullare la ' . $r->riferimento() . '?' : 'Annullare la ricevuta ' . $r->numero_ricevuta . '?'" :aperta="$bag->any()">
                 <form method="POST" action="{{ route('rinnovi.annulla', $r) }}" class="form-modale" id="form-annulla-{{ $r->id }}">
                     @csrf
-                    <p class="form-help">Il numero resta nel registro come «annullata». Il movimento di {{ Importo::it($r->importo, true) }} esce dalla Prima Nota
-                        (se l'anno è chiuso, la correzione resta nell'Audit Log). Il socio torna «da versare» per il {{ $r->anno }}.</p>
+                    @if ($r->senzaRicevuta())
+                        <p class="form-help">La quota caricata con l'importazione resta nel registro come «annullata»; non ha ricevuta né movimento in Prima Nota. Il socio torna «da versare» per il {{ $r->anno }}.</p>
+                    @else
+                        <p class="form-help">Il numero resta nel registro come «annullata». Il movimento di {{ Importo::it($r->importo, true) }} esce dalla Prima Nota
+                            (se l'anno è chiuso, la correzione resta nell'Audit Log). Il socio torna «da versare» per il {{ $r->anno }}.</p>
+                    @endif
                     <div @class(['form-field', 'has-error' => $bag->has('motivo')])>
                         <label class="form-label" for="motivo-{{ $r->id }}">Motivazione<span class="obbligatorio" aria-hidden="true">*</span></label>
                         <textarea id="motivo-{{ $r->id }}" name="motivo" rows="3" required minlength="15" maxlength="1000" class="form-textarea"

@@ -245,6 +245,7 @@ class RinnoviController extends Controller
     {
         $this->richiediModifica($request);
         abort_if($rinnovo->isAnnullato(), 422, 'La ricevuta è annullata.');
+        abort_if($rinnovo->senzaRicevuta(), 422, 'Quota del vecchio gestionale: non ha una ricevuta.');
         $dest = RicevuteQuota::destinatario($rinnovo);
         if (! $dest) {
             return back()->with('error', 'Il socio non ha un indirizzo email (per un minore: quello del genitore). Scarica la ricevuta e consegnala.');
@@ -269,6 +270,9 @@ class RinnoviController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
+        if ($r->senzaRicevuta()) {
+            return back()->with('success', ucfirst($r->riferimento()) . ' annullata.');
+        }
         $messaggio = "Ricevuta n. {$r->numero_ricevuta} annullata: il movimento è uscito dalla Prima Nota.";
         try {
             $this->ricevute->genera($r);   // timbro «annullata»

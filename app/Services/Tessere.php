@@ -203,7 +203,7 @@ class Tessere
         if ($r) {
             return ['versata' => true, 'anno' => $anno, 'situazione' => RinnoviQuota::IN_REGOLA, 'variante' => 'ok', 'conferma' => false,
                 'titolo' => "Quota {$r->anno} versata",
-                'testo' => "Ricevuta {$r->numero_ricevuta} del {$r->data_pagamento->format('d/m/Y')}."];
+                'testo' => ucfirst($r->riferimento()) . " del {$r->data_pagamento->format('d/m/Y')}."];
         }
 
         // Prima dell'avvio della contabilità nel gestionale (2027) le quote

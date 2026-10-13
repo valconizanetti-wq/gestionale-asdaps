@@ -283,7 +283,7 @@ class RinnoviQuota
         return DB::transaction(function () use ($rinnovo, $motivo, $utente) {
             $r = Rinnovo::whereKey($rinnovo->id)->lockForUpdate()->firstOrFail();
             if ($r->isAnnullato()) {
-                throw new \RuntimeException("La ricevuta {$r->numero_ricevuta} è già annullata.");
+                throw new \RuntimeException('La ' . $r->riferimento() . ' è già annullata.');
             }
 
             $r->forceFill(['annullata_il' => now(), 'annullata_da' => $utente->id, 'annullamento_motivo' => $motivo])->save();
