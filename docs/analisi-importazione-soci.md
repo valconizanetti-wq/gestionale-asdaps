@@ -284,3 +284,16 @@ conferma.
      (sarebbero risultate spostate di quattro anni): il lettore lo
      riconosce dal file;
    - aggiunte le celle data in formato ISO.
+
+### Correzioni dalle prove in Laragon (13/10/2026, sera)
+
+- **Estensione PHP «zip»**: in Laragon non era attiva («Class "ZipArchive"
+  not found»). Ora c'è un messaggio chiaro invece dell'errore 500, e le
+  istruzioni sono in `deploy.md` §6 e nel LEGGIMI.
+- **File che non si cancellava su Windows**: il lettore teneva il file
+  `.xlsx` aperto fino alla fine della richiesta, e Windows non cancella un
+  file aperto. I test se ne accorgevano: in `tmp/soci-import` restava il
+  file. Sul server Linux non succedeva, ma restava un difetto. Ora il
+  lettore si chiude subito dopo la lettura (`LettoreXlsx::chiudi()`, in un
+  `finally`), anche se la lettura fallisce.
+

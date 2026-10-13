@@ -49,8 +49,8 @@ class ImportazioneSoci
 
     public const RELAZIONI = ['padre' => 'Padre', 'madre' => 'Madre', 'tutore' => 'Tutore'];
 
-    /** File in lettura (serve per le date: sistema 1900 o 1904). */
-    private ?LettoreXlsx $lettore = null;
+    /** Il file letto usa le date del 1904 (vecchio Excel per Mac). */
+    private bool $date1904 = false;
 
     /**
      * @return array{errore: ?string, righe: list<array>, esempio: bool, conteggi: array{pronte: int, avvisi: int, errori: int}}
@@ -60,15 +60,21 @@ class ImportazioneSoci
         $oggi = ($oggi ?? now())->copy()->startOfDay();
         $vuoto = ['errore' => null, 'righe' => [], 'esempio' => false, 'conteggi' => ['pronte' => 0, 'avvisi' => 0, 'errori' => 0]];
 
+        // Il file si chiude subito dopo la lettura: su Windows un file aperto
+        // non si cancella (e va cancellato: contiene dati personali).
+        $lettore = null;
         try {
             $lettore = new LettoreXlsx($percorso);
             if (! in_array(self::FOGLIO, $lettore->nomiFogli(), true)) {
                 return ['errore' => 'Il file non è il modello dei soci: manca il foglio «' . self::FOGLIO . '».'] + $vuoto;
             }
             $righe = $lettore->righe(self::FOGLIO);
-            $this->lettore = $lettore;
+            $this->date1904 = $lettore->date1904();
         } catch (\RuntimeException $e) {
             return ['errore' => $e->getMessage()] + $vuoto;
+        } finally {
+            $lettore?->chiudi();
+            unset($lettore);
         }
 
         // Intestazioni della riga 1
@@ -428,7 +434,7 @@ class ImportazioneSoci
             return [null, null];
         }
         if (is_float($x)) {
-            $d = $this->lettore ? $this->lettore->data($x) : LettoreXlsx::dataExcel($x);
+            $d = LettoreXlsx::dataExcel($this->date1904 ? $x + 1462 : $x);
 
             return $d && $d->year >= 1900 ? [$d->toDateString(), null] : [null, 'non è una data.'];
         }

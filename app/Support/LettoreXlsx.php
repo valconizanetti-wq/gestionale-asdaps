@@ -39,6 +39,8 @@ class LettoreXlsx
     /** File salvato con il sistema di date del 1904 (vecchio Excel per Mac). */
     private bool $date1904 = false;
 
+    private bool $aperto = false;
+
     /** @throws \RuntimeException con un messaggio per l'utente */
     public function __construct(string $percorso)
     {
@@ -51,6 +53,7 @@ class LettoreXlsx
         if ($this->zip->open($percorso, \ZipArchive::RDONLY) !== true) {
             throw new \RuntimeException('Il file non è un foglio Excel (.xlsx) leggibile.');
         }
+        $this->aperto = true;
 
         $workbook = $this->xml('xl/workbook.xml');
         $rels = $this->xml('xl/_rels/workbook.xml.rels');
@@ -82,13 +85,32 @@ class LettoreXlsx
         }
     }
 
+    /**
+     * Chiude il file. Va chiamato appena letto: su Windows un file aperto non
+     * si può cancellare (collaudo in Laragon, 13/10/2026: il file caricato
+     * restava in tmp/soci-import).
+     */
+    public function chiudi(): void
+    {
+        if ($this->aperto) {
+            $this->aperto = false;
+            try {
+                $this->zip->close();
+            } catch (\Throwable) {
+                // già chiuso
+            }
+        }
+    }
+
     public function __destruct()
     {
-        try {
-            $this->zip->close();
-        } catch (\Throwable) {
-            // già chiuso
-        }
+        $this->chiudi();
+    }
+
+    /** Il file usa il sistema di date del 1904. */
+    public function date1904(): bool
+    {
+        return $this->date1904;
     }
 
     /** @return list<string> */
@@ -108,6 +130,9 @@ class LettoreXlsx
     {
         if (! isset($this->fogli[$foglio])) {
             throw new \RuntimeException("Manca il foglio «{$foglio}».");
+        }
+        if (! $this->aperto) {
+            throw new \RuntimeException('Il file è già stato chiuso.');
         }
         $xml = $this->xml($this->fogli[$foglio]);
         if (! $xml) {
