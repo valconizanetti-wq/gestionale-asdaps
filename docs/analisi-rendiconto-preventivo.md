@@ -1,7 +1,7 @@
 # Analisi — Rendiconto (consuntivo) e preventivo
 
 **Data:** 12/10/2026 (sera) · **Base:** v0.39.1 (commit `bd99c40`, 139 test verdi)
-**Stato:** analisi con domande a Paolo; tavole e codice dopo le risposte.
+**Stato:** risposte di Paolo del 13/10/2026 (§8); punti da discutere (§9) prima delle tavole.
 **Copia nel progetto:** `claude/analisi-rendiconto-preventivo.md`.
 
 Materiale letto: `docs/specifiche/bilancio.md`, MANUALE §2.4, §6.1, §6.2,
@@ -294,6 +294,114 @@ Materiale utile, se c'è: il preventivo 2026 o 2027 della B.A.S. (PDF o
 esportazione di `gestionale-acv`) per la forma a cui i soci sono abituati;
 `contabilita/preventivo.php` e `consuntivo.php`; indicazioni del
 commercialista sul formato.
+
+## 6-bis. Materiale letto il 13/10/2026
+
+**`gestionale-acv`** (`contabilita/preventivo.php` 1.2.0,
+`consuntivo.php` 1.4.13, versioni da telefono):
+- voce del preventivo = categoria + descrizione + **quantità × importo
+  unitario** (entrambi obbligatori dalla 1.1.5; l'importo non si scrive
+  mai a mano) + tag facoltativo; nella pagina le voci sono raggruppate
+  per categoria (subtotale) e, dentro, per tag (senza subtotale di tag);
+  riepilogo Entrate / Uscite / «Saldo previsto» in alto;
+- **testo di presentazione** obbligatorio per pubblicare, più la verifica
+  del CD con la data;
+- **nessuna riga per l'avanzo dell'anno prima**: il «saldo previsto» è
+  solo entrate − uscite;
+- consuntivo: riepilogo per categoria (dalla più grande), dettaglio
+  movimento per movimento, **esportazione Excel** (Riepilogo + Dettaglio
+  movimenti), riepilogo per tag raggruppato per categoria con Entrate,
+  Uscite e «Guadagno», esclusi i tag con sole entrate; il riepilogo per
+  tag non si congela (si legge sempre dai movimenti); relazione e verifica
+  del CD.
+
+**Gestionale APS** (Bilancio preventivo e consuntivo, Modello D): da
+riprendere il **codice di verifica** stampato sul PDF e richiesto al
+caricamento della copia firmata, lo stato **«archiviato»** dopo il
+caricamento (non più sostituibile), la **relazione di missione** con
+editor, il confronto con l'anno precedente, la sanificazione dell'HTML
+(`rimuoviAttributi`) e la guardia sul tipo del documento. Da non
+riprendere: il calcolo per `codice_dm39` (Modello D) e il disco
+`'private'` (difetto corretto lì nella v84).
+
+## 8. Risposte di Paolo (13/10/2026, mattina)
+
+Numerazione di Paolo; tra parentesi la domanda del §6 a cui risponde.
+
+1. **Preventivo approvato entro il 31/12 dell'anno prima** (regola nuova:
+   il preventivo N entro il 31/12 di N−1).
+2. **La relazione sul rendiconto si fa sempre** (anche senza Organo di
+   controllo): è la relazione del CD che accompagna il rendiconto; vi va
+   anche quanto chiede l'art. 22.5.
+3. Righe del preventivo **come in `gestionale-acv`** (dom. 1): quantità ×
+   importo unitario, tag, raggruppamento per categoria e per tag.
+4. Il preventivo lo **approva l'Assemblea** (dom. 2).
+5. Il preventivo **chiude in pareggio con un «+» o «−»** (dom. 3): riga di
+   avanzo o disavanzo previsto che porta i due lati in pari.
+6. **Variazioni del preventivo** sì, documentate, **sopra una soglia**
+   (dom. 4).
+7. **Attivo/Disavanzo** nel rendiconto **dai saldi di apertura** (dom. 5).
+8. **Avanzo/disavanzo dell'anno prima in automatico** (dom. 6, nel
+   preventivo).
+9. Scostamenti sì (dom. 7).
+10. Riepilogo per tag sì (dom. 8).
+11. Approvazione e chiusura dell'anno **insieme** (dom. 9).
+12. **Due PDF** (dom. 10).
+13. Proposta registrata da **Presidente e Tesoriere**, il CD in sola
+    lettura (dom. 11).
+14. **Nessun Organo di controllo nel 2027** (dom. 12).
+
+Senza risposta: raccolte pubbliche di fondi (dom. 12), sezioni
+istituzionale/commerciale da subito (dom. 13), data dell'Assemblea del
+preventivo 2027 e azzeramento (dom. 14), esportazione CSV/Excel (dom. 10),
+chi registra l'approvazione (dom. 11).
+
+## 9. Punti da discutere
+
+**A. Avanzo «automatico» e scadenza del 31/12 (risposte 1, 7, 8).** Il
+preventivo N si approva entro il 31/12 di N−1, quando l'anno N−1 non è
+finito: l'avanzo vero non esiste ancora. Per il 2027 c'è un problema in
+più: il 2026 sta in `gestionale-acv`. Proposta: nel preventivo la riga
+«Avanzo presunto dell'anno precedente» è **proposta in automatico** con i
+saldi di cassa e banca del giorno (nel 2027: scritta a mano dal saldo di
+`gestionale-acv`), modificabile con la nota «stima al gg/mm/aaaa»; nel
+rendiconto la stessa riga è il **valore vero** dai saldi di apertura
+(risposta 7), e lo scostamento mostra quanto la stima era lontana.
+
+**B. Pareggio (risposta 5).** Lettura proposta: Entrate + avanzo presunto
+= Uscite ± «Avanzo (+) / Disavanzo (−) previsto», riga calcolata, mai
+scritta. Un disavanzo previsto è ammesso ma mostrato in rosso.
+
+**C. Variazioni (risposta 6).** Da fissare: (a) soglia per categoria, in
+% e in € (proposta: **la stessa del 20% degli scostamenti**, con un minimo
+di 100 € per non scattare su voci piccole); (b) chi approva una variazione:
+il **CD** con delibera (proposta) o l'Assemblea; (c) senza variazione, lo
+scostamento oltre soglia resta segnalato nel rendiconto e va spiegato
+nella relazione. Nel confronto: colonne «Preventivo iniziale», «Variazioni»,
+«Preventivo assestato», «Consuntivo», «Scostamento».
+
+**D. Obbligo del 31/12 (risposta 1).** Dove scriverlo: nel gestionale
+(scadenza ricorrente «Approvazione del preventivo» al 31/12, promemoria,
+avviso dal 1° gennaio se manca) e, se lo vuoi vincolante, nello statuto
+ancora da adottare (art. 22, nuovo comma). Nel gestionale non può
+bloccare la Prima Nota: i soldi entrano ed escono comunque.
+
+**E. Tempi del preventivo 2027.** Con la regola del 31/12, il preventivo
+2027 va approvato in un'Assemblea **entro fine 2026**, probabilmente la
+stessa che adotta lo statuto. Il modulo va quindi installato sul server
+prima, e il preventivo scritto lì in mezzo ai dati di prova: va escluso
+dall'azzeramento. In alternativa il preventivo 2027 si approva fuori e si
+registra dopo l'azzeramento.
+
+**F. Relazione (risposta 2).** Proposta: relazione obbligatoria per
+proporre il rendiconto (e testo di presentazione obbligatorio per il
+preventivo, come in `gestionale-acv`); editor semplice (grassetto,
+corsivo, elenchi, titoli) con la sanificazione dell'APS; nei PDF prima
+delle firme.
+
+**G. Copia firmata.** Dall'APS: codice di verifica sul PDF «Approvato»,
+richiesto al caricamento della copia firmata; dopo il caricamento il
+documento è «archiviato» e non si sostituisce più.
 
 ## 7. Prossimi passi
 
