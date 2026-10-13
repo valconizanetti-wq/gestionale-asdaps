@@ -2,7 +2,7 @@
 
 **Data:** 13/10/2026 · **Base:** v0.39.1 + analisi rendiconto (commit `3e8adea`)
 **Copia nel progetto:** `claude/analisi-impianto-asd-aps.md`
-**Stato:** analisi richiesta da Paolo; nessuna decisione presa.
+**Stato:** decisioni di Paolo del 13/10/2026 (§5); coerenza (§6), moduli attivabili (§7), ordine dei lavori (§8).
 
 ## 0. In breve
 
@@ -234,3 +234,141 @@ aprile 2028. Sequenza proposta:
 - Statuto pubblicato (`resources/content/statuto/1.0.md`), MANUALE §2, `profilo-ente.md`,
   `da-riportare-gestionale-aps.md`, codice del Gestionale APS allegato il
   13/10/2026 (`BilancioController`, `BilancioConsuntivoController`).
+
+## 5. Decisioni di Paolo (13/10/2026, pomeriggio)
+
+Punti critici:
+- **C1** sì, a condizione che il modello contenga **tutte** le specificità
+  APS/RUNTS e A.S.D., da accendere e spegnere secondo l'installazione;
+- **C2, C3, C4** sì;
+- **C5**: non ragionare sul numero di soci di oggi: l'A.S.D. cresce, e
+  arrivare a 100 soci è facile.
+
+Decisioni del §4:
+1. Si parte dal Gestionale ASD, ma **le specificità dell'APS restano**: il
+   gestionale del Dante è in uso.
+2. Modello D anche per l'A.S.D., con le categorie libere che portano il
+   codice della riga: sì.
+3. Rendiconto e preventivo come il Dante, con le quattro aggiunte: sì.
+4. Verbali e Assemblee dal Dante, prima del rendiconto: sì.
+5. Riconciliazione, cassa mensile e Progetti spenti nel 2027: **no**
+   (restano).
+6. Preventivo 2027 **approvato fuori**, ma **da inserire** nel gestionale
+   per il confronto con il consuntivo di fine 2027.
+7. Tutela dei tesserati: per Paolo i tesserati sono già tutelati dalla
+   tessera (vedi §6, punto 4).
+
+Obiettivo dichiarato: nella migrazione futura il contenuto del gestionale
+del Dante resta **integro**; ne nasce un **modello di gestionale
+configurabile** per A.S.D. e APS/RUNTS, con moduli e funzioni da accendere
+o spegnere secondo la configurazione.
+
+## 6. Coerenza delle scelte
+
+Le scelte sono coerenti tra loro e con l'obiettivo. Quattro conseguenze
+da tenere presenti:
+
+1. **Il modello deve essere l'unione dei due gestionali, non
+   l'intersezione.** Il Dante ha circa 45 controller, il Gestionale ASD
+   20. Restano da portare dal Dante, oltre a Verbali e Assemblee:
+   - Governance CD, Area Consiglieri e RSVP;
+   - Bilancio con il Modello D e Compliance RUNTS;
+   - Erogazioni liberali e 5 per mille;
+   - Comunicazioni e lettere, Corrispondenza, Fascicolo, Archivio;
+   - Cassa, Riconciliazione, Storno, F24, Collaborazioni, Volontari e
+     rimborsi;
+   - Domanda cartacea e importazione dei soci, Backup.
+
+   In senso inverso, il Gestionale ASD porta:
+   - domande online con voto del CD, privacy link;
+   - profilo dell'ente, Rinnovi quota con promemoria;
+   - Tessere EPS, Scadenzario con «Rinnovata», Scontrini con OCR, anni
+     contabili;
+   - le correzioni A–E di `da-riportare-gestionale-aps.md`.
+2. **Migrare il Dante «integro» è più che copiare tabelle.** Vincoli da
+   progettare fin d'ora:
+   - **catena dell'Audit Log**: ogni riga ha l'hash della precedente.
+     Rinominare tabelle o colonne (`gs_` → `gl_`) rompe la verifica. Va
+     sigillata la catena vecchia (certificato finale con l'ultimo hash) e
+     la nuova deve partire da quell'hash;
+   - **numerazioni**: ricevute (`N/ANNO`), movimenti e note di rimborso
+     devono continuare senza salti né doppioni;
+   - **documenti già firmati o certificati** (PDF approvati con codice di
+     verifica, verbali con `hash_contabilita`, giustificativi): stessi
+     file, stessi codici, percorsi riscritti senza toccare il contenuto;
+   - **differenze di schema** già note (conto `cc`/`banca`, categorie con
+     `codice_dm39`, ruoli e permessi);
+   - **prova completa** su una copia del database del Dante prima del
+     passaggio, con un confronto automatico dei totali (soci, quote,
+     movimenti per anno, saldi, rendiconti approvati).
+3. **Preventivo 2027 approvato fuori (decisione 6).** Serve la funzione
+   «Registra un preventivo già approvato»: righe, data dell'Assemblea,
+   riferimento del verbale e scansione, registrata direttamente come
+   approvata e segnata nell'Audit Log. Va fatta dopo l'azzeramento,
+   all'inizio del 2027. È la stessa funzione che servirà a ogni nuovo ente
+   che parte a metà strada, quindi non è lavoro sprecato.
+4. **Tutela dei tesserati (decisione 7): da ricontrollare.** La tessera
+   CSEN dà l'**assicurazione**. L'art. 16 D.Lgs. 39/2021 chiede invece
+   all'associazione degli **adempimenti organizzativi**:
+   - modello organizzativo e di controllo;
+   - codice di condotta;
+   - un responsabile contro abusi, violenze e discriminazioni, con il
+     nominativo pubblicato.
+
+   Lo statuto della Compagnia li prevede (art. 17.1.8 e art. 28). Alcuni
+   EPS forniscono modelli già pronti e le linee guida, ma l'adozione e la
+   nomina restano dell'associazione. Proposta: chiedere a CSEN che cosa
+   serve alla B.A.S. nel 2027. Nel gestionale basta poco: responsabile,
+   date di adozione e documenti nel profilo dell'ente, nel blocco «sport».
+
+## 7. Moduli da accendere e spegnere: è eccessivo?
+
+No, a patto di farlo **per modulo e non per singola funzione**. È anche
+l'unico modo realistico per tenere un modello solo per A.S.D. e APS senza
+rami di codice separati. Il Gestionale ASD ha già due mattoni:
+`haModulo()` nel profilo dell'ente (rasd, l398, runts) e la voce `'se'`
+nella navigazione. Proposta in tre livelli:
+
+| Livello | Chi decide | Esempi | Come si accende |
+|---|---|---|---|
+| **Obbligatori per legge** | La forma giuridica e il regime nel profilo dell'ente, per periodo | RUNTS, Modello D obbligatorio e deposito, 5 per mille (APS); RASD, plafond 398 (A.S.D. in 398) | In automatico; non si spengono a mano |
+| **Facoltativi** | Il Presidente, in Impostazioni › Moduli | Scontrini con OCR, Tessere EPS, Riconciliazione, Cassa mensile, Progetti, Volontari, Comunicazioni, Domande online, Promemoria | Interruttore, con le dipendenze (es. Scontrini richiede Prima Nota) |
+| **Base** | Nessuno | Soci, Prima Nota, Bilancio, Verbali e Assemblee, Audit Log, Privacy, Scadenzario, Utenti e ruoli | Sempre accesi |
+
+Regole perché non diventi complicato:
+- un **registro unico** (`config/moduli.php`): codice, nome, livello,
+  dipendenze, sezioni dei permessi, comandi pianificati;
+- un middleware `modulo:<codice>` sulle rotte. La navigazione, i comandi
+  pianificati e i promemoria leggono lo stesso registro: niente `if`
+  sparsi nelle viste;
+- **spegnere non cancella**: i dati restano, la sezione sparisce dal menu.
+  Se ci sono dati, il modulo resta consultabile in sola lettura dai ruoli
+  di controllo (Revisore, Presidente);
+- l'Audit Log registra accensione e spegnimento;
+- i test girano con **tutti i moduli accesi** più due configurazioni tipo
+  (A.S.D. in 398, APS con RUNTS), non con tutte le combinazioni;
+- i permessi per ruolo (`gl_ruoli_sezioni`) restano come sono: decidono
+  *chi* vede; il modulo decide *se* la sezione esiste.
+
+Cosa sarebbe eccessivo: interruttori per singoli campi o per pulsanti, o
+configurazioni che cambiano le regole contabili (il criterio di cassa, la
+catena dell'audit). Quelle restano uguali per tutti.
+
+## 8. Ordine dei lavori che ne discende (proposta)
+
+Fino al 31/12/2026:
+1. registro dei moduli con gli interruttori, piccolo (si appoggia a ciò che
+   c'è già);
+2. Verbali e Assemblee dal Dante, adattati;
+3. anticipi e note di rimborso;
+4. azzeramento e apertura.
+
+Inizio 2027:
+
+5. mappa delle categorie al Modello D;
+6. Bilancio (preventivo con «registra già approvato», per il preventivo
+   2027);
+7. poi riconciliazione e cassa mensile.
+
+Nel 2027: Governance CD, Comunicazioni e gli altri moduli del Dante, verso
+il modello unico; poi la prova di migrazione del Dante su una copia.
