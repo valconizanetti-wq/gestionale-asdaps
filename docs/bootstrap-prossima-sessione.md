@@ -102,6 +102,8 @@ nel codice):
 - **Fase 3** (ottobre–dicembre 2027): preventivo 2028, migrazione del
   Dante.
 
+**Repository leggero (13/10/2026)**: tavole e tela (`docs/mockup/`, circa 36 MB) e `Test_Domande.pdf` tolti da tutta la storia e messi nel `.gitignore`; il bundle passa da 24,5 a 1,9 MB e gli hash dei commit sono cambiati. Le tavole le conserva Paolo: si allegano solo quando servono; quelle nuove si consegnano come file a parte, non nel repository.
+
 Codice di partenza: `gestionale-asd-<commit>.bundle` (ultimo consegnato:
 quello con questo bootstrap). Si ricostruisce con
 `git clone gestionale-asd-<commit>.bundle /home/claude/gestionale-asd`;
