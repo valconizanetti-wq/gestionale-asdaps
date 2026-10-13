@@ -257,8 +257,31 @@ altrimenti Laravel continua a usare la configurazione precedente.
 
 ## 5. Rilasci successivi
 
-1. In locale: commit, `npm run build`, `git archive -o deploy.zip HEAD`,
-   `build.zip`.
+1. In locale, nella cartella collegata a GitHub (dal 13/10/2026,
+   `valconizanetti-wq/gestionale-asdaps`, ramo `master`):
+   ```
+   git pull
+   php artisan migrate
+   php artisan test
+   npm run build
+   git archive -o deploy.zip HEAD
+   ```
+   poi `build.zip` da `public\build`. I commit arrivano già fatti da
+   GitHub: in questa cartella non si modifica il codice a mano (un `git
+   pull` successivo si fermerebbe con un conflitto). `.env`, `storage/`,
+   `docs/mockup/` e `Test_Domande.pdf` sono fuori da git e restano.
+
+   **Collegamento la prima volta** (fatto da Paolo il 13/10/2026): la
+   cartella vecchia aveva una storia diversa, quindi si rinomina e si fa
+   `git clone https://github.com/valconizanetti-wq/gestionale-asdaps.git
+   gestionale-asd`. Poi si ricopiano `.env`, `storage\app`, `docs\mockup`
+   e `Test_Domande.pdf`, e si lanciano `composer install`, `npm ci`,
+   `npm run build`, `php artisan migrate` e `php artisan test`. Il
+   repository è privato: al primo clone Windows chiede l'accesso a GitHub
+   dal browser e poi lo ricorda.
+
+   In alternativa, con lo ZIP della versione: estrarlo, `git add -A` e
+   `git commit` (era la procedura fino alla v0.39.1).
 2. Sul server: estrarre `deploy.zip` in `~/gestionale-asd`
    (sovrascrivendo) e `build.zip` in `public/` (sostituendo la cartella
    `build` per intero: vecchio manifest e nuovi file non convivono).
@@ -378,6 +401,10 @@ non vengono toccati.
   prima di ogni rilascio con migration conviene comunque un dump manuale.
 
 ## 7. Storia ed evoluzione
+
+- 13/10/2026, sera: la cartella locale di Laragon è collegata a GitHub e
+  §5 usa `git pull` (prove di Paolo: 155 test verdi dopo l'estensione
+  zip). Il commit locale degli ZIP non serve più.
 
 - v0.40.0 (13/10/2026):
   - migration `000103`: ruoli nella tabella `gl_users_ruoli`, tolta
