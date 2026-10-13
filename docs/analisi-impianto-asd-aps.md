@@ -280,11 +280,20 @@ da tenere presenti:
    - Domanda cartacea e importazione dei soci, Backup.
 
    In senso inverso, il Gestionale ASD porta:
-   - domande online con voto del CD, privacy link;
-   - profilo dell'ente, Rinnovi quota con promemoria;
-   - Tessere EPS, Scadenzario con «Rinnovata», Scontrini con OCR, anni
-     contabili;
+   - privacy link, Rinnovi quota con promemoria;
+   - Scadenzario con «Rinnovata», Scontrini con OCR, anni contabili;
    - le correzioni A–E di `da-riportare-gestionale-aps.md`.
+
+   **Correzione (Paolo, 13/10/2026)**: anche il Dante ha le domande
+   online, un profilo dell'ente (con dati diversi) e le tessere. Per
+   questi tre moduli esistono **due realizzazioni da conciliare**, non una
+   da portare:
+   - si tiene la versione del Gestionale ASD, più recente e con le
+     correzioni;
+   - si aggiungono i campi e i casi del Dante (dati RUNTS e del comitato
+     nel profilo, tessere sociali del Dante accanto a quelle EPS,
+     domanda cartacea);
+   - i dati del Dante si migrano dentro la versione unica.
 2. **Migrare il Dante «integro» è più che copiare tabelle.** Vincoli da
    progettare fin d'ora:
    - **catena dell'Audit Log**: ogni riga ha l'hash della precedente.
