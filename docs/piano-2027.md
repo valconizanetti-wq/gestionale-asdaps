@@ -187,11 +187,13 @@ Il vecchio gestionale del Dante resta acceso in sola lettura per tutto il
    sola persona con un solo voto.
 
 Ordine della Fase 0 aggiornato:
-1. più ruoli per utente;
-2. importazione dei soci;
-3. comando di azzeramento;
-4. dominio definitivo (con i dati di prova);
-5. informativa definitiva;
+1. più ruoli per utente — **fatto** (v0.40.0);
+2. importazione dei soci — **fatto** (v0.40.0);
+3. comando di azzeramento — **fatto** (v0.41.0, `gestionale:azzera`);
+4. dominio definitivo (con i dati di prova): procedura scritta il
+   14/10/2026 (`dominio-definitivo.md`), da eseguire (Paolo);
+5. informativa definitiva — **fatta** (v0.41.0); resta il DPA di
+   SupportHost;
 6. dopo il 16/11:
    - azzeramento;
    - importazione dei soci veri;

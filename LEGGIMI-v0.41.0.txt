@@ -1,0 +1,57 @@
+Gestionale ASD - v0.41.0 (14/10/2026)
+Comando di azzeramento dei dati di prova, procedura del dominio definitivo,
+informativa senza segnaposto
+
+Da applicare sopra la v0.40.0 (se la v0.40.0 non e' ancora sul server, prima quella: LEGGIMI
+della v0.40.0 nella storia di GitHub, con la migration e l'estensione PHP "zip").
+NESSUNA migration; nessun seeder; nessun pacchetto Composer nuovo; nessun CSS nuovo.
+Dettaglio: docs/analisi-azzeramento.md (par. 7 decisioni, par. 8 realizzazione con i tre giri
+di revisione). Collaudo: docs/test/collaudo-P-azzeramento.md.
+
+COSA CAMBIA
+  Comando di azzeramento (php artisan gestionale:azzera)
+  - Senza --esegui: prova a vuoto, elenca cosa toglierebbe e non cambia niente.
+  - Con --esegui: chiede di scrivere AZZERA; copia del database in
+    storage/app/private/backup; svuota i dati di prova (soci, domande, quote, Prima Nota,
+    scontrini, fornitori, tessere, Scadenzario a mano, Audit Log, email, sessioni) e i loro
+    file; tiene utenti, permessi, profilo dell'ente, categorie, tipi di tessera, promemoria,
+    impostazioni; rimette le tre scadenze pronte alla prossima data; l'Audit Log riparte con
+    la riga "AZZERAMENTO_DATI_PROVA". Decisioni D1-D5 del 14/10/2026.
+  - Si rifiuta con dati veri (anno contabile chiuso, movimenti o ricevute dal 2027).
+  - SUL SERVER SI USA UNA VOLTA SOLA, DOPO L'ASSEMBLEA (deploy.md par. 5.1). Per provarlo
+    adesso: in Laragon (collaudo P, P4 e P5).
+  - Le pulizie a mano J12, K11, L12, M12, N12, O14 della lista di collaudo ora rimandano al
+    comando.
+  Dominio definitivo
+  - docs/dominio-definitivo.md: procedura passo per passo per gestionale.arciericastello.it
+    (stesso account cPanel), posta da portaleacv@arciericastello.it (SMTP 465), SPF/DKIM/DMARC,
+    reindirizzamento di arco.valconi.it. La fai tu quando vuoi, anche prima di installare
+    questa versione; poi mi dici com'e' andata e aggiorno deploy.md.
+  - .env.example con i valori del nuovo dominio (il .env del server NON si tocca col rilascio).
+  Informativa 1.0
+  - Punto 4: SupportHost OU (Tallinn, Estonia), server in Germania. Punto 5: tolto il
+    consulente fiscale. Cambia l'impronta del testo (nessun consenso vero ancora raccolto).
+  - Resta da fare (tu): accettare il DPA di SupportHost nell'area clienti, o chiederlo
+    all'assistenza.
+
+LOCALE (Laragon)
+  1. git pull                    (oppure: estrarre lo ZIP nella radice e fare un commit)
+  2. php artisan test           -> 160 superati
+  3. git archive -o deploy.zip HEAD   (build.zip non serve: CSS e JS invariati)
+  4. collaudo P, prove P1-P5 (P4 e P5 cancellano i dati di prova di asd_demo: se ti servono,
+     fai prima una copia del database con HeidiSQL)
+
+SERVER
+  Come le ultime (deploy.md par. 5): unzip deploy.zip in ~/gestionale-asd,
+  php artisan optimize:clear e le tre cache. Niente migrate, niente build.
+  Controllo: php artisan gestionale:azzera   (solo la prova a vuoto! P1-P2)
+  NON lanciare --esegui fino a dopo l'Assemblea (P6).
+
+FILE PRINCIPALI
+  Nuovi: app/Services/Azzeramento.php; app/Console/Commands/Azzera.php;
+    tests/Feature/AzzeramentoTest.php; docs/analisi-azzeramento.md, dominio-definitivo.md,
+    test/collaudo-P-azzeramento.md.
+  Modificati: resources/content/informativa/1.0.md; .env.example; docs: deploy.md (par. 5.1,
+    6, 7), specifiche/audit-log.md, informativa-privacy-v1.0.md (due copie), MANUALE-ASD.md
+    (due copie), test-domande-iscrizione.md (due copie), test/collaudo-M, N, O,
+    bootstrap-prossima-sessione.md, piano-2027.md, da-riportare-gestionale-aps.md (D18).

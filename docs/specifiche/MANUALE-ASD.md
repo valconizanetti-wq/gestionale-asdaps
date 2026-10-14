@@ -1231,6 +1231,19 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     (`scontrini.md`): passi 1 e 2 dal telefono, fornitore riconosciuto o
     nuovo, scheda con righe, categorie e «Registra la divisione», pagina
     Fornitori, ruolo Consigliere. Poi: anticipi e note di rimborso.
+    **v0.40.0** (13/10/2026): più ruoli per utente, pagina Utenti,
+    password con il link, avvisi delle operazioni delicate, importazione
+    dei soci da Excel (§6.13).
+    **v0.41.0** (14/10/2026): comando **`gestionale:azzera`**
+    (`analisi-azzeramento.md`, `deploy.md` §5.1). Fa prima una prova a
+    vuoto, poi una copia di sicurezza; svuota i dati di prova, tiene la
+    configurazione e gli utenti e fa ripartire l'Audit Log. Si rifiuta se
+    trova dati veri. Si usa una volta, dopo l'Assemblea della B.A.S., al
+    posto delle pulizie a mano della lista di collaudo. Nella stessa
+    versione: procedura per il dominio definitivo
+    `gestionale.arciericastello.it` (`dominio-definitivo.md`) e informativa
+    1.0 senza segnaposto (SupportHost, server in Germania; niente
+    consulente fiscale).
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

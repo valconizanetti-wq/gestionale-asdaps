@@ -197,14 +197,6 @@ Riscritto per esteso il 12/10/2026, su richiesta di Paolo. Dettaglio tecnico in 
 **Alla fine:** rimetti la data vera della Polizza RC (con il giorno giusto) e quella della tessera modificata.
 
 ### M12 — Azzeramento prima dell'apertura
-**Quando:** solo alla fine del collaudo, prima dell'apertura del 2027, insieme a J12, K11, L12 e N12. I rinnovi annullati in M6 non lasciano nulla.
-**Passi:**
-1. In phpMyAdmin:
-   ```sql
-   DELETE FROM gl_scadenzario_rinnovi;
-   DELETE FROM gl_scadenzario WHERE chiave IS NULL;
-   ALTER TABLE gl_scadenzario_rinnovi AUTO_INCREMENT = 1;
-   ```
-   (La seconda riga cancella le scadenze create a mano nel collaudo; le tre pronte hanno una chiave e restano.)
-2. Nello Scadenzario controlla le date delle tre scadenze pronte: affiliazione 31/12, polizza con il giorno vero, rendiconto 30/04.
+**Quando:** solo alla fine del collaudo, prima dell'apertura del 2027.
+**Passi:** dalla v0.41.0 si fa con il comando `php artisan gestionale:azzera` (blocco P, `collaudo-P-azzeramento.md`). Svuota i rinnovi dello Scadenzario e le scadenze create a mano, e rimette le tre scadenze pronte alla prossima data vera (affiliazione 31/12, polizza con il giorno vero, rendiconto 30/04). La prova a vuoto mostra le date prima e dopo.
 **Attenzione:** non registrare con «Rinnovata» i pagamenti già fatti per le scadenze in corso, perché «Rinnovata» sposta la data all'anno dopo. Il primo «Rinnovata» vero sarà, per esempio, l'affiliazione 2027 a dicembre: l'importo scritto quella volta verrà poi proposto negli anni seguenti.

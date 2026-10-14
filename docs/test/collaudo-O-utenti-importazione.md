@@ -19,7 +19,7 @@ Versione: **v0.40.0** (13/10/2026). Dettaglio tecnico: `docs/analisi-ruoli-utent
    - `soci-buoni.xlsx`: quattro soci inventati, un minorenne e due con la quota fino al 31/12/2027;
    - `soci-errati.xlsx`: quattro righe con errori diversi.
 
-   Hanno codici fiscali inventati ma validi: si cancellano con O14.
+   Hanno codici fiscali inventati ma validi: si cancellano con O14 (comando di azzeramento, blocco P).
 4. L'email del server deve funzionare (link della password e avvisi).
 
 ---
@@ -205,7 +205,7 @@ Versione: **v0.40.0** (13/10/2026). Dettaglio tecnico: `docs/analisi-ruoli-utent
 - Messaggio «Quota 2027 del vecchio gestionale annullata.»; Verdi Luca torna «da versare» per il 2027; nella scheda la quota risulta valida fino al 31/12/2026 (quella del vecchio gestionale resta).
 
 ### O14 — Azzeramento delle prove del blocco O
-Da fare con l'azzeramento generale (dopo l'Assemblea), oppure subito:
-- i quattro soci di `soci-buoni.xlsx` (Bianchi Anna, Verdi Luca, Neri Sofia, Rossi Mario) e le loro quote: elimina le schede (prima annulla le quote 2027) o lasciali all'azzeramento;
-- l'utente `Prova Consigliere`: resta disattivato (gli utenti non si eliminano) oppure si cancella con SQL nell'azzeramento: `DELETE FROM gl_users WHERE email = '…';` (la tabella dei ruoli si svuota da sola);
+Dalla v0.41.0 con il comando `php artisan gestionale:azzera` (blocco P, `collaudo-P-azzeramento.md`), dopo l'Assemblea:
+- i quattro soci di `soci-buoni.xlsx` e le loro quote si svuotano con gli altri dati di prova;
+- l'utente `Prova Consigliere` resta, disattivato: gli utenti non si toccano (decisione D1);
 - i ruoli veri del CD si danno dalla pagina Utenti dopo l'azzeramento (Presidente Andrea Papini; Segretario e Tesoriere Paolo Zanetti; Consiglieri Massimo Papini e Luigi Tascio).

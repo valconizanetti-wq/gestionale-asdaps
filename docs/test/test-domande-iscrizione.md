@@ -133,8 +133,8 @@ Dettaglio in `docs/specifiche/audit-log.md` §9. Da Presidente, poi da un utente
 - I7 Genera il certificato: messaggio verde; nello storico la riga con «Da: … (Presidente)» e il PDF (carta intestata, righe per livello, impronta dell'ultima riga, codice del documento). Un secondo certificato: due righe, due PDF diversi. Elenco: fascia verde «Registro integro e certificato». **v0.34.1**: nello storico «Da» con il nome sopra e il ruolo sotto, nessuno scorrimento orizzontale (righe e impronta sotto data e anno); nel PDF il codice del documento a capo, su una riga sola.
 - I8 Nuova attestazione: «Scarica la bozza» (PDF con i numeri di oggi); caricare un PDF qualunque con oggetto e data → riga nello storico, «Firmata» e «Relazione» si scaricano; un file .txt dà l'errore accanto al campo e la finestra si riapre. **v0.34.1**: la finestra sta nello schermo (su telefono scorre, i pulsanti restano in fondo) e i campi sono più compatti; la bozza non firmata viene rifiutata («Nel file non c'è una firma digitale…»); la bozza firmata (PDF firmato o file .p7m, firma digitale o CIE) viene accettata. **v0.34.2**: l'oggetto è già compilato.
 - I9 Verifica mensile senza aspettare: `php artisan audit:verifica-integrita` → «Catena integra».
-- I10 Anomalia simulata (solo sul collaudo, poi si azzera): `UPDATE gl_audit_log SET dettaglio = CONCAT(dettaglio, ' x') WHERE id = (SELECT MIN(id) FROM (SELECT id FROM gl_audit_log) t);` e di nuovo il comando: esce con errore, email «Audit Log: anomalia nella catena di integrità» al Presidente (e al Revisore), fascia rossa nell'elenco, «Genera il certificato» non c'è, la verifica elenca la riga con «Contenuto: l'impronta non si ricalcola».
-- I11 Pulizia del collaudo I10: la catena resta rotta (è il suo scopo); va azzerata con il resto dei dati di prova prima dell'apertura (`TRUNCATE gl_audit_log; DELETE FROM gl_audit_log_integrity; DELETE FROM gl_impostazioni WHERE chiave = 'audit_ultima_verifica';` e i PDF in `storage/app/private/audit/`).
+- I10 Anomalia simulata (solo sul collaudo, poi si azzera con il blocco P): `UPDATE gl_audit_log SET dettaglio = CONCAT(dettaglio, ' x') WHERE id = (SELECT MIN(id) FROM (SELECT id FROM gl_audit_log) t);` e di nuovo il comando: esce con errore, email «Audit Log: anomalia nella catena di integrità» al Presidente (e al Revisore), fascia rossa nell'elenco, «Genera il certificato» non c'è, la verifica elenca la riga con «Contenuto: l'impronta non si ricalcola».
+- I11 Pulizia del collaudo I10: la catena resta rotta (è il suo scopo); va azzerata con il resto dei dati di prova prima dell'apertura: `php artisan gestionale:azzera` (blocco P) svuota la catena, i certificati e i PDF e la fa ripartire.
 
 ## J. Prima Nota (v0.35.0, correzioni v0.35.1)
 Dettaglio in `docs/specifiche/prima-nota.md`, tavole PN-1…PN-9. Da Presidente (o Tesoriere), poi da Revisore se c'è. **Solo movimenti di prova**: tutto il blocco va azzerato con J12 prima di scrivere i saldi veri del 2027.
@@ -155,20 +155,10 @@ Dettaglio in `docs/specifiche/prima-nota.md`, tavole PN-1…PN-9. Da Presidente 
 - J9 Audit Log: le righe dei movimenti, del giroconto, della categoria e del tag di prova ci sono, con i valori prima e dopo nelle modifiche; l'eliminazione di un movimento è «Alto». **v0.35.1**: ogni operazione è **una riga sola**: giroconto creato, modificato o eliminato = una riga «Prima Nota» con «giroconto: Cassa → Banca» nei valori; eliminazione di un movimento con giustificativi = una riga, con i nomi dei giustificativi nei valori «Prima». Moduli con nomi leggibili («Giustificativo», «Anno contabile», «Categoria di Prima Nota»). Nel dettaglio, sotto il riepilogo, l'«Hash SHA-256» per intero.
 - J10 Domanda di iscrizione accettata con quota versata (blocco C): nella Prima Nota un'entrata in categoria «Quote associative», non eliminabile da qui («collegato alla quota»). La quota di un socio inserito a mano non ha ancora un modulo (Rinnovi quota, da fare).
 - J11 Chiusura (solo come prova di blocco): nel 2026 la lista di controllo segna «L'anno è finito» in rosso e il pulsante di chiusura è spento. **v0.35.1**: al posto di data e riferimento scritti a mano, l'elenco dei verbali dell'Assemblea dell'anno in corso; oggi è vuoto (riquadro «Nessun verbale da scegliere») perché il modulo Verbali non c'è ancora. La chiusura vera, con le correzioni motivate e la riapertura dal Presidente, è coperta dai test automatici (`PrimaNotaTest`); si collauda dal 2028 sul 2027.
-- J12 Azzeramento della Prima Nota di prova (prima dell'apertura del 2027 e dopo ogni giro):
-```sql
-DELETE FROM gl_prima_nota_documenti;
-UPDATE gl_prima_nota SET giroconto_id = NULL;
-DELETE FROM gl_prima_nota;
-DELETE FROM gl_anni_contabili;
-DELETE FROM gl_tag;
-DELETE FROM gl_soggetti WHERE created_at >= '2026-10-06';  -- solo i fornitori nati nel collaudo
-ALTER TABLE gl_prima_nota AUTO_INCREMENT = 1;
-```
-Poi `rm -rf storage/app/private/prima-nota storage/app/private/tmp/prima-nota`; la categoria di prova di J2 si elimina dalla sua pagina (se è rimasta). Solo dopo: in `/prima-nota/anni` il primo anno sarà il 2027 e lì si scrivono i saldi di cassa e banca al 31/12/2026 di `gestionale-acv`, con il rendiconto approvato come documento.
+- J12 Azzeramento della Prima Nota di prova: **dalla v0.41.0 con il comando `php artisan gestionale:azzera`** (blocco P, `collaudo-P-azzeramento.md`), che svuota anche movimenti, giustificativi, anni contabili, tag e fornitori e cancella i file. Solo dopo: in `/prima-nota/anni` il primo anno sarà il 2027 e lì si scrivono i saldi di cassa e banca al 31/12/2026 di `gestionale-acv`, con il rendiconto approvato come documento.
 
 ## K. Rinnovi quota e Promemoria (v0.36.0)
-Dettaglio in `docs/specifiche/rinnovi-quota.md` e `promemoria.md`, tavole RQ-1…RQ-6, PR-1, PR-2. Da Presidente o Tesoriere, poi da Revisore se c'è. Prima: due o tre soci di prova attivi, uno adulto con email, uno minorenne di 14–17 anni con genitore ed email del genitore, uno senza email. **Dati di prova**: si azzerano con K11. Le quote si registrano con data di quest'anno (2026): la Prima Nota di prova del 2026 c'è già (J), quindi entrano anche in Prima Nota. Dopo l'azzeramento (J12, K11) e fino al 31/12/2026 una quota si registra con la ricevuta ma senza movimento (contabilità dal 2027: impostazione `contabilita_anno_avvio`).
+Dettaglio in `docs/specifiche/rinnovi-quota.md` e `promemoria.md`, tavole RQ-1…RQ-6, PR-1, PR-2. Da Presidente o Tesoriere, poi da Revisore se c'è. Prima: due o tre soci di prova attivi, uno adulto con email, uno minorenne di 14–17 anni con genitore ed email del genitore, uno senza email. **Dati di prova**: si azzerano con K11 (comando, blocco P). Le quote si registrano con data di quest'anno (2026): la Prima Nota di prova del 2026 c'è già (J), quindi entrano anche in Prima Nota. Dopo l'azzeramento (J12, K11) e fino al 31/12/2026 una quota si registra con la ricevuta ma senza movimento (contabilità dal 2027: impostazione `contabilita_anno_avvio`).
 - K1 Menu: «Rinnovi quota» (Presidente, Tesoriere, Revisore) e «Promemoria» (anche il Segretario, che la vedeva vuota; dalla v0.38.0 vede «Scadenze dell'associazione» e «Tessere in scadenza», non le quote). Il Revisore non vede «Registra quota» né i pulsanti di invio e annullamento.
 - K2 Elenco `/rinnovi` a 1440 e 375 px: anno sociale 2026; avviso rosso «Da dichiarare decaduti» per chi non ha versato (siamo dopo il 30 aprile); indicatori; filtri situazione, categoria, cerca; CSV. Anno 2027: tutti «Da versare entro il 31/01». Clic sulla riga: scheda del socio, riquadro «Quote associative».
 - K3 Registra quota per il socio adulto (nella scheda e nell'elenco, accanto alla modalità, il conto: «Bonifico · Banca», «Contanti · Cassa»): scelto il socio la pagina si ricarica con anno, importo 70,00, numero della prossima ricevuta (es. 1/2026); bonifico, «Invia la ricevuta» spuntato. Salvato: messaggio con il numero e «inviata a …»; email con il PDF in allegato; in Prima Nota un'entrata «Quota associativa 2026 – …» in Banca, categoria «Quote associative», documento «ricevuta 1/2026». Una seconda quota 2026 dello stesso socio è rifiutata. Data 15/12/2025 (prima del primo anno contabile): ricevuta sì, movimento no, con la nota «movimento nel vecchio gestionale».
@@ -182,15 +172,7 @@ Dettaglio in `docs/specifiche/rinnovi-quota.md` e `promemoria.md`, tavole RQ-1�
 - K12 (v0.37.1) Elimina scheda (Presidente, «Zona riservata»): senza motivazione o sotto 15 caratteri → errore nella finestra, che resta aperta; socio con una quota valida, movimenti o tessere → rifiutata con il motivo («usa Registra cessazione»); socio inserito per errore → eliminata, nell'Audit Log una riga «SOCIO_DELETED» con la motivazione nei valori e l'email al Presidente. Soci › Filtri › Stato «Schede eliminate» (solo Presidente): ricerca per codice fiscale, «Ripristina» riporta la scheda; con quel filtro niente CSV né PDF.
 - K14 (v0.37.2) Su telefono il pulsante del menu (tre righe) è a destra, dopo «Esci»; il menu entra da destra.
 - K13 (v0.37.1) Passando il mouse sui pulsanti con la sola icona (scarica, invia, annulla, apri, matita, cestino…) compare la descrizione.
-- K11 Azzeramento prima dell'apertura (insieme a J12, prima dei saldi 2027):
-```sql
-DELETE FROM gl_promemoria_invii;
-UPDATE gl_prima_nota SET rinnovo_id = NULL;
-DELETE FROM gl_rinnovi;
-UPDATE gl_soci SET quota_scadenza = NULL;
-ALTER TABLE gl_rinnovi AUTO_INCREMENT = 1;
-```
-Poi `rm -rf storage/app/private/ricevute`. I promemoria di prova si eliminano dalla loro pagina dopo aver svuotato `gl_promemoria_invii`; i tre pronti restano (o si ricreano con `php artisan db:seed --class=PromemoriaSeeder --force` se la funzione non ne ha più).
+- K11 Azzeramento prima dell'apertura: **con `php artisan gestionale:azzera`** (blocco P). Svuota quote, ricevute e promemoria inviati e cancella i PDF; i promemoria restano con i loro testi (quelli di prova creati a mano si eliminano prima dalla loro pagina, se non servono).
 
 ## L. Tessere CSEN (v0.37.0)
 Dettaglio in `docs/specifiche/tessere.md`, tavole TS-1…TS-5. Da Tesoriere (menu nuovo «Tesseramento»), poi da Presidente o Segretario (scheda del socio) e da Revisore. Prima: `php artisan db:seed --class=TesseraTipoSeeder --force` fatto (LEGGIMI), qualche socio di prova attivo, il file CSV esportato dal portale CSEN. **Dati di prova**: si azzerano con L12. Fino al 31/12/2026 la quota è «nel vecchio gestionale» (nessun blocco); per provare «Rinnova lo stesso» serve una quota di prova del 2026 mancante in un anno contabile aperto, quindi la regola si vede bene dal 2027 (anche nei test automatici).
@@ -211,22 +193,14 @@ WHERE numero_tessera_csen = '26B2749167';
   Nella pagina Tessere la riga è «tra N giorni · data»; «Rinnova» propone il giorno dopo la scadenza e «Come la tessera precedente.». Dopo il rinnovo la vecchia tessera nella scheda è «Rinnovata» e il socio esce da «Da rinnovare».
 - L10 Scheda del socio (Presidente o Segretario): badge «Tessera CSEN: …» nell'intestazione; riquadro «Tessera CSEN» con lo storico (numero, pacchetto o «dall'elenco CSEN», tipo, date, stato); pulsante «Emetti»/«Rinnova» solo se manca, è scaduta o scade entro 30 giorni: apre la pagina Tessere con la finestra già aperta e dopo l'emissione si torna alla scheda. Socio senza tessera: avviso rosso. Elenco soci: colonna «Tessera CSEN» con lo stesso badge.
 - L11 Rinnovi quota: colonna «Tessera CSEN» e, sotto l'elenco, «Quota netta 2026: incassati − tessere CSEN». Registrare la quota di un socio senza tessera valida: dopo il salvataggio l'avviso «… non ha una tessera valida» con «Emetti la tessera». Pacchetti: matita → correzione; con tessere emesse serve la motivazione (Audit Log «TESSERE_PACCHETTO_CORRETTO»), l'intervallo che esclude un numero usato è rifiutato; senza tessere c'è «Elimina il pacchetto». Cestino su una tessera: motivazione sotto 15 caratteri → errore nella finestra; con motivazione la tessera sparisce e il numero torna proposto.
-- L12 Azzeramento prima dell'apertura (con J12 e K11; le tessere vere si ricaricano dal CSV dopo l'azzeramento dei soci):
-```sql
-DELETE FROM gl_tesseramenti_qualifiche;
-UPDATE gl_tesseramenti SET precedente_id = NULL;
-DELETE FROM gl_tesseramenti;
-DELETE FROM gl_tessere_pacchetti;
-ALTER TABLE gl_tesseramenti AUTO_INCREMENT = 1;
-ALTER TABLE gl_tessere_pacchetti AUTO_INCREMENT = 1;
-```
-I tipi restano (Silver Base, Gold Base con i loro prezzi).
+- L12 Azzeramento prima dell'apertura: **con `php artisan gestionale:azzera`** (blocco P). Svuota tessere e pacchetti; i tipi restano (Silver Base, Gold Base con i loro prezzi). Le tessere vere si ricaricano dal CSV dopo l'importazione dei soci veri.
 
 ## Blocchi in file separati (dal blocco M)
 Dal 12/10/2026 ogni blocco nuovo ha un suo file in `docs/test/` (e una copia in `claude/` nel progetto), scritto per esteso: scopo, chi, prima, passi numerati, risultato atteso.
 - **M** — Scadenze dell'associazione e promemoria «N giorni prima» (v0.38.0, correzioni v0.38.1): `collaudo-M-scadenzario.md`. Azzeramento: M12.
 - **N** — Scontrini dal telefono con OCR (v0.39.0): `collaudo-N-scontrini.md`. Azzeramento: N12.
 - **O** — Più ruoli per utente, pagina Utenti, password con il link, avvisi delle operazioni e importazione dei soci da Excel (v0.40.0): `collaudo-O-utenti-importazione.md`. Azzeramento: O14.
+- **P** — Azzeramento dei dati di prova con il comando `php artisan gestionale:azzera` (v0.41.0): `collaudo-P-azzeramento.md`. Prende il posto di J12, K11, L12, M12, N12 e O14.
 
 ## CD di prova (SQL)
 Controllo dei soci:

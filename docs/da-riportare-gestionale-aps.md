@@ -391,6 +391,18 @@ non riportare".
   Qui: anteprima con errori bloccanti riga per riga, rilettura e ricontrollo
   alla conferma, tutto o niente, file cancellato, lettore `.xlsx` senza
   librerie (`LettoreXlsx`).
+- [ ] **D18. Comando di azzeramento dei dati di prova** (v0.41.0). Nel
+  Gestionale APS le pulizie prima dell'apertura si fanno a mano con SQL.
+  Qui `php artisan gestionale:azzera` (`App\Services\Azzeramento`):
+  - prova a vuoto predefinita, conferma scritta `AZZERA`;
+  - copia di sicurezza del database scritta da PHP (senza `mysqldump`);
+  - ogni tabella in un gruppo (tieni, correggi, svuota): una tabella nuova
+    non classificata ferma il comando, e un test lo controlla;
+  - rifiuto con dati veri (anno chiuso, movimenti o ricevute dall'anno
+    d'avvio);
+  - Audit Log che riparte con una riga `AZZERAMENTO_DATI_PROVA`.
+
+  Per il Dante, gli elenchi delle tabelle vanno rifatti sulle sue.
 
 ## E. PDF ed email
 
@@ -418,3 +430,4 @@ non riportare".
 - 11/10/2026 (v0.38.0): aggiunte D10 e D11 da Scadenzario e Promemoria.
 - 12/10/2026 (v0.39.0): aggiunte D12 e D13 dagli Scontrini.
 - 13/10/2026 (v0.40.0): aggiunte D14–D17 da ruoli multipli, password, avvisi e importazione dei soci.
+- 14/10/2026 (v0.41.0): aggiunta D18 dal comando di azzeramento.

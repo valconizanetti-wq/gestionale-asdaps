@@ -318,6 +318,35 @@ altrimenti Laravel continua a usare la configurazione precedente.
 Il `.env` e la cartella `storage/` del server non sono nello ZIP, quindi
 non vengono toccati.
 
+### 5.1 Azzeramento dei dati di prova (dalla v0.41.0)
+
+Una volta sola, **dopo l'Assemblea della B.A.S. (circa il 16/11/2026)** e
+prima di caricare i dati veri; eventualmente anche fra un giro di collaudo
+e l'altro. Dettaglio in `docs/analisi-azzeramento.md`, collaudo nel blocco
+**P** (`docs/test/collaudo-P-azzeramento.md`).
+```
+cd ~/gestionale-asd
+php artisan gestionale:azzera            # prova a vuoto: elenca cosa toglierebbe, non cambia niente
+php artisan gestionale:azzera --esegui   # chiede di scrivere AZZERA, poi azzera
+```
+- Prima di tutto fa da solo una **copia del database** in
+  `storage/app/private/backup/azzeramento-AAAAMMGG-HHMMSS.sql.gz`, e per
+  il tempo dell'azzeramento mette il gestionale in manutenzione.
+- Svuota i dati di prova (soci, domande, quote, Prima Nota, scontrini,
+  tessere, Scadenzario a mano, Audit Log, email, sessioni…) e i loro file;
+  tiene utenti, permessi, profilo dell'ente, categorie, tipi di tessera,
+  promemoria, impostazioni e le tre scadenze pronte (con la data rimessa).
+- Si rifiuta se trova dati veri: un anno contabile chiuso, movimenti o
+  ricevute dall'anno d'avvio della contabilità (2027), o una tabella che
+  non conosce.
+- Dopo: tutti devono rientrare (sessioni svuotate); il Presidente riceve
+  l'avviso dell'operazione delicata.
+- **Ripristino**: decomprimere la copia e importarla con phpMyAdmin ›
+  Importa (sostituisce tutte le tabelle). I file cancellati non sono nella
+  copia: li hanno i backup giornalieri di SupportHost.
+- La copia contiene i dati di prova e le password cifrate degli utenti:
+  va cancellata quando si è controllato che tutto va bene.
+
 ## 6. Interazioni e punti aperti
 
 - **Estensione PHP «zip»** (dalla v0.40.0, importazione dei soci da Excel):
@@ -410,13 +439,25 @@ non vengono toccati.
   `php artisan test`. Il database dei test viene azzerato a ogni giro: non
   usare mai quello di sviluppo. (La forma `DB_CONNECTION=mysql … php
   artisan test` funziona solo nelle shell Unix, non in Cmder.)
-- **Migrazione al dominio definitivo**: ripetere §3 sul nuovo server,
-  poi copiare database (`mysqldump`) e `storage/app/private`, e aggiornare
-  `APP_URL`.
+- **Dominio definitivo** (14/10/2026): stesso account e stesso server,
+  quindi niente migrazione. Si aggiunge il sottodominio
+  `gestionale.arciericastello.it` collegato a `~/gestionale-asd/public`,
+  si cambiano `APP_URL` e la posta nel `.env` (casella
+  `portaleacv@arciericastello.it`, SMTP 465) e `arco.valconi.it` diventa un
+  reindirizzamento 301. Procedura passo per passo in
+  `docs/dominio-definitivo.md`.
 - **Backup**: quelli giornalieri di SupportHost coprono file e database;
   prima di ogni rilascio con migration conviene comunque un dump manuale.
 
 ## 7. Storia ed evoluzione
+
+- v0.41.0 (14/10/2026):
+  - comando `gestionale:azzera` (§5.1), nessuna migration;
+  - procedura per il dominio definitivo (`docs/dominio-definitivo.md`,
+    §6); `.env.example` con i valori di `gestionale.arciericastello.it` e
+    della casella `portaleacv@`;
+  - informativa 1.0 senza segnaposto (hosting SupportHost in Germania,
+    niente consulente fiscale): cambia l'impronta del testo.
 
 - 13/10/2026, sera: la cartella locale di Laragon è collegata a GitHub e
   §5 usa `git pull` (prove di Paolo: 155 test verdi dopo l'estensione

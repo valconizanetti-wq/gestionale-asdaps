@@ -336,9 +336,17 @@ salvato nelle impostazioni (data e numero di anomalie, per la fascia
 dell'elenco); con anomalie riga HIGH `AUDIT_INTEGRITY_FAIL` (senza dati
 personali) ed email al Presidente e agli eventuali utenti Revisore; mai correzioni automatiche.
 
-**Azzeramento prima dell'apertura.** La catena andrà svuotata con il
-resto dei dati di prova; il primo certificato vero sarà quello del 2027.
-Da scrivere nella procedura di azzeramento.
+**Azzeramento prima dell'apertura** (v0.41.0, `php artisan
+gestionale:azzera`, `docs/analisi-azzeramento.md` §3.5). Il comando
+svuota `gl_audit_log`, `gl_audit_log_integrity`, `gl_audit_archivi` e
+`gl_attestazioni_tecniche`, cancella `storage/app/private/audit` e toglie
+l'impostazione `audit_ultima_verifica`. Poi scrive la **prima riga della
+catena nuova**, `AZZERAMENTO_DATI_PROVA` (HIGH, utente «sistema
+(gestionale:azzera)»), con le righe tolte per tabella, il numero di file
+e il nome della copia di sicurezza. La verifica d'integrità riparte
+pulita. Il certificato 2026 non si fa (dati di prova): il primo vero sarà
+quello del 2027. Come operazione di sistema, l'avviso per email arriva al
+Presidente.
 
 ### v0.34.0 — realizzazione (06/10/2026)
 

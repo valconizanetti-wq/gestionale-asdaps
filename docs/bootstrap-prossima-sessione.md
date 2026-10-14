@@ -10,6 +10,51 @@
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-utenti-importazione.pdf`).
 
+## Stato al 14/10/2026: v0.41.0 consegnata
+Comando di azzeramento, procedura del dominio definitivo, informativa
+senza segnaposto. 160 test verdi. Niente migration.
+
+- **Comando `php artisan gestionale:azzera`** (`docs/analisi-azzeramento.md`):
+  - prova a vuoto predefinita, `--esegui` con conferma `AZZERA`;
+  - copia di sicurezza in `storage/app/private/backup`;
+  - si rifiuta con dati veri: anno chiuso, oppure movimenti o ricevute
+    dal 2027.
+
+  Decisioni D1–D5 accettate da Paolo il 14/10/2026 (§7):
+  - utenti tenuti;
+  - copia di sicurezza automatica;
+  - promemoria tenuti;
+  - scadenze pronte rimesse alla prossima data;
+  - fornitori svuotati.
+
+  Collaudo nel blocco **P** (`docs/test/collaudo-P-azzeramento.md`):
+  - P4 e P5 in Laragon;
+  - P6 sul server dopo l'Assemblea.
+
+  J12…O14 ora rimandano al comando. Uso: `deploy.md` §5.1.
+- **Ogni migration nuova con una tabella** va messa in uno dei gruppi di
+  `App\Services\Azzeramento`, altrimenti `AzzeramentoTest` fallisce e il
+  comando si ferma.
+- **Dominio definitivo** (`docs/dominio-definitivo.md`, procedura per
+  Paolo):
+  - `gestionale.arciericastello.it`, stesso account cPanel `uiynixlg`;
+  - casella `portaleacv@arciericastello.it`, SMTP 465;
+  - DMARC con `p=none`;
+  - `arco.valconi.it` reindirizzato con un 301.
+
+  Il sito WordPress `arciericastello.it` è nello stesso account. Quando
+  Paolo dice com'è andata, aggiornare `deploy.md` §3.4 e §3.6 con i fatti
+  reali.
+- **Informativa 1.0**:
+  - punto 4: SupportHost OÜ, server in Germania;
+  - punto 5: niente consulente fiscale.
+
+  L'impronta è cambiata. Resta a Paolo: accettare il DPA di SupportHost.
+- **Da fare per Paolo**:
+  - installare la v0.40.0 e la v0.41.0;
+  - collaudi O e P (P1–P5);
+  - passaggio di dominio.
+
 ## Stato al 13/10/2026 (sera): v0.40.0 consegnata
 Più ruoli per utente, pagina Utenti, password con il link, avvisi delle
 operazioni delicate, importazione dei soci da Excel. Dettaglio in
@@ -42,15 +87,13 @@ blocco **O** (`docs/test/collaudo-O-utenti-importazione.md`, copia
 
 ## Prossima sessione: resto della Fase 0
 Dal piano (`docs/piano-2027.md` §2 e §2-ter):
-1. collaudo O di Paolo e correzioni;
-2. comando di azzeramento (`php artisan …` con prova a vuoto, al posto di
-   J12…O14 a mano);
-3. dominio definitivo con i dati di prova:
-   - SSL, `APP_URL`, cron;
-   - SPF, DKIM e DMARC per arciericastello.it;
-   - reindirizzamento del vecchio indirizzo;
-4. informativa senza segnaposto (hosting e consulente fiscale) **prima**
-   dei link privacy;
+1. collaudi O e P di Paolo e correzioni;
+2. ~~comando di azzeramento~~ — **fatto** (v0.41.0);
+3. dominio definitivo con i dati di prova: procedura scritta
+   (`dominio-definitivo.md`), la esegue Paolo; poi `deploy.md` §3.4 e §3.6
+   con i fatti reali;
+4. ~~informativa senza segnaposto~~ — **fatta** (v0.41.0); resta il DPA di
+   SupportHost (Paolo) **prima** dei link privacy;
 5. **dopo l'Assemblea della B.A.S. (circa il 16/11/2026)**: azzeramento,
    soci veri con l'importazione, CD vero (utenti dalla pagina Utenti, ruoli
    sotto), tessere dal CSV;
@@ -123,7 +166,7 @@ cima; niente più bundle). Dopo il clone:
 - `npm ci`, `npm run build`, `php artisan key:generate`;
 - MariaDB (`apt-get install mariadb-server`, `service mariadb start`,
   database `asd_test` e `asd_demo`, utente);
-- `php artisan test` (155 test verdi).
+- `php artisan test` (160 test verdi).
 - Composer: se Packagist è bloccato dal proxy, `composer install` scarica
   comunque dal `composer.lock` (archivi da GitHub); `composer require` di
   pacchetti nuovi invece non funziona.

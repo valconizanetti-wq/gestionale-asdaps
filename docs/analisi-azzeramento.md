@@ -112,8 +112,9 @@ Una cartella sconosciuta viene elencata e lasciata dov'è, con un avviso.
 ### 3.4 Impostazioni rimesse
 
 - `iscrizioni_aperte` = no; `domande_modalita_test` = no (fine delle prove).
-- Tolte `audit_ultima_verifica` e `audit_esito`: la prima verifica sarà
-  quella vera.
+- Tolta `audit_ultima_verifica`: la prima verifica sarà quella vera.
+  (L'esito mostrato dopo una verifica a mano sta nella sessione, che si
+  svuota comunque.)
 - Tutte le altre restano come sono: quote, `contabilita_anno_avvio` 2027,
   versioni di statuto e informativa, soglie.
 
@@ -133,16 +134,26 @@ prova); il primo vero sarà il 2027.
 ### 3.6 Protezioni
 
 - **Copia di sicurezza** automatica prima di toccare qualunque cosa:
-  `storage/app/private/backup/azzeramento-AAAAMMGG-HHMM.sql.gz`, tutte le
+  `storage/app/private/backup/azzeramento-AAAAMMGG-HHMMSS.sql.gz`, tutte le
   tabelle, scritta da PHP (non serve `mysqldump`, che su cPanel a volte
   manca). Resta finché non la cancelli tu; è l'unico modo per tornare
   indietro.
 - **Conferma scritta**: `AZZERA`. Con `--force` si salta solo la domanda,
   non la copia.
-- **Rifiuto dopo l'apertura**: se c'è già un anno contabile **chiuso**, o
-  una domanda arrivata con le iscrizioni aperte e la modalità test spenta,
-  il comando non parte. In quel caso sono dati veri, e servirebbe un'altra
-  procedura.
+- **Rifiuto dopo l'apertura**: il comando non parte se trova dati veri:
+  - un anno contabile **chiuso**;
+  - movimenti di Prima Nota dall'anno d'avvio della contabilità
+    (`contabilita_anno_avvio`, 2027) in poi;
+  - ricevute di quote con la numerazione di quell'anno (es. 1/2027).
+
+  In quei casi servirebbe un'altra procedura. Se trova una tabella che non
+  è in nessun gruppo (§3.2), si ferma comunque.
+
+  *Cambiata in realizzazione (§8).* La prima proposta guardava le domande
+  arrivate con le iscrizioni aperte e la modalità test spenta. Ma il
+  collaudo K8 ne chiede proprio una così, e il comando si sarebbe
+  rifiutato dopo il collaudo. Quote e movimenti del 2027, invece, prima
+  dell'apertura non ci possono essere.
 - Gli **utenti restano**, come le loro password. Dopo l'azzeramento le
   persone vere si sistemano dalla pagina Utenti (D1).
 
@@ -191,11 +202,11 @@ $ php artisan gestionale:azzera --esegui
 ATTENZIONE: i dati elencati sopra si cancellano. Prima si fa una copia del database.
 Scrivi AZZERA per continuare: AZZERA
 
-  ✔ Copia di sicurezza: storage/app/private/backup/azzeramento-20261114-2131.sql.gz (1,4 MB)
+  ✔ Copia di sicurezza: storage/app/private/backup/azzeramento-20261114-213102.sql.gz (1,4 MB)
   ✔ Gestionale in manutenzione
   ✔ Tabelle svuotate: 1.069 righe in 32 tabelle
   ✔ File cancellati: 143 (38,2 MB)
-  ✔ Impostazioni rimesse
+  ✔ Impostazioni rimesse, scadenze pronte alla prossima data
   ✔ Audit Log ripartito: riga n. 1 «Azzeramento dei dati di prova»
   ✔ Gestionale di nuovo in linea
 
@@ -234,7 +245,7 @@ Non si può azzerare: l'anno contabile 2027 è chiuso, quindi ci sono dati veri.
   `gestionale:azzera`».
 - `audit-log.md` (punto «da scrivere»), `MANUALE-ASD.md`, bootstrap.
 
-## 6. Da decidere
+## 6. Da decidere (decise il 14/10/2026, §7)
 
 - **D1 Utenti**: restano tutti (proposta), e li sistemi tu dalla pagina
   Utenti. In alternativa si cancellano tutti tranne i Presidenti.
@@ -247,3 +258,95 @@ Non si può azzerare: l'anno contabile 2027 è chiuso, quindi ci sono dati veri.
   restano come sono.
 - **D5 Fornitori**: si cancellano tutti (proposta: sono tutti di prova),
   oppure restano quelli creati a mano.
+
+## 7. Decisioni (Paolo, 14/10/2026)
+
+«Ok, per il comando di azzeramento»: accettate le cinque proposte.
+- **D1**: gli utenti restano tutti, con ruoli e password. Il CD vero si
+  sistema dalla pagina Utenti; l'utente di prova del blocco O resta
+  disattivato.
+- **D2**: copia di sicurezza automatica in `storage/app/private/backup`.
+- **D3**: i promemoria restano con i testi di adesso.
+- **D4**: le tre scadenze pronte tornano alla prossima data vera.
+- **D5**: i fornitori si cancellano tutti.
+
+## 8. Realizzazione (v0.41.0, 14/10/2026)
+
+**File nuovi:**
+- `app/Services/Azzeramento.php`: i tre gruppi di tabelle (`TIENI`,
+  `PARZIALI`, `SVUOTA`), il riepilogo, la copia di sicurezza,
+  l'azzeramento e il rifiuto;
+- `app/Console/Commands/Azzera.php`: il comando `gestionale:azzera`, che
+  stampa le tavole AZ-1…AZ-3;
+- `tests/Feature/AzzeramentoTest.php`: 5 test.
+
+Nessuna migration, nessuna pagina.
+
+**Come lavora:**
+- **Tabelle.** Ogni tabella del database è in uno dei tre gruppi. I gruppi
+  sono scritti a mano nel codice, così una tabella nuova ferma il comando
+  finché non si decide.
+  - `SVUOTA`: 75 tabelle, comprese quelle di Laravel (sessioni, cache,
+    code) e i token delle password.
+  - `TIENI`: 14 tabelle.
+  - `PARZIALI`: impostazioni e Scadenzario.
+- **Svuotamento.** `TRUNCATE` con i controlli delle chiavi esterne sospesi:
+  l'ordine non conta e i contatori ripartono da 1. Il test controlla che
+  nessuna tabella tenuta abbia una chiave esterna verso una tabella
+  svuotata.
+- **Copia di sicurezza.** La scrive PHP, non serve `mysqldump`: per ogni
+  tabella `SHOW CREATE TABLE` più gli `INSERT`, compressa gzip. Si importa
+  così com'è in phpMyAdmin.
+- **Scadenze pronte.** Prossima data della ricorrenza a partire da oggi.
+  La scheda dell'ente riprende la scadenza dell'affiliazione.
+- **Audit Log.** La catena riparte con la riga `AZZERAMENTO_DATI_PROVA`.
+  Come ogni riga HIGH di sistema, l'avviso va al Presidente.
+- **Manutenzione.** Il comando mette il gestionale in manutenzione
+  (`down --retry=60`) e lo rimette in linea anche se qualcosa va storto.
+  Se era già in manutenzione, lo lascia così.
+
+**Prova sul database di sviluppo (`asd_demo`):**
+- prova a vuoto: niente cambiato;
+- esecuzione: catena dell'Audit Log integra;
+- copia di sicurezza reimportata in un database vuoto: 91 tabelle con
+  tutte le righe.
+
+**Test:** 160 verdi (5 nuovi).
+
+**Tre giri di revisione:**
+1. *Logica.*
+   - `Schema::getTables()` elencava anche le tabelle degli altri database
+     visibili all'utente MySQL, per esempio quello dei test. Corretto:
+     solo il database del gestionale.
+   - Nel test la chiave della scadenza era sbagliata: `affiliazione` →
+     `affiliazione_eps`.
+   - Regola del rifiuto cambiata (§3.6).
+   - Controllato che le tabelle tenute non puntino a quelle svuotate:
+     `gl_users` non ha legami con i soci, `gl_promemoria` e
+     `gl_scadenzario` hanno i legami nelle tabelle figlie, che si svuotano.
+2. *Dati e sicurezza.*
+   - La copia di sicurezza sta in `storage/app/private`, fuori dalla
+     cartella pubblica. Contiene le password cifrate: il comando e
+     `deploy.md` §5.1 dicono di cancellarla dopo il controllo.
+   - `--force` salta solo la domanda, non la copia.
+   - `TRUNCATE` non si annulla: se il comando si interrompe a metà, l'unico
+     ritorno è la copia. Per questo la copia si fa prima di tutto, e
+     l'errore dice dove trovarla e come reimportarla.
+   - Il registro delle email si svuota prima dell'avviso al Presidente,
+     così l'avviso è la prima riga del registro nuovo.
+3. *Uso.*
+   - Le sessioni si svuotano: chi era dentro deve rientrare. Scritto in
+     `deploy.md` §5.1 e nel collaudo P.
+   - Le cartelle di `storage/app/private` che il comando non conosce
+     restano e vengono elencate.
+   - Il messaggio finale elenca i passi successivi, nell'ordine di §1.
+   - Le prove di pulizia a mano J12, K11, L12, M12, N12 e O14 della lista
+     di collaudo rimandano al comando.
+
+**Documenti:**
+- `deploy.md` §5.1;
+- `specifiche/audit-log.md`;
+- lista di collaudo: blocco P e rimandi;
+- MANUALE;
+- bootstrap.
+

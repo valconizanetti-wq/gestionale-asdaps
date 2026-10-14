@@ -152,13 +152,5 @@ Riscritto per esteso il 12/10/2026, su richiesta di Paolo. Dettaglio tecnico in 
 8. Entra come Consigliere e apri Fornitori. → La pagina si vede, ma senza pulsanti.
 
 ### N12 — Azzeramento prima dell'apertura
-**Quando:** solo alla fine del collaudo, insieme a J12, K11, L12 e M12.
-**Passi:** per ogni scontrino di prova «Elimina lo scontrino» dalla scheda, oppure in phpMyAdmin:
-```sql
-DELETE FROM gl_prima_nota WHERE scontrino_id IS NOT NULL;
-DELETE FROM gl_prima_nota_scontrini;
-ALTER TABLE gl_prima_nota_scontrini AUTO_INCREMENT = 1;
-ALTER TABLE gl_prima_nota_scontrini_righe AUTO_INCREMENT = 1;
-ALTER TABLE gl_prima_nota_scontrini_file AUTO_INCREMENT = 1;
-```
-Poi cancella la cartella `storage/app/private/scontrini`. I fornitori di prova si eliminano dalla pagina Fornitori (quelli veri restano).
+**Quando:** solo alla fine del collaudo, prima dell'apertura del 2027.
+**Passi:** dalla v0.41.0 si fa con il comando `php artisan gestionale:azzera` (blocco P, `collaudo-P-azzeramento.md`). Svuota scontrini, righe, foto e i loro movimenti, cancella la cartella `storage/app/private/scontrini` e svuota anche i fornitori, che sono tutti di prova (decisione D5).
