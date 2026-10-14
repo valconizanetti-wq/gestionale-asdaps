@@ -10,6 +10,25 @@
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-utenti-importazione.pdf`).
 
+## Prossima sessione (dal 14/10/2026, 14:00): collaudi O e P
+Paolo esegue i collaudi e riporta gli esiti prova per prova; si correggono
+i difetti (codice, test, LEGGIMI di una v0.41.x, collaudo e documenti
+aggiornati), con push su GitHub e copie nel progetto.
+- **Blocco O** (`docs/test/collaudo-O-utenti-importazione.md`, O1–O14),
+  sul server con la v0.40.0. Già emerso: in O1 la voce «Utenti» mancava al
+  Presidente per le cache di Laravel rifatte con i file vecchi; risolto da
+  Paolo con `optimize:clear` e le tre cache (avvertenza aggiunta in O1 e
+  in `deploy.md` §5). Nessun difetto del codice: verificato rifacendo la
+  migrazione da v0.39.1, il Presidente ha «utenti» in scrittura.
+- **Blocco P** (`docs/test/collaudo-P-azzeramento.md`): P1–P2 anche sul
+  server (solo prova a vuoto), P3–P5 in Laragon; P6 sul server **solo dopo
+  l'Assemblea** (circa il 16/11/2026).
+- Se un difetto chiede una scelta, analisi breve e domanda a Paolo prima
+  del codice (regola di sempre).
+- In parallelo, quando Paolo lo fa: passaggio al dominio definitivo
+  (`docs/dominio-definitivo.md`), poi `deploy.md` §3.4 e §3.6 con i fatti
+  reali.
+
 ## Stato al 14/10/2026: v0.41.0 consegnata
 Comando di azzeramento, procedura del dominio definitivo, informativa
 senza segnaposto. 160 test verdi. Niente migration.
