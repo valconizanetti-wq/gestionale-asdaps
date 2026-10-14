@@ -15,6 +15,14 @@
 > e della domanda decaduta (12 mesi). Restano da sostituire i segnaposto
 > di hosting (punto 4) e consulente fiscale (punto 5).
 >
+> **Aggiornamento del 14/10/2026 (v0.41.0).** Tolti gli ultimi segnaposto
+> (Paolo, 14/10/2026). Punto 4: hosting SupportHost OÜ (Tallinn,
+> Estonia), server in Germania. Punto 5: tolto il consulente fiscale, che
+> l'Associazione non ha; se un giorno ne incaricherà uno, servirà una nuova
+> versione dell'informativa. Correzione sul posto della 1.0: cambia di
+> nuovo la sua impronta. Resta da accettare il DPA di SupportHost (art. 28)
+> nell'area clienti, o da chiederlo all'assistenza.
+>
 > **Aggiornamento del 05/10/2026 (v0.33.0).** Punto 2 del testo di
 > riferimento: tra i dati sulla domanda e sui consensi anche data, ora e
 > indirizzo IP della conferma con il link personale ricevuto per email
@@ -96,8 +104,8 @@ sull'adesione.
 ### 4. Come trattiamo i dati
 
 I dati sono trattati con strumenti elettronici, nel gestionale web
-dell'Associazione. Il gestionale è ospitato sui server di un fornitore di
-hosting [SupportHost, datacenter nell'Unione europea — da verificare].
+dell'Associazione. Il gestionale è ospitato sui server di SupportHost OÜ
+(Tallinn, Estonia), fornitore di hosting, in un datacenter in Germania.
 
 Vi accedono solo i componenti del Consiglio Direttivo e le persone
 autorizzate dal Consiglio, ciascuna per le sole sezioni necessarie al
@@ -122,8 +130,6 @@ Gli eventuali documenti cartacei sono custoditi presso la sede.
 - **Fornitori di servizi tecnici** (hosting, posta elettronica,
   manutenzione del gestionale), nominati responsabili del trattamento ai
   sensi dell'art. 28.
-- **[Consulente fiscale o commercialista]**, se incaricato, per gli
-  adempimenti contabili.
 - **Autorità pubbliche**, quando la legge lo richiede.
 
 I dati non sono diffusi. Fanno eccezione le immagini, solo con il suo
