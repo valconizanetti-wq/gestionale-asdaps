@@ -33,6 +33,7 @@ Versione: **v0.40.0** (13/10/2026). Dettaglio tecnico: `docs/analisi-ruoli-utent
 **Risultato atteso:**
 - Il menu è quello di prima. In fondo, sotto «Impostazioni», c'è la voce nuova «Utenti»: la vedono Presidente, Segretario, Tesoriere e Consigliere, non il Revisore.
 - Sotto il nome compare il ruolo di sempre (es. «PRESIDENTE»).
+- **Se «Utenti» non c'è** (successo al collaudo del 14/10/2026): sono le cache di Laravel rifatte con i file vecchi. Dal Terminale `php artisan optimize:clear`, poi le tre cache (`deploy.md` §5); se `grep -c "utenti.index" config/navigazione.php` dà 0, va estratto di nuovo `deploy.zip`, sovrascrivendo.
 
 ### O2 — Elenco degli utenti
 **Scopo:** controllare la pagina Utenti per chi modifica e per chi consulta.

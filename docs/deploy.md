@@ -310,7 +310,9 @@ altrimenti Laravel continua a usare la configurazione precedente.
    ```
    `optimize:clear` sempre: senza, può restare la cache delle rotte della
    versione precedente e le rotte nuove risultano "not defined" (errore
-   500 del collaudo del 29/09/2026).
+   500 del collaudo del 29/09/2026). Lo stesso vale per la cache della configurazione: al
+   collaudo O (14/10/2026) la voce di menu «Utenti» non compariva finché
+   le cache non sono state rifatte **dopo** aver estratto i file nuovi.
    Se `build.zip` contiene percorsi che iniziano con `public/build/` si
    estrae nella radice, se con `build/` si estrae con `-d public`
    (controllare con `unzip -l build.zip | head`); se una cartella è in
