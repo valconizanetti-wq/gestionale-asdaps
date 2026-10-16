@@ -237,4 +237,9 @@ Osservazioni riportate prova per prova. Quelle che chiedono una scelta passano d
 ### O10 — osservazioni (16/10/2026)
 - **O10.1** Eliminata la scheda di un socio, l'avviso al Segretario **non è arrivato**. In locale il test (`UtentiTest`, SOCIO_DELETED) passa: da verificare sul server con il registro delle email (`gl_email_log`, tipo `avviso_operazione`) e lo stato del Segretario (attivo, email, ruolo).
 
+### O12 — osservazioni (16/10/2026)
+- **O12.1** Al Segretario non è arrivato l'avviso «soci importati da Excel». Stessa strada di O10.1 (avviso verso il Segretario di un'operazione del Presidente).
+
+Collaudo O concluso da Paolo il 16/10/2026. Analisi di tutte le osservazioni: `docs/analisi-collaudo-O.md`.
+
 Fuori collaudo: il 16/10/2026 Paolo ha perso la password del Presidente sul server; reimpostata a mano dal database (nessun difetto del codice).
