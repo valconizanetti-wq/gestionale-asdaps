@@ -228,4 +228,13 @@ Osservazioni riportate prova per prova. Quelle che chiedono una scelta passano d
 - **O3.4** Link già usato: il messaggio «Il link non è più valido…» deve comparire subito sulla pagina a cui porta il link, non solo dopo aver scritto la nuova password.
 - **O3.5** Manca l'occhio per vedere la password anche in «Ripeti la password».
 
+### O8 — osservazioni (16/10/2026)
+- **O8.1** Un ruolo non può stare su due utenti diversi, tranne **Consigliere** (insieme a O3.1: un solo Presidente, e così un solo Segretario, Tesoriere e Revisore).
+
+### O9 — osservazioni (16/10/2026)
+- **O9.1** Per un utente disattivato l'accesso deve dire «Utente non attivo nel gestionale», non «Email o password non corrette.». Da valutare: il messaggio generico era voluto (non rivela a chi prova quali email esistono). Si può dare il messaggio nuovo solo quando la password è giusta.
+
+### O10 — osservazioni (16/10/2026)
+- **O10.1** Eliminata la scheda di un socio, l'avviso al Segretario **non è arrivato**. In locale il test (`UtentiTest`, SOCIO_DELETED) passa: da verificare sul server con il registro delle email (`gl_email_log`, tipo `avviso_operazione`) e lo stato del Segretario (attivo, email, ruolo).
+
 Fuori collaudo: il 16/10/2026 Paolo ha perso la password del Presidente sul server; reimpostata a mano dal database (nessun difetto del codice).
