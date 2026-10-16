@@ -210,3 +210,22 @@ Dalla v0.41.0 con il comando `php artisan gestionale:azzera` (blocco P, `collaud
 - i quattro soci di `soci-buoni.xlsx` e le loro quote si svuotano con gli altri dati di prova;
 - l'utente `Prova Consigliere` resta, disattivato: gli utenti non si toccano (decisione D1);
 - i ruoli veri del CD si danno dalla pagina Utenti dopo l'azzeramento (Presidente Andrea Papini; Segretario e Tesoriere Paolo Zanetti; Consiglieri Massimo Papini e Luigi Tascio).
+
+---
+
+## Esiti del collaudo (Paolo, dal 15/10/2026)
+
+Osservazioni riportate prova per prova. Quelle che chiedono una scelta passano da un'analisi breve e da una domanda a Paolo prima del codice.
+
+### O2 — osservazioni (16/10/2026)
+- **O2.1** Nome e cognome in due campi distinti, negli utenti e anche nei soci.
+- **O2.2** Serve anche un utente **sysadmin** (amministratore di sistema).
+
+### O3 — osservazioni (16/10/2026)
+- **O3.1** Il Presidente può essere uno solo: se lo si assegna a un secondo utente, va segnalato l'errore.
+- **O3.2** Si sceglie un solo ruolo per utente; l'unica coppia ammessa è **Segretario + Tesoriere**.
+- **O3.3** L'utente si sceglie dall'elenco dei soci: i membri del CD non possono essere esterni alla Compagnia.
+- **O3.4** Link già usato: il messaggio «Il link non è più valido…» deve comparire subito sulla pagina a cui porta il link, non solo dopo aver scritto la nuova password.
+- **O3.5** Manca l'occhio per vedere la password anche in «Ripeti la password».
+
+Fuori collaudo: il 16/10/2026 Paolo ha perso la password del Presidente sul server; reimpostata a mano dal database (nessun difetto del codice).
