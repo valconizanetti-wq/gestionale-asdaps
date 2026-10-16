@@ -196,3 +196,17 @@ Statuto: il CD lo nomina al proprio interno (art. 15.2). Sostituisce il Presiden
 **O10.1 e O12.1 non sono difetti del codice.** Rimedio: correggere l'email dell'utente dalla pagina Utenti, poi ripetere O10.
 
 Spunto per la v0.42.0, da proporre: un avviso nella pagina Utenti per le email con domini quasi uguali a quelli comuni (`gmail.net`, `gmial.com`…).
+
+## 13. Errori dei campi più evidenti (richiesta di Paolo, 16/10/2026)
+
+Oggi il messaggio sotto il campo è a 11 px: il testo più piccolo della pagina. **Scelta A, approvata da Paolo** sul confronto `errori-confronto.png`:
+- messaggio a 13 px su una striscia rosa, con il bordo rosso a sinistra e l'icona «!»;
+- etichetta del campo rossa e bordo del campo più spesso;
+- il riquadro «Controlla i dati» elenca i campi da correggere, ciascuno come link al campo;
+- all'apertura la pagina scorre al primo errore e ci mette il cursore.
+
+Scartati:
+- il pop-up sul campo: sul telefono copre, mostra un errore alla volta, i lettori di schermo lo leggono male;
+- il messaggio a comparsa: sparisce.
+
+Si fa nei componenti comuni (`x-campo`, `x-avviso` del riquadro), quindi vale per tutti i moduli. Tavola **ER-1**; va nella v0.42.0.
