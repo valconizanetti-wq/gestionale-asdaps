@@ -37,7 +37,7 @@
 <div class="socio-form"
      x-data="{
         minore: @js($minoreIniziale),
-        erroreCf: null,
+        erroreCf: @js($errors->first('codice_fiscale') ?: null),
         richiesta: 0,
         async leggiCf(valore) {
             const numero = ++this.richiesta;
@@ -80,11 +80,20 @@
     <div class="socio-riga socio-riga-nome">
         <x-campo name="cognome" label="Cognome" :value="$socio->cognome" required autocomplete="family-name" />
         <x-campo name="nome" label="Nome" :value="$socio->nome" required autocomplete="given-name" />
-        <x-campo name="codice_fiscale" label="Codice fiscale" :value="$socio->codice_fiscale" required codice
-                 maxlength="16" autocapitalize="characters" spellcheck="false" autocomplete="off"
-                 x-init="leggiCf($el.value)" x-on:input.debounce.400ms="leggiCf($event.target.value)" />
+        {{-- Errore del codice fiscale in un solo posto, sotto la riga: quello
+             del server dopo il salvataggio e quello del controllo immediato.
+             Appena si modifica il codice errore e bordo spariscono (collaudo
+             O, 16/10/2026: prima restava l'errore del server fino al
+             salvataggio successivo). Come nel modulo della domanda. --}}
+        <div class="socio-cf" x-bind:class="{ 'has-error': erroreCf }">
+            <x-campo name="codice_fiscale" label="Codice fiscale" :value="$socio->codice_fiscale" required codice
+                     maxlength="16" autocapitalize="characters" spellcheck="false" autocomplete="off" errore-esterno
+                     aria-describedby="socio-cf-errore" x-bind:aria-invalid="erroreCf ? 'true' : 'false'"
+                     x-init="if (! erroreCf) leggiCf($el.value)" x-on:input="erroreCf = null"
+                     x-on:input.debounce.400ms="leggiCf($event.target.value)" />
+        </div>
     </div>
-    <div class="form-error" x-show="erroreCf" x-text="erroreCf" x-cloak></div>
+    <div class="form-error" id="socio-cf-errore" x-show="erroreCf" x-text="erroreCf" @if (! $errors->has('codice_fiscale')) x-cloak @endif>{{ $errors->first('codice_fiscale') }}</div>
     <div class="socio-riga socio-riga-nascita">
         <x-campo name="data_nascita" label="Data di nascita" tipo="date" :value="$socio->data_nascita" readonly tabindex="-1" x-ref="nascita" />
         <x-campo name="luogo_nascita" label="Luogo di nascita" :value="$socio->luogo_nascita" readonly tabindex="-1" x-ref="luogo" />

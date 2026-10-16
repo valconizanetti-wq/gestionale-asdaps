@@ -242,4 +242,7 @@ Osservazioni riportate prova per prova. Quelle che chiedono una scelta passano d
 
 Collaudo O concluso da Paolo il 16/10/2026. Analisi di tutte le osservazioni: `docs/analisi-collaudo-O.md`.
 
+### Fuori elenco — scheda del socio (16/10/2026)
+- **O-extra.1** Nuovo socio con il codice fiscale sbagliato: anche dopo la correzione restava la segnalazione d'errore; spariva solo ricaricando la pagina. Riprodotto: succede dopo un salvataggio con il codice sbagliato, quando l'errore del server resta fino al salvataggio successivo. **Corretto** per la v0.42.0 (`soci.md` §7, `SocioFormTest`). Da ricontrollare nel collaudo O-bis.
+
 Fuori collaudo: il 16/10/2026 Paolo ha perso la password del Presidente sul server; reimpostata a mano dal database (nessun difetto del codice).

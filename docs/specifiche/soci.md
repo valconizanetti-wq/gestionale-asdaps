@@ -335,3 +335,14 @@ Paolo:
   - quote del vecchio gestionale: dal 2027 in `gl_rinnovi` senza ricevuta.
 
   Filtro `importati` nell'elenco.
+- **v0.42.0** (collaudo O, 16/10/2026): errore del codice fiscale nella
+  scheda.
+  - Prima, dopo un salvataggio con il codice sbagliato, l'errore del server
+    restava sotto il campo, rosso, fino al salvataggio successivo, anche a
+    codice corretto. Compariva inoltre due volte: server e controllo
+    immediato.
+  - Ora il campo è `errore-esterno`. L'errore del server è il valore
+    iniziale di `erroreCf` e compare una volta sola, sotto la riga.
+  - Errore e bordo spariscono appena si modifica il codice, come nel modulo
+    della domanda (collaudo A1).
+  - Test: `SocioFormTest`.
