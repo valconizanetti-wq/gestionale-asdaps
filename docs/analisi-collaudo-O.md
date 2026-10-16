@@ -210,3 +210,15 @@ Scartati:
 - il messaggio a comparsa: sparisce.
 
 Si fa nei componenti comuni (`x-campo`, `x-avviso` del riquadro), quindi vale per tutti i moduli. Tavola **ER-1**; va nella v0.42.0.
+
+## 14. Tavole (16/10/2026)
+
+`Tavole-collaudo-O.pdf`, fuori dal repository come le altre. Pagine a 1440 e 375 px, fatte con i componenti veri del gestionale:
+- **UT-5a** nuovo utente, socio scelto: Segretario, anche Tesoriere e Amministratore; Presidente spento con «Passa il ruolo»;
+- **UT-5b** ricerca del socio;
+- **UT-5c** utente esterno (Revisore), con nome e cognome separati;
+- **UT-6** finestra «Passa il ruolo»;
+- **UT-7** elenco con la colonna Socio e l'avviso per un utente del CD non collegato;
+- **ER-1** errori dei campi.
+
+Da approvare prima del codice.
