@@ -177,7 +177,7 @@ Effetti sull'Amministratore:
 - può usare «Passa il ruolo» anche per il Presidente, con conferma e avviso a tutto il CD;
 - ogni sua modifica degli utenti avvisa il Presidente.
 
-## 11. Proposta per il Vicepresidente (S2, da confermare)
+## 11. Vicepresidente (S2, proposta confermata da Paolo il 16/10/2026)
 
 Statuto: il CD lo nomina al proprio interno (art. 15.2). Sostituisce il Presidente in assenza o impedimento e, se il Presidente cessa, ne esercita le funzioni fino alla nuova elezione (art. 18.3).
 
@@ -188,3 +188,11 @@ Statuto: il CD lo nomina al proprio interno (art. 15.2). Sostituisce il Presiden
 - La **sostituzione vera**, con i poteri del Presidente per un periodo, si registra con il modulo Governance CD (Fase 1): data di inizio e fine e delibera. Fino ad allora, se serve, l'Amministratore usa «Passa il ruolo».
 
 **Nota.** La composizione del CD esiste già in un'altra tabella, `gl_governance_cd`, con il socio e la carica, e la usa il voto sulle domande. Con il modulo Governance CD (Fase 1) i ruoli degli utenti del CD si potranno ricavare dalla carica, per avere una sola fonte. Nella v0.42.0 il collegamento al socio (§4) prepara questo passo.
+
+## 12. Esito del controllo del §1 (16/10/2026)
+
+`gl_email_log` sul database del gestionale: gli avvisi delle operazioni risultano tutti «inviata». Quelli per il Segretario vanno a un indirizzo con il dominio sbagliato (`gmail.net` al posto di `gmail.com`). Il server li accetta, ma non arrivano a nessuno.
+
+**O10.1 e O12.1 non sono difetti del codice.** Rimedio: correggere l'email dell'utente dalla pagina Utenti, poi ripetere O10.
+
+Spunto per la v0.42.0, da proporre: un avviso nella pagina Utenti per le email con domini quasi uguali a quelli comuni (`gmail.net`, `gmial.com`…).
