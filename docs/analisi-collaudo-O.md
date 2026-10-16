@@ -147,3 +147,44 @@ Dopo le risposte:
 4. collaudo **O-bis** in un file nuovo.
 
 Le regole nuove su ruoli e soci vanno anche in `da-riportare-gestionale-aps.md`, adattate al Dante.
+
+---
+
+## 10. Risposte di Paolo (16/10/2026)
+
+- **§1 controllo**: la query è stata lanciata sul database `uiynixlg_acv`, che è quello del vecchio plugin `gestionale-acv`, non del gestionale. Da rifare sul database scritto in `DB_DATABASE` nel `.env` del gestionale.
+- **S1**: segnalazione errata. I soci restano come sono; nome e cognome separati solo negli utenti.
+- **S2**: sì al Vicepresidente. Permessi da definire (§11).
+- **S3**: un solo Revisore, ruolo unico. Per ora non serve, ma la regola si mette.
+- **S4**: (a). L'amministratore di sistema legge tutto e scrive solo Utenti.
+- **S5**: l'amministratore è Paolo. Il ruolo si **somma agli altri, tranne Presidente**. Esempio: Segretario + Tesoriere + Amministratore sullo stesso utente.
+- **S6**: messaggio «Utente non attivo» solo con email e password giuste.
+
+Effetti sulle regole del §3:
+- combinazioni ammesse:
+  - un ruolo solo;
+  - Segretario + Tesoriere;
+  - ciascuno dei due, o la coppia, con in più l'Amministratore;
+  - Vicepresidente o Consigliere con in più l'Amministratore;
+- l'Amministratore non si unisce al Presidente né al Revisore, perché l'Organo di controllo è fuori da tutto il resto;
+- unici: Presidente, Vicepresidente, Segretario, Tesoriere, Revisore, Amministratore. Ripetibile solo il Consigliere.
+
+Effetti sull'Amministratore:
+- con un ruolo del CD sullo stesso utente, il socio resta obbligatorio (§4);
+- i permessi si sommano come oggi: dove un ruolo scrive e l'altro legge, scrive;
+- non cambia i propri ruoli, come il Segretario;
+- può mandare il link della password a chiunque, Presidente compreso. È il rimedio alla password persa, senza passare dal database;
+- può usare «Passa il ruolo» anche per il Presidente, con conferma e avviso a tutto il CD;
+- ogni sua modifica degli utenti avvisa il Presidente.
+
+## 11. Proposta per il Vicepresidente (S2, da confermare)
+
+Statuto: il CD lo nomina al proprio interno (art. 15.2). Sostituisce il Presidente in assenza o impedimento e, se il Presidente cessa, ne esercita le funzioni fino alla nuova elezione (art. 18.3).
+
+**Proposta.**
+- Permessi del **Consigliere**: scontrini, Prima Nota in lettura, Utenti in lettura.
+- In più, **in sola lettura**, le sezioni del Presidente: Soci, Domande, Rinnovi quota, Tessere, Scadenzario, Promemoria, Impostazioni, Audit Log. Così, quando deve sostituirlo, sa già com'è la situazione.
+- Riceve gli avvisi delle operazioni delicate, come Presidente, Segretario e Tesoriere.
+- La **sostituzione vera**, con i poteri del Presidente per un periodo, si registra con il modulo Governance CD (Fase 1): data di inizio e fine e delibera. Fino ad allora, se serve, l'Amministratore usa «Passa il ruolo».
+
+**Nota.** La composizione del CD esiste già in un'altra tabella, `gl_governance_cd`, con il socio e la carica, e la usa il voto sulle domande. Con il modulo Governance CD (Fase 1) i ruoli degli utenti del CD si potranno ricavare dalla carica, per avere una sola fonte. Nella v0.42.0 il collegamento al socio (§4) prepara questo passo.
