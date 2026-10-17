@@ -206,6 +206,7 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::post('/', 'store')->name('store');
             Route::put('/{membro}/carica', 'carica')->whereNumber('membro')->name('carica');
             Route::put('/{membro}/togli', 'togli')->whereNumber('membro')->name('togli');
+            Route::post('/{membro}/utente', 'utente')->whereNumber('membro')->name('utente');
         });
 
     // Rinnovi quota (rinnovi-quota.md, v0.36.0): Presidente e Tesoriere

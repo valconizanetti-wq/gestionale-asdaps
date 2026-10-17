@@ -29,6 +29,21 @@ scelta: analisi breve e domanda prima del codice.
 
   Email solo sul server, mai nei documenti.
 
+## Stato al 17/10/2026 (sera): v0.42.1 (collaudo O-bis, OB4 e OB5)
+- Sul server: v0.42.0 installata dopo il pasticcio del primo `deploy.zip`.
+  In Laragon lo ZIP era stato estratto senza commit, e `git archive` prende
+  solo i commit. Rimedio: `git stash -u` e `git pull`.
+- Correzioni della v0.42.1 (`analisi-collaudo-O.md` §17, esiti in
+  `collaudo-O-bis-consiglio-direttivo.md`):
+  - errore 500 sul membro con la scheda del socio eliminata;
+  - nota obbligatoria con «Altro»;
+  - «Crea o collega l'utente»;
+  - email degli esterni diversa da quelle dei soci;
+  - CD solo maggiorenni;
+  - riquadri Tutore e Tessera.
+- 171 test.
+- Collaudo O-bis da riprendere da OB4 (ripetere OB4 e OB5).
+
 ## Stato al 17/10/2026: v0.42.0 consegnata (correzioni del collaudo O)
 Collaudo O concluso da Paolo il 16/10/2026. Osservazioni O2–O12 in
 `collaudo-O-utenti-importazione.md` («Esiti del collaudo»); analisi e

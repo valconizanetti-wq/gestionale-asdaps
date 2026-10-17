@@ -178,3 +178,33 @@ Versione: **v0.42.0** (17/10/2026). Dettaglio: `docs/analisi-collaudo-O.md` (§1
 Con `php artisan gestionale:azzera` (blocco P), quando arriva il momento:
 - si svuota anche il CD di prova; gli utenti restano, scollegati dai soci;
 - poi l'ordine di `deploy.md` §5.1: soci veri, CD dalla pagina, Amministratore sul tuo utente.
+
+---
+
+## Esiti del collaudo (Paolo, dal 17/10/2026)
+
+Installazione: il primo `deploy.zip` era della versione precedente. In Laragon lo ZIP era stato estratto sopra un repository fermo al 14/10, senza commit, e `git archive` prende solo i commit. Rimedio: `git stash -u`, poi `git pull`. Il controllo del LEGGIMI con `grep "governance.index"` era sbagliato; il nome giusto da cercare è `consiglio-direttivo` (corretto).
+
+### OB4 — osservazioni (17/10/2026), corrette nella v0.42.1
+- **OB4.1** Errore 500 togliendo un membro, e un membro del CD senza nome.
+  - Causa: la scheda del socio di quel membro era stata eliminata durante le prove K7.
+  - L'uscita veniva salvata, poi il messaggio cercava il nome. Per questo il secondo tentativo sembrava funzionare.
+  - Ora il CD legge anche le schede eliminate: nome con «Scheda eliminata». Il membro si può solo togliere, non ricevere cariche.
+- **OB4.2** Con il motivo «Altro» la nota è obbligatoria.
+- In più: un membro con «Nessun utente» (per esempio Papini Andrea, con l'email del socio diversa da quella del suo utente) ha il pulsante «Crea o collega l'utente».
+  - Prima si corregge l'email nella scheda del socio, poi si preme il pulsante.
+  - Collega l'utente con quell'email, oppure ne crea uno con il link.
+
+### OB5 — osservazioni (17/10/2026), corrette nella v0.42.1
+- **OB5.1** Un utente esterno con l'email di un socio ora non si salva: «Questa email è nella scheda del socio …».
+- **OB5.2** Nel CD entrano solo soci maggiorenni:
+  - i minorenni non sono nel menu;
+  - se arrivano comunque, compare «… è minorenne: nel Consiglio Direttivo entrano solo soci maggiorenni.».
+- **OB5.3** Scheda del socio:
+  - riquadro «Tutore» su due righe (nome, relazione, codice fiscale; telefono ed email);
+  - «Tessera CSEN» senza scorrimento orizzontale: il tipo sta sotto il numero.
+
+### Da riprovare con la v0.42.1
+- OB4: togli un membro con «Altro», prima senza nota poi con la nota. Sul membro senza nome nessun errore.
+- «Crea o collega l'utente» su Papini Andrea, dopo aver messo nella sua scheda di socio l'email del suo utente.
+- OB5: nuovo utente esterno con l'email di un socio; aggiunta di un minorenne; scheda di un socio minorenne (Tutore e Tessera).

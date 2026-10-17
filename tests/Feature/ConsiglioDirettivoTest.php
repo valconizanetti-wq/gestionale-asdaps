@@ -243,7 +243,7 @@ class ConsiglioDirettivoTest extends TestCase
         $this->actingAs($this->presidente)->get(route('governance.index'))->assertSee('Usciti dal CD')->assertSee('Tascio Luigi · Consigliere');
         // Con l'Amministratore resta attivo
         $z->assegnaRuoli(['segretario', 'tesoriere', 'amministratore']);
-        $this->actingAs($this->presidente)->put(route('governance.togli', $membroZ), ['al' => '2027-03-10', 'motivo' => 'altro'])->assertSessionHasNoErrors();
+        $this->actingAs($this->presidente)->put(route('governance.togli', $membroZ), ['al' => '2027-03-10', 'motivo' => 'altro', 'nota' => 'Resta solo Amministratore'])->assertSessionHasNoErrors();
         $this->assertSame(['amministratore'], $z->fresh()->codiciRuoli());
         $this->assertTrue($z->fresh()->attivo);
         // Il socio nel CD non si cessa né si elimina
@@ -251,6 +251,46 @@ class ConsiglioDirettivoTest extends TestCase
             ->assertSessionHas('error', fn ($m) => str_contains($m, 'toglilo prima dal CD'));
         $this->actingAs($this->presidente)->delete(route('soci.destroy', $tascio), ['motivo' => 'Inserito due volte per errore'])
             ->assertSessionHas('error', fn ($m) => str_contains($m, 'Consiglio Direttivo'));
+    }
+
+    public function test_correzioni_del_collaudo_ob(): void
+    {
+        [$papini, $zanetti, $tascio] = $this->cdCompleto();
+        $membroTascio = GovernanceCd::where('socio_id', $tascio->id)->first();
+
+        // OB4: «Altro» chiede la nota
+        $this->actingAs($this->presidente)->put(route('governance.togli', $membroTascio), ['al' => '2027-03-10', 'motivo' => 'altro'])
+            ->assertSessionHasErrors(['nota' => 'Con il motivo «Altro» scrivi nella nota di che cosa si tratta.']);
+        $this->assertTrue($membroTascio->fresh()->in_carica);
+
+        // OB4: membro con la scheda del socio eliminata (prove K7): niente errore 500
+        $tascio->delete();
+        $this->actingAs($this->presidente)->get(route('governance.index'))->assertOk()->assertSee('Tascio Luigi')->assertSee('Scheda eliminata');
+        $this->actingAs($this->presidente)->put(route('governance.carica', $membroTascio), [
+            'nuova_carica' => 'vicepresidente', 'dal_carica' => '2027-01-10', 'motivazione' => 'Prova su scheda eliminata',
+        ])->assertSessionHasErrors(['carica' => 'La scheda del socio è stata eliminata: toglilo dal CD.']);
+        $this->actingAs($this->presidente)->put(route('governance.togli', $membroTascio), ['al' => '2027-03-10', 'motivo' => 'altro', 'nota' => 'Scheda eliminata per errore'])
+            ->assertRedirect(route('governance.index'))->assertSessionHas('success', 'Tascio Luigi non è più nel Consiglio Direttivo.');
+
+        // OB5: nel CD solo maggiorenni (e il menu non li propone)
+        $minore = $this->socio('Neri', 'Sofia', 'sofia@example.it', 'NRESFO12A41E098F');
+        $minore->forceFill(['data_nascita' => now()->subYears(15)->toDateString()])->save();
+        $this->actingAs($this->presidente)->get(route('governance.index'))->assertDontSee('Neri Sofia');
+        $this->aggiungi($this->presidente, $minore, 'consigliere')
+            ->assertSessionHasErrors(['socio_id' => 'Neri Sofia è minorenne: nel Consiglio Direttivo entrano solo soci maggiorenni.']);
+
+        // OB4: membro senza utente (email del socio diversa): si collega o si crea dopo aver corretto l'email
+        $verdi = $this->socio('Verdi', 'Luca', 'luca@example.it', 'VRDLCU90E10L117B');
+        $m = GovernanceCd::create(['socio_id' => $verdi->id, 'carica' => 'Consigliere', 'data_inizio_mandato' => '2026-09-29', 'in_carica' => true]);
+        $m->forceFill(['carica_codice' => 'consigliere'])->save();
+        $esistente = User::factory()->conRuoli('consigliere')->create(['email' => 'luca@example.it', 'name' => 'Luca V']);
+        $this->actingAs($this->presidente)->get(route('governance.index'))->assertSee('Crea o collega l');
+        $this->actingAs($this->presidente)->post(route('governance.utente', $m))
+            ->assertSessionHas('success', 'Verdi Luca: collegato il suo utente.');
+        $this->assertSame($verdi->id, $esistente->fresh()->socio_id);
+        $this->assertSame(['Luca', 'Verdi'], [$esistente->fresh()->nome, $esistente->fresh()->cognome]);
+        $this->actingAs($this->presidente)->post(route('governance.utente', $m))->assertSessionHas('error', 'Verdi Luca ha già il suo utente.');
+        $this->assertDatabaseHas('gl_audit_log', ['evento' => 'CD_UTENTE']);
     }
 
     public function test_utenti_esterni_e_accesso_disattivato(): void

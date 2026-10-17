@@ -364,3 +364,25 @@ Migration provata anche all'indietro e di nuovo in avanti, sui dati.
 - nella pagina del CD l'email del socio sta sotto il nome, al posto di
   «socio dal…»;
 - con meno di tre membri o senza Presidente c'è un avviso in cima.
+
+## 17. Collaudo O-bis, prime osservazioni (v0.42.1, 17/10/2026)
+
+- **OB4.1, errore 500:** riprodotto in un test.
+  - `togli` salvava, poi il messaggio leggeva `$membro->socio->cognome` su una scheda eliminata (soft delete): null.
+  - `GovernanceCd::socio()` ora è `withTrashed()`. C'è `nomeSocio()` per i messaggi e la vista, con il badge «Scheda eliminata».
+  - Su un membro così non si cambia carica: si toglie soltanto.
+- **OB4.2:** con «Altro» la nota è obbligatoria: `required_if` nel controller, controllo nel servizio, asterisco con Alpine.
+- **Membro senza utente:** `ConsiglioDirettivo::utenteDelMembro()`, rotta `governance.utente`, evento `CD_UTENTE`.
+  - Collega per email o crea, con le stesse regole dell'aggiunta.
+  - Serve per il CD di prova, e per quando l'email del socio è diversa da quella dell'utente.
+- **OB5.1:** regola sull'email degli esterni in `UtentiController::valida`: non deve essere nella scheda di un socio.
+  - Punto aperto: un Revisore che è anche socio. Oggi deve usare un'email diversa da quella della scheda; se serve, si potrà collegarlo al socio.
+- **OB5.2:** `isMinorenne($dal)` in `aggiungi`; i minorenni sono tolti anche dal menu.
+- **OB5.3:**
+  - `dati-griglia-3` con l'email su due colonne;
+  - tabella della tessera `ts-scheda`, senza colonna Tipo (va sotto il numero);
+  - valori lunghi che vanno a capo (`overflow-wrap`).
+
+Test: 171 verdi (`test_correzioni_del_collaudo_ob`, più una prova in `UtentiTest`).
+
+Revisione: un difetto in più trovato e corretto: si poteva dare una carica a un membro con la scheda eliminata. Ora è bloccato, con una prova nel test.

@@ -56,12 +56,13 @@
                             @php
                                 $u = $utenti[$m->socio_id] ?? null;
                                 $presidente = $m->carica_codice === 'presidente';
-                                $cambia = ! $presidente && ($puoModificare || $puoPresidente) && ($m->socio_id !== $io || $puoPresidente);
+                                $cambia = ! $presidente && ! $m->socio?->trashed() && ($puoModificare || $puoPresidente) && ($m->socio_id !== $io || $puoPresidente);
                                 $togli = ! $presidente && $gestisce($m->carica_codice) && $m->socio_id !== $io;
                             @endphp
                             <tr>
                                 <td class="td-primario">
-                                    @if (auth()->user()->puoAccedere('soci'))<a href="{{ route('soci.show', $m->socio_id) }}">{{ $m->socio?->cognome }} {{ $m->socio?->nome }}</a>@else{{ $m->socio?->cognome }} {{ $m->socio?->nome }}@endif
+                                    @if (auth()->user()->puoAccedere('soci') && $m->socio && ! $m->socio->trashed())<a href="{{ route('soci.show', $m->socio_id) }}">{{ $m->nomeSocio() }}</a>@else{{ $m->nomeSocio() }}@endif
+                                    @if ($m->socio?->trashed())<x-badge variante="ko">Scheda eliminata</x-badge>@endif
                                     <span class="td-sub">{{ $m->socio?->email ?: 'senza email' }}</span>
                                 </td>
                                 <td data-label="Carica"><x-badge :variante="$m->carica_codice === 'consigliere' ? 'neutral' : 'info'">{{ ConsiglioDirettivo::etichetta($m->carica_codice) }}</x-badge></td>
@@ -69,6 +70,13 @@
                                 <td data-label="Utente">
                                     @if (! $u)
                                         <x-badge variante="warn">Nessun utente</x-badge>
+                                        {{-- OB4: CD di prova o email del socio diversa da quella dell'utente --}}
+                                        @if ($gestisce($m->carica_codice) && $m->socio && ! $m->socio->trashed())
+                                            <form method="POST" action="{{ route('governance.utente', $m) }}" class="cd-utente">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-ghost">Crea o collega l'utente</button>
+                                            </form>
+                                        @endif
                                     @elseif (! $u->attivo)
                                         <x-badge variante="neutral">Disattivato</x-badge>
                                     @else
@@ -78,11 +86,11 @@
                                 @if ($puoModificare || $puoPresidente)
                                     <td class="td-azioni">
                                         @if ($cambia)
-                                            <button type="button" class="action-btn" aria-label="Cambia la carica di {{ $m->socio?->cognome }} {{ $m->socio?->nome }}"
+                                            <button type="button" class="action-btn" aria-label="Cambia la carica di {{ $m->nomeSocio() }}"
                                                     x-data x-on:click="$dispatch('apri-modale', 'carica-{{ $m->id }}')"><x-icona nome="matita" /></button>
                                         @endif
                                         @if ($togli)
-                                            <button type="button" class="action-btn" aria-label="Togli {{ $m->socio?->cognome }} {{ $m->socio?->nome }} dal CD"
+                                            <button type="button" class="action-btn" aria-label="Togli {{ $m->nomeSocio() }} dal CD"
                                                     x-data x-on:click="$dispatch('apri-modale', 'togli-{{ $m->id }}')"><x-icona nome="esci" /></button>
                                         @endif
                                     </td>
@@ -99,7 +107,7 @@
         <x-card titolo="Usciti dal CD" class="cd-usciti">
             <ul class="cd-elenco">
                 @foreach ($usciti as $m)
-                    <li>{{ $m->socio?->cognome }} {{ $m->socio?->nome }} · {{ ConsiglioDirettivo::etichetta($m->carica_codice) }}
+                    <li>{{ $m->nomeSocio() }} · {{ ConsiglioDirettivo::etichetta($m->carica_codice) }}
                         dal {{ $m->data_inizio_mandato?->format('d/m/Y') }} al {{ $m->data_fine_mandato?->format('d/m/Y') }}
                         · {{ mb_strtolower(ConsiglioDirettivo::MOTIVI_FINE[$m->motivo_fine] ?? 'uscito') }}</li>
                 @endforeach
@@ -124,7 +132,7 @@
                         @csrf
                         <x-campo name="socio_id" label="Socio" tipo="select" required class="ut-intero" vuota="Scegli dal libro soci…" x-model="socio"
                                  :opzioni="$soci->mapWithKeys(fn ($s) => [$s->id => $s->cognome . ' ' . $s->nome . ($s->data_nascita ? ' · ' . ($s->sesso === 'F' ? 'nata' : 'nato') . ' il ' . $s->data_nascita->format('d/m/Y') : '')])->all()"
-                                 aiuto="Soci attivi non ancora nel CD, in ordine di cognome." />
+                                 aiuto="Soci attivi e maggiorenni non ancora nel CD, in ordine di cognome." />
                         <x-campo name="carica" label="Carica" tipo="select" required :opzioni="$liberePerNuovo" x-model="carica"
                                  :value="old('carica', array_key_last($liberePerNuovo))"
                                  :aiuto="count($liberePerNuovo) < count(ConsiglioDirettivo::CARICHE) ? 'Solo le cariche libere: per le altre usa la matita sul membro che la lascia o la riceve.' : null" />
@@ -147,7 +155,7 @@
         @foreach ($membri as $m)
             @continue($m->carica_codice === 'presidente')
             @php
-                $nome = trim("{$m->socio?->cognome} {$m->socio?->nome}");
+                $nome = $m->nomeSocio();
                 $possibili = collect($cariche)->except($m->carica_codice)->filter(fn ($c, $k) => $gestisce($k))->map(fn ($c) => $c['label'])->all();
             @endphp
             @if ($puoModificare || $puoPresidente)
@@ -179,11 +187,12 @@
             @if ($gestisce($m->carica_codice) && $m->socio_id !== $io)
                 @php $u = $utenti[$m->socio_id] ?? null; @endphp
                 <x-modale :nome="'togli-' . $m->id" :titolo="'Togliere ' . $nome . ' dal CD?'" :aperta="$modale === 'togli-' . $m->id">
-                    <form method="POST" action="{{ route('governance.togli', $m) }}" id="form-togli-{{ $m->id }}" class="form-grid">
+                    <form method="POST" action="{{ route('governance.togli', $m) }}" id="form-togli-{{ $m->id }}" class="form-grid" x-data="{ motivo: @js(old('motivo', '')) }">
                         @csrf @method('PUT')
                         <x-campo name="al" label="Fuori dal CD dal" tipo="date" required :value="old('al', now()->format('Y-m-d'))" />
-                        <x-campo name="motivo" label="Motivo" tipo="select" required vuota="Scegli…" :opzioni="ConsiglioDirettivo::MOTIVI_FINE" :value="old('motivo')" />
-                        <x-campo name="nota" label="Note" tipo="textarea" rows="2" class="ut-intero" :value="old('nota')" placeholder="Es. lettera di dimissioni del …" />
+                        <x-campo name="motivo" label="Motivo" tipo="select" required vuota="Scegli…" :opzioni="ConsiglioDirettivo::MOTIVI_FINE" :value="old('motivo')" x-model="motivo" />
+                        <x-campo name="nota" label="Note" tipo="textarea" rows="2" class="ut-intero" :value="old('nota')" placeholder="Es. lettera di dimissioni del …" obbligatorio-se="motivo === 'altro'"
+                                 aiuto="Obbligatorie con il motivo «Altro»." />
                     </form>
                     <p>@if ($u && $u->haRuolo('amministratore'))Il suo utente perde i ruoli del CD e resta Amministratore.@else Il suo utente perde il ruolo di {{ ConsiglioDirettivo::etichetta($m->carica_codice) }} e <strong>si disattiva</strong>.@endif Resta nello storico del CD.</p>
                     <x-slot:piede>

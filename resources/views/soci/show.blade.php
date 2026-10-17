@@ -107,15 +107,17 @@
         </x-card>
 
         @if ($minorenne || $socio->tutore_nome)
+            {{-- Due righe al posto di tre (collaudo OB5, 17/10/2026): nome,
+                 relazione e codice fiscale; telefono ed email --}}
             <x-card titolo="Tutore">
-                <dl class="dati-griglia">
+                <dl class="dati-griglia dati-griglia-3">
                     <x-dato label="Nome" :valore="$socio->tutore_nome" />
-                    <x-dato label="Codice fiscale" :valore="$socio->tutore_codice_fiscale" codice />
                     <x-dato label="Relazione" :valore="$socio->tutore_relazione" />
+                    <x-dato label="Codice fiscale" :valore="$socio->tutore_codice_fiscale" codice />
                     <x-dato label="Telefono">
                         @if ($socio->tutore_telefono)<a href="tel:{{ preg_replace('/[^\d+]/', '', $socio->tutore_telefono) }}">{{ $socio->tutore_telefono }}</a>@endif
                     </x-dato>
-                    <x-dato label="Email">
+                    <x-dato label="Email" class="dato-largo">
                         @if ($socio->tutore_email)<a href="mailto:{{ $socio->tutore_email }}">{{ $socio->tutore_email }}</a>@endif
                     </x-dato>
                 </dl>
@@ -145,9 +147,10 @@
                 <x-vuoto>Nessuna tessera registrata.</x-vuoto>
             @else
                 <div class="table-wrap">
-                    <table class="data-table responsive ts-tabella">
+                    {{-- Senza scorrimento orizzontale (collaudo OB5): il tipo sta sotto il numero --}}
+                    <table class="data-table responsive ts-tabella ts-scheda">
                         <thead>
-                            <tr><th scope="col">Numero</th><th scope="col">Tipo</th><th scope="col">Emessa</th><th scope="col">Scade</th><th scope="col">Stato</th></tr>
+                            <tr><th scope="col">Numero</th><th scope="col">Emessa</th><th scope="col">Scade</th><th scope="col">Stato</th></tr>
                         </thead>
                         <tbody>
                             @foreach ($socio->tesseramenti as $t)
@@ -158,8 +161,7 @@
                                 @endphp
                                 <tr>
                                     <td class="td-primario"><span class="ts-numero">{{ $t->numero_tessera_csen }}</span>
-                                        <span class="td-sub">{{ $t->pacchetto ? 'pacchetto ' . $t->pacchetto->intervallo() : ($t->origine === 'caricata' ? 'dall\'elenco CSEN' : '') }}</span></td>
-                                    <td data-label="Tipo">{{ $t->tipoNome() }}</td>
+                                        <span class="td-sub">{{ collect([$t->tipoNome(), $t->pacchetto ? 'pacchetto ' . $t->pacchetto->intervallo() : ($t->origine === 'caricata' ? 'dall\'elenco CSEN' : null)])->filter()->implode(' · ') }}</span></td>
                                     <td data-label="Emessa">{{ $t->data_rilascio?->format('d/m/Y') ?? '—' }}</td>
                                     <td data-label="Scade">{{ $t->scadenza?->format('d/m/Y') ?? '—' }}</td>
                                     <td data-label="Stato"><x-badge :variante="$sVar">{{ $sTesto }}</x-badge></td>

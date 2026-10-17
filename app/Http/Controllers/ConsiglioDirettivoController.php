@@ -31,7 +31,9 @@ class ConsiglioDirettivoController extends Controller
         // Soci attivi non nel CD, in ordine di cognome (tavola CD-2)
         $soci = Socio::where('stato', 'attivo')
             ->whereNotIn('id', $membri->pluck('socio_id'))
-            ->orderBy('cognome')->orderBy('nome')->get(['id', 'cognome', 'nome', 'data_nascita', 'sesso', 'email']);
+            ->orderBy('cognome')->orderBy('nome')->get(['id', 'cognome', 'nome', 'data_nascita', 'sesso', 'email'])
+            ->reject(fn (Socio $s) => $s->isMinorenne()) // OB5: nel CD solo maggiorenni
+            ->values();
 
         $occupati = ConsiglioDirettivo::occupati();
 
@@ -40,7 +42,7 @@ class ConsiglioDirettivoController extends Controller
             'utenti' => $utenti,
             'usciti' => GovernanceCd::with('socio')->where('in_carica', false)->orderByDesc('data_fine_mandato')->limit(20)->get(),
             'soci' => $soci,
-            'occupati' => array_map(fn ($m) => ['id' => $m->id, 'nome' => trim("{$m->socio?->cognome} {$m->socio?->nome}")], $occupati),
+            'occupati' => array_map(fn ($m) => ['id' => $m->id, 'nome' => $m->nomeSocio()], $occupati),
             'puoModificare' => $chi->puoModificare('governance_cd'),
             'puoPresidente' => $chi->haRuolo('presidente', 'amministratore'),
             'io' => $chi->socio_id,
@@ -58,10 +60,9 @@ class ConsiglioDirettivoController extends Controller
             ], ['socio_id.required' => 'Scegli il socio.', 'carica.required' => 'Scegli la carica.'], ['dal' => 'data']);
             $esito = $this->cd->aggiungi(Socio::findOrFail($dati['socio_id']), $dati['carica'], Carbon::parse($dati['dal']),
                 $dati['nominato_da'] ?? null, $request->boolean('link'), $request->user());
-            $s = $esito['membro']->socio;
             $utente = $esito['nuovo'] ? 'creato l\'utente' : 'collegato il suo utente';
 
-            return "{$s->cognome} {$s->nome} è nel Consiglio Direttivo come ".ConsiglioDirettivo::etichetta($dati['carica'])
+            return $esito['membro']->nomeSocio().' è nel Consiglio Direttivo come '.ConsiglioDirettivo::etichetta($dati['carica'])
                 .": {$utente}".($esito['link'] ? ' e inviato il link per la password.' : '.');
         });
     }
@@ -78,9 +79,7 @@ class ConsiglioDirettivoController extends Controller
                 ['nuova_carica' => 'carica', 'dal_carica' => 'data']);
             $this->cd->cambiaCarica($membro, $dati['nuova_carica'], Carbon::parse($dati['dal_carica']), $dati['motivazione'],
                 $dati['altri'] ?? 'consigliere', $request->user());
-            $s = $membro->socio;
-
-            return "{$s->cognome} {$s->nome} ora è ".ConsiglioDirettivo::etichetta($dati['nuova_carica']).'.';
+            return $membro->nomeSocio().' ora è '.ConsiglioDirettivo::etichetta($dati['nuova_carica']).'.';
         });
     }
 
@@ -90,21 +89,39 @@ class ConsiglioDirettivoController extends Controller
             $dati = $request->validate([
                 'al' => ['required', 'date'],
                 'motivo' => ['required', Rule::in(array_keys(ConsiglioDirettivo::MOTIVI_FINE))],
-                'nota' => ['nullable', 'string', 'max:1000'],
-            ], ['motivo.required' => 'Scegli il motivo.'], ['al' => 'data']);
+                // OB4 (17/10/2026): con «Altro» la nota dice quale
+                'nota' => ['nullable', 'required_if:motivo,altro', 'string', 'max:1000'],
+            ], ['motivo.required' => 'Scegli il motivo.', 'nota.required_if' => 'Con il motivo «Altro» scrivi nella nota di che cosa si tratta.'], ['al' => 'data']);
             $this->cd->togli($membro, Carbon::parse($dati['al']), $dati['motivo'], $dati['nota'] ?? null, $request->user());
-            $s = $membro->socio;
 
-            return "{$s->cognome} {$s->nome} non è più nel Consiglio Direttivo.";
+            return $membro->nomeSocio().' non è più nel Consiglio Direttivo.';
+        });
+    }
+
+    /**
+     * Membro senza utente (es. email del socio diversa da quella
+     * dell'utente): lo collega per email o ne crea uno (collaudo OB4).
+     */
+    public function utente(Request $request, GovernanceCd $membro)
+    {
+        return $this->conModale($request, null, function () use ($request, $membro) {
+            $esito = $this->cd->utenteDelMembro($membro, $request->user());
+
+            return $membro->nomeSocio().': '.($esito['nuovo'] ? 'creato l\'utente' : 'collegato il suo utente')
+                .($esito['link'] ? ' e inviato il link per la password.' : '.');
         });
     }
 
     /** Esegue; con un errore torna alla pagina con la finestra aperta. */
-    private function conModale(Request $request, string $modale, callable $azione)
+    private function conModale(Request $request, ?string $modale, callable $azione)
     {
         try {
             $messaggio = $azione();
         } catch (ValidationException $e) {
+            if ($modale === null) {
+                return redirect()->route('governance.index')->with('error', collect($e->errors())->flatten()->first());
+            }
+
             return redirect()->route('governance.index')->withErrors($e->errors())->withInput()->with('modale', $modale);
         }
 

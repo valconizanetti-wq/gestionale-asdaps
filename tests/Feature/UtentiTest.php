@@ -131,6 +131,13 @@ class UtentiTest extends TestCase
             'cognome' => 'X', 'nome' => 'Y', 'email' => 'paolo@example.it', 'ruolo' => 'amministratore', 'attivo' => '1',
         ])->assertSessionHasErrors('email');
         $this->assertDatabaseMissing('gl_users', ['email' => 'x@example.it']);
+        // OB5: l'email di un esterno non può essere quella di un socio
+        $socio = new \App\Models\Socio();
+        $socio->forceFill(['cognome' => 'Bianchi', 'nome' => 'Anna', 'email' => 'Anna@Example.it', 'codice_fiscale' => 'BNCNNA75B43E098D',
+            'data_prima_iscrizione' => '2024-07-24', 'tipo' => 'ordinario', 'stato' => 'attivo'])->save();
+        $this->actingAs($this->presidente)->post(route('utenti.store'), [
+            'cognome' => 'X', 'nome' => 'Y', 'email' => 'anna@example.it', 'ruolo' => 'amministratore', 'attivo' => '1',
+        ])->assertSessionHasErrors(['email' => "Questa email è nella scheda del socio Bianchi Anna: un socio del CD entra dalla pagina Consiglio Direttivo; per un esterno usa un'email sua."]);
 
         // Amministratore in più su un utente del CD; non con il Presidente; uno solo
         $this->actingAs($this->presidente)->put(route('utenti.update', $this->paolo), [

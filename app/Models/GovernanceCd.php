@@ -39,7 +39,15 @@ class GovernanceCd extends Model
 
     public function socio(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Socio::class, 'socio_id');
+        // Anche con la scheda eliminata (soft delete): il CD e lo storico la
+        // citano (collaudo OB4, 17/10/2026: errore 500 sul nome mancante)
+        return $this->belongsTo(Socio::class, 'socio_id')->withTrashed();
+    }
+
+    /** «Cognome Nome» del socio, anche con la scheda eliminata. */
+    public function nomeSocio(): string
+    {
+        return $this->socio ? trim("{$this->socio->cognome} {$this->socio->nome}") : "socio n. {$this->socio_id}";
     }
 
     public function verbaleNomina(): \Illuminate\Database\Eloquent\Relations\BelongsTo

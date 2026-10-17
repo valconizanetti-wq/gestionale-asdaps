@@ -149,6 +149,10 @@ class ConsiglioDirettivo
         if ($socio->caricheCd()->where('in_carica', true)->exists()) {
             throw ValidationException::withMessages(['socio_id' => "{$socio->cognome} {$socio->nome} è già nel Consiglio Direttivo: per cambiare carica usa la matita sulla sua riga."]);
         }
+        // OB5 (17/10/2026): nel CD solo maggiorenni, alla data d'ingresso
+        if ($socio->isMinorenne($dal)) {
+            throw ValidationException::withMessages(['socio_id' => "{$socio->cognome} {$socio->nome} è minorenne: nel Consiglio Direttivo entrano solo soci maggiorenni."]);
+        }
         if (! filled($socio->email)) {
             throw ValidationException::withMessages(['socio_id' => "{$socio->cognome} {$socio->nome} non ha l'email nella scheda: aggiungila prima, serve per entrare nel gestionale e per i voti del CD."]);
         }
@@ -231,6 +235,9 @@ class ConsiglioDirettivo
         }
         if ($carica === $membro->carica_codice) {
             throw ValidationException::withMessages(['carica' => 'È già la sua carica.']);
+        }
+        if (! $membro->socio || $membro->socio->trashed()) {
+            throw ValidationException::withMessages(['carica' => 'La scheda del socio è stata eliminata: toglilo dal CD.']);
         }
         if (self::diPresidente($membro->carica_codice)) {
             throw ValidationException::withMessages(['carica' => 'Il Presidente non cambia carica da solo: usa «Cambia carica» sul membro che diventa Presidente.']);
@@ -318,6 +325,9 @@ class ConsiglioDirettivo
         if (! isset(self::MOTIVI_FINE[$motivo])) {
             throw ValidationException::withMessages(['motivo' => 'Scegli il motivo.']);
         }
+        if ($motivo === 'altro' && ! filled($nota)) {
+            throw ValidationException::withMessages(['nota' => 'Con il motivo «Altro» scrivi nella nota di che cosa si tratta.']);
+        }
 
         DB::transaction(function () use ($membro, $al, $motivo, $nota) {
             $utente = $this->chiudi($membro, $al, $motivo, $nota);
@@ -338,6 +348,61 @@ class ConsiglioDirettivo
     // ----------------------------------------------------------------
     // Utenti
     // ----------------------------------------------------------------
+
+    /**
+     * Utente per un membro in carica che non ce l'ha (collaudo OB4: email del
+     * socio diversa da quella dell'utente, CD inserito prima della v0.42.0).
+     * Si corregge prima l'email nella scheda del socio, poi questo collega
+     * l'utente con quell'email o ne crea uno con il link.
+     *
+     * @return array{utente: User, nuovo: bool, link: bool}
+     */
+    public function utenteDelMembro(GovernanceCd $membro, User $chi): array
+    {
+        $socio = $membro->socio;
+        if (! $membro->in_carica || ! $socio || $socio->trashed()) {
+            throw ValidationException::withMessages(['utente' => 'Solo per un membro in carica con la scheda del socio.']);
+        }
+        if ($m = self::motivoBlocco($chi, $membro->carica_codice)) {
+            throw ValidationException::withMessages(['utente' => $m]);
+        }
+        if (User::where('socio_id', $socio->id)->exists()) {
+            throw ValidationException::withMessages(['utente' => "{$membro->nomeSocio()} ha già il suo utente."]);
+        }
+        if (! filled($socio->email)) {
+            throw ValidationException::withMessages(['utente' => "{$membro->nomeSocio()} non ha l'email nella scheda: aggiungila prima."]);
+        }
+        $utente = self::utenteDelSocio($socio);
+        if ($utente && ($utente->socio_id || $utente->haRuolo('revisore'))) {
+            throw ValidationException::withMessages(['utente' => "L'email del socio ({$utente->email}) è di un utente collegato a un altro socio o del Revisore: correggila nella scheda."]);
+        }
+
+        $esito = DB::transaction(function () use ($membro, $socio, $utente) {
+            $nuovo = $utente === null;
+            $utente ??= new User(['password' => \Illuminate\Support\Str::random(40), 'email' => mb_strtolower(trim($socio->email))]);
+            $utente->fill(['nome' => $socio->nome, 'cognome' => $socio->cognome, 'socio_id' => $socio->id, 'attivo' => true]);
+            $utente->save();
+            $prima = $nuovo ? [] : $utente->codiciRuoli();
+            $this->ruoliCd($utente, self::ruoliCarica($membro->carica_codice));
+            $tolti = $this->togliUniciAgliAltri($utente, self::ruoliCarica($membro->carica_codice));
+            AuditLogService::scrivi([
+                'evento' => 'CD_UTENTE',
+                'operazione' => 'updated',
+                'entita_tipo' => 'GovernanceCd',
+                'entita_id' => $membro->id,
+                'livello_rischio' => 'HIGH',
+                'dettaglio' => "Utente n. {$utente->id}" . ($nuovo ? ' creato' : ' collegato') . " per il membro n. {$membro->id} (socio n. {$socio->id}, "
+                    . self::etichetta($membro->carica_codice) . ')' . ($tolti ? '; ruolo tolto agli utenti n. ' . implode(', ', $tolti) : '') . '.',
+                'old_values' => ['ruoli_utente' => $prima],
+                'new_values' => ['ruoli_utente' => $utente->codiciRuoli()],
+            ]);
+
+            return ['utente' => $utente, 'nuovo' => $nuovo];
+        });
+        $esito['link'] = $esito['nuovo'] && $this->inviaLink($esito['utente']);
+
+        return $esito;
+    }
 
     /** Membro fuori dal CD; il suo utente perde i ruoli del CD. */
     private function chiudi(GovernanceCd $membro, Carbon $al, string $motivo, ?string $nota = null): ?User

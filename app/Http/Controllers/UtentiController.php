@@ -118,6 +118,14 @@ class UtentiController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('gl_users', 'email')->ignore($utente?->id)],
         ];
         if (! $delCd) {
+            // OB5 (17/10/2026): l'email di un esterno non deve essere quella
+            // di un socio, che il Consiglio Direttivo collegherebbe a lui
+            $regole['email'][] = function (string $attr, mixed $valore, \Closure $fallisci) {
+                $socio = \App\Models\Socio::whereRaw('LOWER(email) = ?', [mb_strtolower(trim((string) $valore))])->first();
+                if ($socio) {
+                    $fallisci("Questa email è nella scheda del socio {$socio->cognome} {$socio->nome}: un socio del CD entra dalla pagina Consiglio Direttivo; per un esterno usa un'email sua.");
+                }
+            };
             $regole += [
                 'cognome' => ['required', 'string', 'max:100'],
                 'nome' => ['required', 'string', 'max:100'],

@@ -2019,3 +2019,20 @@
     .errori-elenco li { list-style: decimal; }
     .errori-elenco a { color: inherit; font-weight: 600; text-decoration: underline; }
 }
+@layer components {
+    /* Membro del CD senza utente: pulsante sotto l'avviso (collaudo OB4) */
+    .cd-utente { display: inline-block; margin-left: 6px; }
+}
+@layer components {
+    /* Scheda del socio, collaudo OB5: Tutore su due righe, Tessera senza scorrimento */
+    .dati-griglia-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .dati-griglia-3 .dato-largo { grid-column: span 2; }
+    .dati-griglia .dato-valore { overflow-wrap: anywhere; }
+    .ts-scheda { min-width: 0; }
+    .ts-scheda th, .ts-scheda td { padding-left: 10px; padding-right: 10px; }
+    .ts-scheda .badge { white-space: normal; }
+}
+@media (max-width: 768px) {
+    .dati-griglia-3 { grid-template-columns: 1fr; }
+    .dati-griglia-3 .dato-largo { grid-column: auto; }
+}

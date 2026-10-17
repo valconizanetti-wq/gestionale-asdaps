@@ -1,3 +1,19 @@
+Gestionale ASD - v0.42.1 (17/10/2026)
+Correzioni dal collaudo O-bis (OB4, OB5), sopra la v0.42.0
+
+NESSUNA migration nuova; CSS cambiato (npm run build).
+  - OB4: errore 500 togliendo un membro con la scheda del socio eliminata (e membro senza nome):
+    ora il CD mostra anche le schede eliminate, con "Scheda eliminata"; quel membro si puo' solo
+    togliere. Con il motivo "Altro" la nota e' obbligatoria.
+  - Membro con "Nessun utente": pulsante "Crea o collega l'utente" (prima correggi l'email nella
+    scheda del socio, es. Papini Andrea con l'email del suo utente).
+  - OB5: utente esterno con l'email di un socio rifiutato; nel CD solo maggiorenni; scheda del
+    socio con il riquadro Tutore su due righe e la Tessera CSEN senza scorrimento.
+  Installazione: in Laragon git pull, npm run build, php artisan test (171), git archive e
+  build.zip; sul server estrai sovrascrivendo, php artisan optimize:clear e le tre cache.
+  Se la v0.42.0 non e' ancora sul server: anche php artisan migrate --force (vedi sotto).
+
+----------------------------------------------------------------------------------------------
 Gestionale ASD - v0.42.0 (17/10/2026)
 Correzioni dal collaudo O: pagina Consiglio Direttivo (da cui nascono gli utenti del CD),
 Vicepresidente e Amministratore di sistema, pagina Utenti per gli esterni, cognome e nome
