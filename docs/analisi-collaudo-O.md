@@ -222,3 +222,77 @@ Si fa nei componenti comuni (`x-campo`, `x-avviso` del riquadro), quindi vale pe
 - **ER-1** errori dei campi.
 
 Da approvare prima del codice.
+
+## 15. Scelta B: il CD dalla pagina «Consiglio Direttivo» (Paolo, 17/10/2026)
+
+Prende il posto del §4 (socio scelto nel modulo utente) e di parte del §3. Le tavole UT-5 e UT-6 del §14 sono superate da CD-1…CD-3, UT-8 e UT-9.
+
+**Perché.** La composizione del CD esiste già in `gl_governance_cd`, con il socio, la carica e l'inizio del mandato. La usano:
+- il voto sulle domande (`VotazioneCd`);
+- il nome del Tesoriere (`RinnoviQuota::tesoriere`).
+
+Mancava la pagina: sul server il CD di prova è stato inserito con SQL. Con i ruoli degli utenti il CD stava in due posti. Ora una sola fonte, i soci in carica, e da lì nascono gli utenti.
+
+**Pagina «Consiglio Direttivo»** (menu Governance; la voce c'è già in `navigazione.php`, manca la rotta `governance.index`):
+- elenco dei membri in carica: socio, carica, dal, utente del gestionale (attivo, link inviato, ultimo accesso);
+- **«+ Aggiungi un membro»**:
+  - socio scelto da un **menu a tendina** con i soci attivi non ancora nel CD, in ordine di cognome;
+  - carica: Presidente, Vicepresidente, Segretario, Tesoriere, Segretario e Tesoriere, Consigliere;
+  - «In carica dal» (data dell'Assemblea o della delibera del CD) e un riferimento facoltativo («Assemblea del 16/11/2026»);
+  - spunta «Mandagli il link per entrare nel gestionale», già attiva;
+- **«Cambia carica»** su un membro. Se la carica è già di un altro, la finestra propone il passaggio («Passare la carica di Presidente da A a B? A resta: Consigliere / esce dal CD»), con motivazione;
+- **«Togli dal CD»**: data di fine e motivo (dimissioni, decadenza, fine mandato, altro). Il membro resta nello storico (`in_carica = false`, `data_fine_mandato`);
+- avviso se i membri non sono da tre a cinque (art. 15.1). Solo avviso: il CD si compone un membro alla volta.
+
+**Regole delle cariche** (fra i membri in carica):
+- uniche: Presidente, Vicepresidente, Segretario, Tesoriere;
+- «Segretario e Tesoriere» occupa le due cariche;
+- un socio ha una sola carica;
+- il Presidente si toglie solo passandolo a un altro.
+
+**Utenti, che nascono dal CD:**
+- quando un socio entra nel CD:
+  - se ha già un utente (collegato per `socio_id`, o con la stessa email: così i quattro utenti di prova si collegano al CD vero senza doppioni), gli si danno i ruoli della carica;
+  - altrimenti nasce un utente con nome, cognome ed email della scheda e il link per la password;
+  - un socio senza email nella scheda non si aggiunge: «Aggiungi prima l'email nella scheda del socio»;
+- carica → ruolo:
+  - Presidente → presidente;
+  - Vicepresidente → vicepresidente;
+  - Segretario → segretario;
+  - Tesoriere → tesoriere;
+  - Segretario e Tesoriere → segretario + tesoriere;
+  - Consigliere → consigliere;
+- quando il socio esce dal CD i ruoli del CD si tolgono. Se non gli resta l'Amministratore, l'utente si disattiva;
+- anche la cessazione e la decadenza del socio lo tolgono dal CD, con la stessa data;
+- ogni passaggio scrive una riga di Audit Log (HIGH) e manda l'avviso agli altri.
+
+**Pagina Utenti** (diventa più semplice):
+- i ruoli del CD si vedono ma **non si cambiano** lì: «Ruoli dal Consiglio Direttivo», con il link;
+- restano: Amministratore di sistema (spunta), Revisore, attivo o disattivato, email, link della password;
+- «+ Nuovo utente» serve solo agli **esterni** (Revisore, o un Amministratore non socio), con cognome e nome separati (O2.1);
+- un utente del CD prende cognome e nome dalla scheda del socio.
+
+**Permessi della pagina CD.**
+- Modificano Presidente e Segretario. Il Segretario non tocca la carica di Presidente.
+- L'Amministratore può fare il passaggio del Presidente (§10).
+- In lettura: Vicepresidente, Tesoriere, Consigliere, Revisore.
+
+**Dopo l'Assemblea:**
+1. azzeramento (svuota anche `gl_governance_cd`; gli utenti restano);
+2. importazione dei soci veri;
+3. pagina CD: i cinque membri. Gli utenti esistenti si collegano per email; per gli altri nasce l'utente;
+4. pagina Utenti: Amministratore sul tuo utente.
+
+**Restano alla Fase 1** (modulo Governance CD): verbale di nomina collegato, storico dei mandati, rinnovo dell'intero CD, sostituzione del Presidente con il Vicepresidente per un periodo, dichiarazioni di incompatibilità.
+
+**Tavole** (`Tavole-consiglio-direttivo.pdf`, fuori dal repository, 17/10/2026):
+- CD-1 e CD-1b: pagina del CD, anche con meno di tre membri;
+- CD-2: aggiungi un membro;
+- CD-3: cambia carica, con il passaggio;
+- CD-4: togli dal CD;
+- UT-8a: utente del CD;
+- UT-8b: nuovo utente esterno;
+- UT-9: elenco degli utenti;
+- ER-1: errori dei campi, come nel §14.
+
+Sostituiscono UT-5…UT-7 di `Tavole-collaudo-O.pdf`.
