@@ -52,7 +52,8 @@ SERVER (deploy.md par. 5)
   2. php artisan migrate --force
      La migration collega da sola ogni utente al socio del CD di prova con la stessa email.
   3. php artisan optimize:clear   poi le tre cache (config, route, view)
-  4. Controllo: grep -c "governance.index" routes/web.php   -> almeno 1
+  4. Controllo: grep -c "consiglio-direttivo" routes/web.php   -> almeno 1
+     php artisan route:list --name=governance   -> 4 rotte (se 0: deploy.zip vecchio o non sovrascritto)
   Poi collaudo O-bis (OB1-OB7). Niente seeder.
 
 DOPO L'ASSEMBLEA (deploy.md par. 5.1)
