@@ -1,0 +1,74 @@
+Gestionale ASD - v0.42.0 (17/10/2026)
+Correzioni dal collaudo O: pagina Consiglio Direttivo (da cui nascono gli utenti del CD),
+Vicepresidente e Amministratore di sistema, pagina Utenti per gli esterni, cognome e nome
+separati, link della password e utente disattivato, errori dei campi piu' evidenti
+
+Da applicare sopra la v0.41.0 (se non e' ancora sul server: prima la v0.40.0 e la v0.41.0,
+LEGGIMI nella storia di GitHub).
+UNA migration (2026_10_17_000104); nessun seeder; nessun pacchetto Composer nuovo;
+CSS e JS cambiati (npm run build).
+Dettaglio: docs/analisi-collaudo-O.md (par. 10-16: decisioni, realizzazione, tre giri di
+revisione). Tavole: Tavole-consiglio-direttivo.pdf (fuori dal repository).
+Collaudo: docs/test/collaudo-O-bis-consiglio-direttivo.md (OB1-OB9).
+
+COSA CAMBIA
+  Consiglio Direttivo (menu Governance, voce che prima era nascosta)
+  - Si aggiungono i soci con la carica: Presidente, Vicepresidente, Segretario, Tesoriere,
+    Segretario e Tesoriere, Consigliere. Da tre a cinque membri (art. 15.1).
+  - L'utente del gestionale nasce dal CD: email dalla scheda del socio, ruolo uguale alla
+    carica, link per la password. Se esiste gia' un utente con la stessa email, si usa quello.
+  - "Cambia carica": se la carica e' di un altro, si passa in un'unica operazione (chi la
+    lascia resta Consigliere o esce). Il Presidente si cambia cosi'; la sua carica la gestiscono
+    solo il Presidente e l'Amministratore.
+  - "Togli dal CD": data e motivo; l'utente perde i ruoli del CD e si disattiva.
+  - Un socio nel CD non si cessa (prima si toglie dal CD); uno che c'e' stato non si elimina.
+  Utenti
+  - I ruoli del CD si vedono ma si cambiano solo dal Consiglio Direttivo.
+  - "Nuovo utente esterno": Revisore (anche non socio) o solo Amministratore, con cognome e
+    nome separati. Revisore e Amministratore: uno solo ciascuno.
+  - Amministratore di sistema: legge tutto, scrive solo gli Utenti, puo' mandare il link
+    della password anche al Presidente; si somma ai ruoli tranne Presidente e Revisore.
+  - Vicepresidente: come il Consigliere, piu' le sezioni del Presidente in lettura; riceve gli
+    avvisi delle operazioni delicate.
+  Correzioni piccole
+  - O3.4 link della password gia' usato: lo dice subito, all'apertura.
+  - O3.5 occhio anche su "Ripeti la password".
+  - O9.1 utente disattivato con email e password giuste: "Utente non attivo nel gestionale".
+  - Errori dei campi (tutti i moduli): messaggio piu' grande su striscia rosa, elenco dei
+    campi da correggere in cima con i link, cursore sul primo campo sbagliato.
+  - Scheda del socio: l'errore del codice fiscale sparisce appena lo correggi.
+  - O10 e O12 (avvisi al Segretario): non erano difetti, l'email dell'utente era sbagliata.
+
+LOCALE (Laragon)
+  1. git pull                    (oppure: estrarre lo ZIP nella radice e fare un commit)
+  2. php artisan migrate
+  3. npm run build
+  4. php artisan test           -> 170 superati
+  5. git archive -o deploy.zip HEAD   e   build.zip con public/build (come di solito)
+  6. collaudo O-bis, OB8 (passaggio della Presidenza) solo qui
+
+SERVER (deploy.md par. 5)
+  1. unzip deploy.zip in ~/gestionale-asd (sovrascrivendo) e build.zip in public
+  2. php artisan migrate --force
+     La migration collega da sola ogni utente al socio del CD di prova con la stessa email.
+  3. php artisan optimize:clear   poi le tre cache (config, route, view)
+  4. Controllo: grep -c "governance.index" routes/web.php   -> almeno 1
+  Poi collaudo O-bis (OB1-OB7). Niente seeder.
+
+DOPO L'ASSEMBLEA (deploy.md par. 5.1)
+  azzeramento -> soci veri (Importa da Excel) -> Consiglio Direttivo con i cinque eletti ->
+  Amministratore sul tuo utente -> tessere dal CSV.
+
+FILE PRINCIPALI
+  Nuovi: app/Services/ConsiglioDirettivo.php; app/Http/Controllers/ConsiglioDirettivoController.php;
+    resources/views/governance/index.blade.php; database/migrations/2026_10_17_000104_...;
+    tests/Feature/ConsiglioDirettivoTest.php, SocioFormTest.php;
+    docs/analisi-collaudo-O.md, test/collaudo-O-bis-consiglio-direttivo.md.
+  Modificati: app/Services/Utenti.php, AvvisiOperazioni.php, Azzeramento.php;
+    app/Http/Controllers/UtentiController.php, AuthController.php, PasswordController.php,
+    SociController.php; app/Models/User.php, GovernanceCd.php; RuoloSeeder, SezioneSeeder;
+    resources/views/utenti/*, auth/password-scegli, soci/_form e i sei moduli con
+    "Controlla i dati"; resources/css/app.css (sezione 19); resources/js/app.js; routes/web.php;
+    docs: deploy.md (3.8, 5.1), specifiche/permessi.md, governance-cd.md, soci.md, ui.md,
+    MANUALE-ASD.md (due copie), test-domande-iscrizione.md (due copie), test/collaudo-O,
+    da-riportare-gestionale-aps.md (D19-D21), bootstrap-prossima-sessione.md.

@@ -242,6 +242,13 @@ Osservazioni riportate prova per prova. Quelle che chiedono una scelta passano d
 
 Collaudo O concluso da Paolo il 16/10/2026. Analisi di tutte le osservazioni: `docs/analisi-collaudo-O.md`.
 
+**Correzioni nella v0.42.0 (17/10/2026)**, da ricontrollare nel blocco **O-bis** (`collaudo-O-bis-consiglio-direttivo.md`):
+- O2.1, O3.1–O3.3, O8.1: con la pagina Consiglio Direttivo e la pagina Utenti per gli esterni;
+- O2.2: ruolo Amministratore di sistema;
+- O3.4, O3.5, O9.1: corretti;
+- O10.1, O12.1: non erano difetti (email sbagliata);
+- O-extra.1: corretto.
+
 ### Fuori elenco — scheda del socio (16/10/2026)
 - **O-extra.1** Nuovo socio con il codice fiscale sbagliato: anche dopo la correzione restava la segnalazione d'errore; spariva solo ricaricando la pagina. Riprodotto: succede dopo un salvataggio con il codice sbagliato, quando l'errore del server resta fino al salvataggio successivo. **Corretto** per la v0.42.0 (`soci.md` §7, `SocioFormTest`). Da ricontrollare nel collaudo O-bis.
 

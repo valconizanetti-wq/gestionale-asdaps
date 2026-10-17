@@ -61,6 +61,7 @@ class AzzeramentoTest extends TestCase
         $s = new Socio();
         $s->forceFill(['nome' => 'Luca', 'cognome' => 'Verdi', 'codice_fiscale' => 'VRDLCU90E10L117B',
             'data_prima_iscrizione' => '2026-01-01', 'tipo' => 'ordinario', 'stato' => 'attivo'])->save();
+        $paolo->forceFill(['socio_id' => $s->id])->save(); // utente del CD collegato a un socio di prova (v0.42.0)
         (new Rinnovo())->forceFill(['socio_id' => $s->id, 'anno' => 2026, 'importo' => 70, 'categoria' => 'ordinario',
             'data_pagamento' => '2026-03-01', 'metodo_pagamento' => 'contante', 'numero_ricevuta' => '1/2026',
             'anno_ricevuta' => 2026, 'progressivo' => 1, 'ricevuta_stato' => 'non_generata'])->save();
@@ -90,10 +91,14 @@ class AzzeramentoTest extends TestCase
         $this->assertSame([], array_values(array_diff([...Azzeramento::TIENI, ...Azzeramento::PARZIALI, ...Azzeramento::SVUOTA], $azz->tabelle())));
 
         // Una tabella che si tiene non deve puntare a una che si svuota
-        $fk = DB::select('SELECT TABLE_NAME AS figlia, REFERENCED_TABLE_NAME AS madre FROM information_schema.KEY_COLUMN_USAGE
+        $fk = DB::select('SELECT TABLE_NAME AS figlia, COLUMN_NAME AS colonna, REFERENCED_TABLE_NAME AS madre FROM information_schema.KEY_COLUMN_USAGE
             WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL');
         $tenute = [...Azzeramento::TIENI, ...Azzeramento::PARZIALI];
         foreach ($fk as $r) {
+            // Colonne che il comando rimette a null (utenti scollegati dai soci di prova)
+            if ((Azzeramento::SCOLLEGATE["{$r->figlia}.{$r->colonna}"] ?? null) === $r->madre) {
+                continue;
+            }
             if (in_array($r->figlia, $tenute, true)) {
                 $this->assertNotContains($r->madre, Azzeramento::SVUOTA, "{$r->figlia} punta a {$r->madre}, che si svuota");
             }
@@ -149,6 +154,7 @@ class AzzeramentoTest extends TestCase
         // Tenute
         $this->assertSame(['presidente'], $pres->fresh()->codiciRuoli());
         $this->assertSame(['segretario', 'tesoriere'], $paolo->fresh()->codiciRuoli());
+        $this->assertNull($paolo->fresh()->socio_id, 'utente scollegato dal socio di prova');
         $this->assertSame($categorie, DB::table('gl_prima_nota_categorie')->count());
         $this->assertSame($promemoria, DB::table('gl_promemoria')->count());
         $this->assertTrue(DB::table('gl_tessere_tipi')->exists());

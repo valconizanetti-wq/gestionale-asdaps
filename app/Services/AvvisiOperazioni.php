@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
  * notifica «al Presidente» dell'observer, che arrivava anche a chi aveva
  * fatto l'operazione.
  *
- * Destinatari: Presidente, Segretario e Tesoriere attivi che vedono la
+ * Destinatari: Presidente, Vicepresidente (v0.42.0), Segretario e Tesoriere attivi che vedono la
  * sezione dell'operazione, escluso chi l'ha eseguita; una email per persona.
  * Operazioni di sistema (comandi, pagine pubbliche) e sezione sconosciuta:
  * solo al Presidente, come prima. Nessun dato personale oltre al dettaglio
@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
  */
 class AvvisiOperazioni
 {
-    public const RUOLI = ['presidente', 'segretario', 'tesoriere'];
+    public const RUOLI = ['presidente', 'vicepresidente', 'segretario', 'tesoriere'];
 
     /** Modello o entità dell'Audit Log => sezione dei permessi e pagina. */
     private const SEZIONI = [
@@ -42,6 +42,7 @@ class AvvisiOperazioni
         'PrimaNota' => ['prima_nota', 'prima-nota.index'],
         'AnnoContabile' => ['prima_nota', 'prima-nota.anni.index'],
         'PrimaNotaScontrino' => ['prima_nota', 'scontrini.index'],
+        'GovernanceCd' => ['governance_cd', 'governance.index'],
     ];
 
     /** Eventi del registro che hanno già un loro avviso (verifica mensile). */

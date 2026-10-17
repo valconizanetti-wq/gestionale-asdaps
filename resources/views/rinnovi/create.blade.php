@@ -17,7 +17,7 @@
                    :indietro="$indietro" :indietro-label="$da === 'socio' && $socio ? $socio->cognome . ' ' . $socio->nome : 'Rinnovi quota'" />
 
     @if ($errors->any())
-        <x-avviso tipo="ko" titolo="Controlla i dati.">Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
+        <x-avviso tipo="ko" titolo="Controlla i dati." data-errori-elenco>Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
     @endif
 
     <div class="pn-colonne">

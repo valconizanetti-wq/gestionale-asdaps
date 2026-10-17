@@ -199,8 +199,9 @@ WHERE numero_tessera_csen = '26B2749167';
 Dal 12/10/2026 ogni blocco nuovo ha un suo file in `docs/test/` (e una copia in `claude/` nel progetto), scritto per esteso: scopo, chi, prima, passi numerati, risultato atteso.
 - **M** — Scadenze dell'associazione e promemoria «N giorni prima» (v0.38.0, correzioni v0.38.1): `collaudo-M-scadenzario.md`. Azzeramento: M12.
 - **N** — Scontrini dal telefono con OCR (v0.39.0): `collaudo-N-scontrini.md`. Azzeramento: N12.
-- **O** — Più ruoli per utente, pagina Utenti, password con il link, avvisi delle operazioni e importazione dei soci da Excel (v0.40.0): `collaudo-O-utenti-importazione.md`. Azzeramento: O14.
+- **O** — Più ruoli per utente, pagina Utenti, password con il link, avvisi delle operazioni e importazione dei soci da Excel (v0.40.0): `collaudo-O-utenti-importazione.md`. Concluso il 16/10/2026; osservazioni corrette nella v0.42.0 (blocco O-bis). Azzeramento: O14.
 - **P** — Azzeramento dei dati di prova con il comando `php artisan gestionale:azzera` (v0.41.0): `collaudo-P-azzeramento.md`. Prende il posto di J12, K11, L12, M12, N12 e O14.
+- **O-bis** — Consiglio Direttivo, utenti del CD, Amministratore, correzioni del collaudo O ed errori dei campi (v0.42.0): `collaudo-O-bis-consiglio-direttivo.md`.
 
 ## CD di prova (SQL)
 Controllo dei soci:

@@ -1,6 +1,6 @@
 # Governance CD (eliminazione ridondanza anagrafica, incompatibilità art. 11)
 
-**Stato:** in sviluppo (schema consegnato)
+**Stato:** pagina della composizione del CD dalla v0.42.0 (17/10/2026); verbali e mandati in Fase 1
 **Introdotto in:** v0.6.0 (2026-09-22)
 **File coinvolti:**
 - Migration: `2026_09_22_000076` (alter gl_governance_cd)
@@ -127,3 +127,53 @@ disallineato alla prossima modifica.
   amministratori" a "solo il Presidente" — informazione che ha
   direttamente motivato la scelta di non irrigidire lo schema attorno
   alla regola attuale.
+
+
+## Pagina Consiglio Direttivo (v0.42.0, 17/10/2026)
+
+Scelta B di Paolo (`analisi-collaudo-O.md` §15). Tavole CD-1…CD-4 in
+`Tavole-consiglio-direttivo.pdf`, fuori dal repository. Prima c'era solo la
+tabella; il CD di prova sul server era stato inserito con SQL.
+
+- **Struttura**: colonne nuove in `gl_governance_cd`:
+  - `carica_codice`: presidente, vicepresidente, segretario, tesoriere,
+    segretario_tesoriere, consigliere;
+  - `motivo_fine`: dimissioni, decadenza, fine_mandato, altro.
+
+  `carica` resta come etichetta, letta da `VotazioneCd` e da
+  `RinnoviQuota::tesoriere()`. Il riferimento della nomina va in
+  `delibera_assemblea`. Migration `000104`: ricava `carica_codice` dal
+  testo e collega per email gli utenti ai soci in carica.
+- **Servizio** `App\Services\ConsiglioDirettivo`, con tre operazioni.
+  - **Aggiungi**:
+    - solo soci attivi, con l'email; al massimo cinque membri;
+    - cariche uniche libere;
+    - l'utente è quello del socio (`socio_id` o stessa email) oppure ne
+      nasce uno con il link per la password.
+  - **Cambia carica**: se la carica è di un altro membro, la cede in
+    un'unica operazione. Tiene la parte che resta libera (Segretario e
+    Tesoriere che cede il Tesoriere resta Segretario), altrimenti resta
+    Consigliere o esce.
+  - **Togli**: data e motivo. L'utente perde i ruoli del CD e, senza altri
+    ruoli, si disattiva.
+
+  Regole:
+  - il Presidente non si toglie e non cambia carica da solo;
+  - la propria carica la cambiano solo il Presidente e l'Amministratore;
+  - un ruolo unico dato a un membro si toglie agli altri utenti che lo
+    avevano ancora (utenti di prova).
+- **Utenti**: `gl_users.socio_id`. Cognome e nome si prendono dalla scheda
+  del socio. Audit Log HIGH (`CD_MEMBRO_AGGIUNTO`, `CD_CARICA`,
+  `CD_MEMBRO_TOLTO`), con l'avviso agli altri (`AvvisiOperazioni`, entità
+  `GovernanceCd`).
+- **Soci**: un socio nel CD non si cessa (va tolto prima dal CD) e un socio
+  che è stato nel CD non si elimina.
+- **Azzeramento**: `gl_governance_cd` si svuota. Gli utenti restano, con
+  `socio_id` rimesso a null (`Azzeramento::SCOLLEGATE`).
+- **Restano alla Fase 1**:
+  - verbale di nomina collegato (`verbale_nomina_id`);
+  - rinnovo dell'intero CD;
+  - sostituzione temporanea del Presidente con il Vicepresidente;
+  - dichiarazioni di incompatibilità.
+- Test: `ConsiglioDirettivoTest`. Tre giri di revisione in
+  `analisi-collaudo-O.md` §16.

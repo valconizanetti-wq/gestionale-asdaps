@@ -346,3 +346,8 @@ Paolo:
   - Errore e bordo spariscono appena si modifica il codice, come nel modulo
     della domanda (collaudo A1).
   - Test: `SocioFormTest`.
+- **v0.42.0** (17/10/2026): Consiglio Direttivo.
+  - La cessazione di un socio nel CD rimanda alla pagina Consiglio
+    Direttivo: prima si toglie dal CD.
+  - Un socio che è stato nel CD non si elimina, perché lo storico lo cita.
+  - Gli errori dei campi seguono ER-1 (`ui.md`).

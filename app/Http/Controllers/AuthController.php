@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -59,6 +61,16 @@ class AuthController extends Controller
         }
 
         RateLimiter::hit($chiave, self::DURATA_BLOCCO);
+
+        // Utente disattivato (O9.1, v0.42.0): lo si dice solo a chi ha email
+        // e password giuste, così a un estraneo non si rivela nulla in più.
+        // Il tentativo conta comunque per il blocco.
+        $disattivato = User::whereRaw('LOWER(email) = ?', [Str::lower($credentials['email'])])->where('attivo', false)->first();
+        if ($disattivato && Hash::check($credentials['password'], $disattivato->password)) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Utente non attivo nel gestionale: rivolgiti al Presidente.']);
+        }
 
         return back()
             ->withInput($request->only('email'))

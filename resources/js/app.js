@@ -175,3 +175,69 @@ function titoloIcona(el) {
 }
 document.addEventListener('mouseover', (e) => titoloIcona(e.target.closest?.('a[aria-label], button[aria-label]')));
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('a[aria-label], button[aria-label]').forEach(titoloIcona));
+
+// Errori dei campi (tavola ER-1, v0.42.0, analisi-collaudo-O.md §13):
+// all'apertura di una pagina con errori di validazione
+// - il riquadro «Controlla i dati» (data-errori-elenco) elenca i campi da
+//   correggere, ciascuno con il link al campo;
+// - la pagina scorre al primo campo sbagliato e ci mette il cursore, se non
+//   è aperta una finestra (che ha già i suoi errori in vista).
+// Senza JavaScript resta il testo «li trovi evidenziati qui sotto».
+function campiConErrore() {
+    return [...document.querySelectorAll('.has-error')]
+        .filter((el) => !el.parentElement?.closest('.has-error'))
+        .filter((el) => el.offsetParent !== null && !el.closest('.modal-backdrop'));
+}
+
+function etichettaCampo(el) {
+    const label = el.querySelector('.form-label');
+    return (label ? label.childNodes[0]?.textContent : '')?.replace('*', '').trim() || 'Campo';
+}
+
+function messaggioCampo(el) {
+    const dentro = el.querySelector('.form-error');
+    if (dentro?.textContent.trim()) return dentro.textContent.trim();
+    // Errore subito dopo il campo o la sua riga (es. codice fiscale del socio)
+    let dopo = el.nextElementSibling ?? el.parentElement?.nextElementSibling;
+    if (dopo && !dopo.classList.contains('form-error')) dopo = el.parentElement?.nextElementSibling;
+    return dopo?.classList.contains('form-error') ? dopo.textContent.trim() : '';
+}
+
+function vaiAlCampo(el) {
+    const controllo = el.querySelector('input:not([type=hidden]), select, textarea');
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    controllo?.focus({ preventScroll: true });
+}
+
+function erroriDeiCampi() {
+    const campi = campiConErrore();
+    if (!campi.length) return;
+    const riquadro = document.querySelector('[data-errori-elenco]');
+    if (riquadro) {
+        const testo = riquadro.querySelector(':scope > div');
+        const elenco = document.createElement('ol');
+        elenco.className = 'errori-elenco';
+        campi.forEach((el) => {
+            const voce = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = etichettaCampo(el);
+            link.addEventListener('click', (e) => { e.preventDefault(); vaiAlCampo(el); });
+            voce.append(link);
+            const msg = messaggioCampo(el);
+            if (msg) voce.append(' — ' + msg);
+            elenco.append(voce);
+        });
+        if (testo) {
+            const n = campi.length;
+            testo.innerHTML = '';
+            const forte = document.createElement('strong');
+            forte.textContent = 'Controlla i dati.';
+            testo.append(forte, ' ' + (n === 1 ? 'Un campo da correggere:' : `${n} campi da correggere:`), elenco);
+        }
+    }
+    if (!document.querySelector('.modal-backdrop:not([style*="display: none"])')) {
+        vaiAlCampo(campi[0]);
+    }
+}
+document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(erroriDeiCampi));

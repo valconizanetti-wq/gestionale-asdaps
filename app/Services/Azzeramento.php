@@ -26,7 +26,7 @@ class Azzeramento
     public const TIENI = [
         'migrations',
         'gl_ruoli', 'gl_sezioni', 'gl_ruoli_sezioni',
-        'gl_users', 'gl_users_ruoli',                       // D1: restano tutti gli utenti
+        'gl_users_ruoli',                                   // D1: restano tutti gli utenti
         'gl_associazione', 'gl_associazione_periodi',
         'gl_prima_nota_categorie',
         'gl_tessere_tipi',
@@ -34,10 +34,19 @@ class Azzeramento
         'gl_promemoria',                                    // D3: i testi restano
     ];
 
+    /**
+     * Colonne di tabelle tenute che puntano a tabelle svuotate: esegui() le
+     * rimette a null (v0.42.0: gli utenti restano, i soci di prova no).
+     */
+    public const SCOLLEGATE = [
+        'gl_users.socio_id' => 'gl_soci',
+    ];
+
     /** Si tengono con delle correzioni (vedi esegui()). */
     public const PARZIALI = [
         'gl_impostazioni',   // chiavi rimesse (§3.4)
         'gl_scadenzario',    // solo le tre pronte, con la data rimessa (D4)
+        'gl_users',          // D1: restano tutti, scollegati dai soci di prova (v0.42.0)
     ];
 
     /**
@@ -311,6 +320,12 @@ class Azzeramento
                 DB::table($t)->truncate();
             }
             DB::table('gl_scadenzario')->whereNull('chiave')->delete();
+            // Gli utenti restano (D1) ma i soci di prova no: si ricollegano
+            // ai soci veri dalla pagina Consiglio Direttivo (v0.42.0)
+            foreach (array_keys(self::SCOLLEGATE) as $colonna) {
+                [$tabella, $campo] = explode('.', $colonna);
+                DB::table($tabella)->update([$campo => null]);
+            }
         } finally {
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
         }

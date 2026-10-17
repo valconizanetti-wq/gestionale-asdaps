@@ -123,6 +123,22 @@ class SezioneSeeder extends Seeder
         $this->assegna('tesoriere', 'utenti', soloLettura: true);
         $this->assegna('consigliere', 'utenti', soloLettura: true);
 
+        // v0.42.0 (analisi-collaudo-O.md §11, §15): pagina del CD in lettura
+        // per gli altri del CD e il Revisore; Vicepresidente come il
+        // Consigliere più le sezioni del Presidente in lettura;
+        // Amministratore in lettura ovunque, Utenti in scrittura.
+        foreach (['tesoriere', 'consigliere', 'revisore'] as $ruolo) {
+            $this->assegna($ruolo, 'governance_cd', soloLettura: true);
+        }
+        $this->assegna('vicepresidente', 'scontrini');
+        foreach (['prima_nota', 'utenti', 'soci', 'domande', 'rinnovi_quota', 'tesseramento', 'scadenzario',
+            'promemoria', 'impostazioni', 'audit_log', 'governance_cd'] as $codice) {
+            $this->assegna('vicepresidente', $codice, soloLettura: true);
+        }
+        foreach ($sezioni as $s) {
+            $this->assegna('amministratore', $s['codice'], soloLettura: $s['codice'] !== 'utenti');
+        }
+
         // Erogazioni/Collaboratori: nessun ruolo assegnato — sezione
         // dormiente, nessun dipendente/collaboratore oggi (vedi
         // MANUALE-ASD.md, checklist moduli).

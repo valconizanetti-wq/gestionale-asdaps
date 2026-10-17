@@ -6,6 +6,7 @@ use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\UtentiController;
+use App\Http\Controllers\ConsiglioDirettivoController;
 use App\Http\Controllers\DomandeController;
 use App\Http\Controllers\ImpostazioniEnteController;
 use App\Http\Controllers\PrimaNotaController;
@@ -191,6 +192,20 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             Route::get('/{utente}/modifica', 'edit')->whereNumber('utente')->name('edit');
             Route::put('/{utente}', 'update')->whereNumber('utente')->name('update');
             Route::post('/{utente}/link-password', 'linkPassword')->whereNumber('utente')->name('link-password');
+        });
+
+    // Consiglio Direttivo (v0.42.0, tavole CD-1…CD-4): la composizione del
+    // CD, da cui nascono gli utenti. Leggono tutti quelli che vedono la
+    // sezione; chi modifica lo decide il servizio (la carica di Presidente:
+    // Presidente e Amministratore; le altre anche il Segretario).
+    Route::middleware('permesso:governance_cd')
+        ->prefix('consiglio-direttivo')->name('governance.')
+        ->controller(ConsiglioDirettivoController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::put('/{membro}/carica', 'carica')->whereNumber('membro')->name('carica');
+            Route::put('/{membro}/togli', 'togli')->whereNumber('membro')->name('togli');
         });
 
     // Rinnovi quota (rinnovi-quota.md, v0.36.0): Presidente e Tesoriere

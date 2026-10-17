@@ -290,7 +290,7 @@ class SociController extends Controller
         if ($carica) {
             return back()->with('error',
                 "Il socio ricopre la carica di {$carica->carica} nel Consiglio Direttivo: "
-                . 'va conclusa prima la carica, poi si può registrare la cessazione.');
+                . 'toglilo prima dal CD (pagina Consiglio Direttivo), poi registra la cessazione.');
         }
 
         $socio->update($dati + ['stato' => 'cancellato']);
@@ -366,6 +366,9 @@ class SociController extends Controller
     private function bloccaEliminazione(Socio $socio): array
     {
         $blocchi = [];
+        if ($socio->caricheCd()->exists()) {
+            $blocchi[] = 'è o è stato nel Consiglio Direttivo';
+        }
         if ($socio->rinnovi()->valido()->exists()) {
             $ricevute = $socio->rinnovi()->valido()->pluck('numero_ricevuta')->filter();
             $blocchi[] = 'ha quote registrate' . ($ricevute->isNotEmpty() ? ' (ricevuta ' . $ricevute->implode(', ') . ')' : '');

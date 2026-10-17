@@ -52,7 +52,13 @@ class PasswordController extends Controller
 
     public function scegli(Request $request, string $token)
     {
-        return view('auth.password-scegli', ['token' => $token, 'email' => (string) $request->query('email')]);
+        $email = (string) $request->query('email');
+        // O3.4 (v0.42.0): il link scaduto o già usato si dice subito, non
+        // dopo aver scritto la password. Al salvataggio il controllo resta.
+        $utente = User::whereRaw('LOWER(email) = ?', [mb_strtolower(trim($email))])->where('attivo', true)->first();
+        $valido = $utente && Password::broker()->tokenExists($utente, $token);
+
+        return view('auth.password-scegli', ['token' => $token, 'email' => $email, 'valido' => $valido]);
     }
 
     public function salva(Request $request)

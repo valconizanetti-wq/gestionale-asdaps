@@ -10,24 +10,65 @@
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-utenti-importazione.pdf`).
 
-## Prossima sessione (dal 14/10/2026, 14:00): collaudi O e P
-Paolo esegue i collaudi e riporta gli esiti prova per prova; si correggono
-i difetti (codice, test, LEGGIMI di una v0.41.x, collaudo e documenti
-aggiornati), con push su GitHub e copie nel progetto.
-- **Blocco O** (`docs/test/collaudo-O-utenti-importazione.md`, O1–O14),
-  sul server con la v0.40.0. Già emerso: in O1 la voce «Utenti» mancava al
-  Presidente per le cache di Laravel rifatte con i file vecchi; risolto da
-  Paolo con `optimize:clear` e le tre cache (avvertenza aggiunta in O1 e
-  in `deploy.md` §5). Nessun difetto del codice: verificato rifacendo la
-  migrazione da v0.39.1, il Presidente ha «utenti» in scrittura.
-- **Blocco P** (`docs/test/collaudo-P-azzeramento.md`): P1–P2 anche sul
-  server (solo prova a vuoto), P3–P5 in Laragon; P6 sul server **solo dopo
-  l'Assemblea** (circa il 16/11/2026).
-- Se un difetto chiede una scelta, analisi breve e domanda a Paolo prima
-  del codice (regola di sempre).
+## Prossima sessione: collaudo O-bis e P, poi Fase 0
+Paolo installa la **v0.42.0** e fa il collaudo **O-bis**
+(`docs/test/collaudo-O-bis-consiglio-direttivo.md`, OB1–OB9) e il **P**
+(P1–P2 sul server, P3–P5 in Laragon; P6 dopo l'Assemblea, circa il
+16/11/2026). Come sempre: esiti prova per prova, correzioni con LEGGIMI di
+una v0.42.x, push su GitHub e copie nel progetto. Se un difetto chiede una
+scelta: analisi breve e domanda prima del codice.
 - In parallelo, quando Paolo lo fa: passaggio al dominio definitivo
   (`docs/dominio-definitivo.md`), poi `deploy.md` §3.4 e §3.6 con i fatti
   reali.
+- Pulizia del server prima di OB (16/10/2026):
+  - utenti 1 e 3 «Paolo Zanetti» con Segretario e Tesoriere, tutti e due
+    disattivati; l'utente 3 aveva l'email `…@gmail.net`, corretta da Paolo
+    con il suggerimento del «+» di Gmail;
+  - utente 4 Massimo Papini con l'email di Paolo
+    (`valconi.zanetti+massimo@gmail.com` suggerito).
+
+  Email solo sul server, mai nei documenti.
+
+## Stato al 17/10/2026: v0.42.0 consegnata (correzioni del collaudo O)
+Collaudo O concluso da Paolo il 16/10/2026. Osservazioni O2–O12 in
+`collaudo-O-utenti-importazione.md` («Esiti del collaudo»); analisi e
+decisioni in `docs/analisi-collaudo-O.md` (copia nel progetto). 170 test
+verdi. Una migration (`000104`), `npm run build`.
+
+**Decisioni di Paolo (16–17/10/2026):**
+- **Scelta B:** pagina **Consiglio Direttivo**, una sola fonte. I soci si
+  scelgono con la carica e da lì nascono gli utenti del CD.
+- **Cariche e ruoli:**
+  - cariche uniche Presidente, Vicepresidente, Segretario e Tesoriere;
+    Segretario e Tesoriere insieme; Consigliere ripetibile;
+  - un solo Revisore, uno solo Amministratore;
+  - l'**Amministratore** è Paolo: legge tutto, scrive gli Utenti, si somma
+    ai ruoli tranne Presidente e Revisore;
+  - **Vicepresidente**: il Consigliere più le sezioni del Presidente in
+    lettura; riceve gli avvisi delle operazioni.
+- **Utenti:** cognome e nome separati solo negli utenti (i soci li avevano
+  già); «Utente non attivo» solo con email e password giuste.
+- **Errori dei campi:** scelta A, con l'elenco in cima e il cursore sul
+  primo campo (tavola ER-1).
+- **O10 e O12:** non erano difetti. L'email del Segretario sul server era
+  sbagliata (`gmail.net`).
+
+**Realizzato:**
+- `App\Services\ConsiglioDirettivo` (aggiungi, cambia carica con il
+  passaggio, togli);
+- pagina `governance.index` (tavole CD-1…CD-4,
+  `Tavole-consiglio-direttivo.pdf`, fuori dal repository);
+- Utenti rivisti (UT-8, UT-9);
+- O3.4, O3.5, O9.1, ER-1, O-extra.1 (codice fiscale nella scheda del socio).
+
+Tre giri di revisione: R1.1, R1.2, R2.1, R3.1 (§16).
+
+**Fase 1:** verbale di nomina, rinnovo dell'intero CD, sostituzione del
+Presidente con il Vicepresidente, incompatibilità.
+
+**Regola nuova:** i ruoli del CD **non** si danno più dalla pagina Utenti.
+Dopo l'Assemblea l'ordine è in `deploy.md` §5.1: azzeramento, soci, CD,
+Amministratore, tessere.
 
 ## Stato al 14/10/2026: v0.41.0 consegnata
 Comando di azzeramento, procedura del dominio definitivo, informativa
@@ -185,7 +226,10 @@ cima; niente più bundle). Dopo il clone:
 - `npm ci`, `npm run build`, `php artisan key:generate`;
 - MariaDB (`apt-get install mariadb-server`, `service mariadb start`,
   database `asd_test` e `asd_demo`, utente);
-- `php artisan test` (160 test verdi).
+- `php artisan test` (170 test verdi);
+- per le pagine in locale: `MAIL_MAILER=log` nel `.env` (altrimenti prova a
+  spedire con l'SMTP del server); MariaDB si ferma quando il container
+  dorme: `service mariadb start`.
 - Composer: se Packagist è bloccato dal proxy, `composer install` scarica
   comunque dal `composer.lock` (archivi da GitHub); `composer require` di
   pacchetti nuovi invece non funziona.

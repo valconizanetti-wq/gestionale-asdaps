@@ -1981,3 +1981,41 @@
     .ut-scelta-ruoli { grid-template-columns: 1fr; }
     .is-tutte .is-riga-ok { display: block; }
 }
+
+/* --------------------------------------------------------------------------
+   19. CONSIGLIO DIRETTIVO, UTENTI DEL CD, ERRORI DEI CAMPI (v0.42.0)
+   Tavole CD-1…CD-4, UT-8, UT-9, ER-1 (Tavole-consiglio-direttivo.pdf),
+   analisi-collaudo-O.md §13–§15.
+   -------------------------------------------------------------------------- */
+@layer components {
+    .cd-usciti { margin-top: 16px; }
+    .cd-elenco { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; color: var(--color-testo-2); }
+    .cd-elenco li { list-style: disc; }
+    .testo-ko { color: var(--color-ko); }
+
+    /* Socio collegato all'utente (UT-8a) */
+    .ut-socio {
+        display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        border: 1px solid var(--color-primario); background: var(--color-primario-tenue); border-radius: 8px; padding: 10px 12px;
+    }
+    .ut-socio .td-sub { display: block; margin-top: 2px; }
+
+    /* ER-1: errore del campo ben visibile, con l'icona «!» */
+    .form-error {
+        display: flex; gap: 6px; align-items: flex-start; margin-top: 6px;
+        font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--color-ko);
+        background: var(--color-ko-bg, #fdecec); border-left: 3px solid var(--color-ko); border-radius: 0 4px 4px 0; padding: 6px 8px;
+    }
+    .form-error::before {
+        content: '!'; flex: none; width: 16px; height: 16px; margin-top: 1px; border-radius: 50%;
+        background: var(--color-ko); color: #fff; font-size: 11px; font-weight: 700;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+    .form-error:empty { display: none; }
+    .has-error > .form-label, .has-error .form-label { color: var(--color-ko); }
+    .has-error .form-input, .has-error .form-select, .has-error .form-textarea { border-width: 2px; }
+    /* Elenco dei campi da correggere nel riquadro «Controlla i dati» */
+    .errori-elenco { margin: 6px 0 0; padding-left: 18px; }
+    .errori-elenco li { list-style: decimal; }
+    .errori-elenco a { color: inherit; font-weight: 600; text-decoration: underline; }
+}

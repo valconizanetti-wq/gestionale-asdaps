@@ -30,7 +30,7 @@
         <x-avviso tipo="info" titolo="Sola lettura.">Il tuo ruolo consulta lo Scadenzario ma non lo modifica.</x-avviso>
     @endif
     @if ($errors->any())
-        <x-avviso tipo="ko" titolo="Controlla i dati.">Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
+        <x-avviso tipo="ko" titolo="Controlla i dati." data-errori-elenco>Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
     @endif
 
     <div class="pn-colonne">

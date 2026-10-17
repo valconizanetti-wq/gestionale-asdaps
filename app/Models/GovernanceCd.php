@@ -11,8 +11,10 @@ class GovernanceCd extends Model
     protected $fillable = [
         'socio_id',
         'carica',
+        'carica_codice',
         'data_inizio_mandato',
         'data_fine_mandato',
+        'motivo_fine',
         'in_carica',
         'delibera_assemblea',
         'delibera_data',

@@ -565,3 +565,35 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
     nascoste finché non si spunta «Mostra anche le righe pronte»
     (`is-riga-ok`, `is-tutte`); passi successivi in `is-passi`.
   - Verificato a 1440 e 375 px.
+- **v0.42.0** (17/10/2026): Consiglio Direttivo, utenti del CD, errori dei
+  campi (sezione 19 di `app.css`; tavole CD-1…CD-4, UT-8, UT-9, ER-1 in
+  `Tavole-consiglio-direttivo.pdf`).
+  - **Errori dei campi (ER-1, per tutto il gestionale).**
+    - `.form-error` a 13 px, su striscia `--color-ko-bg` con bordo rosso a
+      sinistra e icona «!» (`::before`).
+    - Etichetta rossa e bordo di 2 px sul campo con `has-error`.
+    - Il riquadro «Controlla i dati.» con `data-errori-elenco` diventa
+      «N campi da correggere:», con l'elenco numerato `errori-elenco` (link
+      a ogni campo e messaggio).
+    - All'apertura la pagina scorre al primo campo sbagliato e ci mette il
+      cursore, se non è aperta una finestra (`app.js`, `erroriDeiCampi`).
+    - Senza JavaScript resta il testo «li trovi evidenziati qui sotto».
+    - Il pop-up sul campo è stato scartato: sul telefono copre i campi e
+      mostra un errore alla volta.
+  - **Pagina Consiglio Direttivo.**
+    - Tabella dei membri (scheda per membro su telefono); azioni con la
+      matita «Cambia carica» e con «esci» «Togli dal CD».
+    - Usciti in `cd-usciti` / `cd-elenco`.
+    - Finestre «Aggiungi», «Cambia carica» (avviso del passaggio calcolato
+      da Alpine sulle cariche occupate) e «Togli». Con un errore la
+      finestra si riapre (`session('modale')`).
+  - **Utenti.**
+    - Socio collegato in `ut-socio`; ruoli del CD in sola lettura;
+      Amministratore come casella `ut-ruolo`.
+    - Gli esterni hanno cognome e nome e la scelta Revisore / Solo
+      Amministratore.
+    - Colonna «Da» nell'elenco.
+  - «Scegli la password»: link non valido detto subito, con il pulsante
+    «Chiedi un altro link»; occhio anche su «Ripeti la password», con il
+    suo stato.
+  - Verificato a 1440 e 375 px.

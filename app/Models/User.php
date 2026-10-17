@@ -17,6 +17,9 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'nome',
+        'cognome',
+        'socio_id',
         'email',
         'password',
         'attivo',
@@ -46,6 +49,37 @@ class User extends Authenticatable
             'attivo' => 'boolean',
             'ultimo_accesso' => 'datetime',
         ];
+    }
+
+    /**
+     * Cognome e nome separati (v0.42.0, O2.1). `name` resta «Nome Cognome»
+     * per email, Audit Log e testi: si ricompone qui a ogni salvataggio.
+     * Chi scrive solo `name` (vecchio codice, factory) ottiene nome e
+     * cognome divisi alla prima parola.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (User $u) {
+            if ($u->isDirty(['nome', 'cognome']) && (filled($u->nome) || filled($u->cognome))) {
+                $u->name = trim($u->nome . ' ' . $u->cognome);
+            } elseif ($u->isDirty('name') && blank($u->nome) && blank($u->cognome)) {
+                $parti = preg_split('/\s+/u', trim((string) $u->name), 2);
+                $u->nome = $parti[0] ?? '';
+                $u->cognome = $parti[1] ?? '';
+            }
+        });
+    }
+
+    /** Socio collegato (utenti del Consiglio Direttivo, v0.42.0). */
+    public function socio(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Socio::class, 'socio_id');
+    }
+
+    /** «Zanetti Paolo», per gli elenchi in ordine di cognome. */
+    public function cognomeNome(): string
+    {
+        return trim($this->cognome . ' ' . $this->nome) ?: (string) $this->name;
     }
 
     /**

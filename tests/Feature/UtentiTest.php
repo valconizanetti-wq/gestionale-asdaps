@@ -93,14 +93,18 @@ class UtentiTest extends TestCase
         $this->actingAs($this->consigliere)->get(route('utenti.index'))->assertSee(route('utenti.index'));
     }
 
-    public function test_presidente_crea_utente_con_due_ruoli_e_link(): void
+    public function test_presidente_crea_utente_esterno_e_link(): void
     {
+        // v0.42.0: da qui solo esterni (Revisore o Amministratore); il Revisore di setUp va disattivato (uno solo)
+        DB::table('gl_users')->where('id', $this->revisore->id)->update(['attivo' => false]);
         $this->actingAs($this->presidente)->post(route('utenti.store'), [
-            'name' => 'Luigi Nuovo', 'email' => 'Luigi@Example.it', 'ruoli' => ['tesoriere', 'segretario'], 'attivo' => '1', 'invia_link' => '1',
+            'cognome' => 'Nuovo', 'nome' => 'Luigi', 'email' => 'Luigi@Example.it', 'ruolo' => 'revisore', 'attivo' => '1', 'invia_link' => '1',
         ])->assertRedirect(route('utenti.index'))->assertSessionHas('success', fn ($m) => str_contains($m, 'link'));
 
         $u = User::where('email', 'luigi@example.it')->firstOrFail();
-        $this->assertSame(['segretario', 'tesoriere'], $u->codiciRuoli());
+        $this->assertSame(['revisore'], $u->codiciRuoli());
+        $this->assertSame(['Luigi', 'Nuovo', 'Luigi Nuovo'], [$u->nome, $u->cognome, $u->name]);
+        $this->assertNull($u->socio_id);
         Mail::assertSent(LinkPassword::class, fn ($m) => $m->hasTo('luigi@example.it') && str_contains($m->url, '/password/scegli/'));
         $this->assertDatabaseHas('gl_audit_log', ['evento' => 'UTENTE_RUOLI', 'entita_id' => $u->id, 'livello_rischio' => 'HIGH']);
         // Avviso a chi non l'ha fatto e vede gli utenti: Paolo (Segretario), non il Presidente che l'ha fatto
@@ -109,74 +113,103 @@ class UtentiTest extends TestCase
         Mail::assertNotSent(OperazioneAvviso::class, fn ($m) => $m->hasTo('cons@example.it'));
     }
 
-    public function test_combinazioni_non_ammesse(): void
+    public function test_regole_dei_ruoli_esterni(): void
     {
+        // Revisore: uno solo fra gli attivi
         $this->actingAs($this->presidente)->post(route('utenti.store'), [
-            'name' => 'X', 'email' => 'x@example.it', 'ruoli' => ['revisore', 'tesoriere'], 'attivo' => '1',
-        ])->assertSessionHasErrors(['ruoli' => "Il Revisore non può avere altri ruoli: l'Organo di controllo è fuori dal Consiglio Direttivo (statuto, art. 20.1)."]);
+            'cognome' => 'X', 'nome' => 'Y', 'email' => 'x@example.it', 'ruolo' => 'revisore', 'attivo' => '1',
+        ])->assertSessionHasErrors(['ruoli' => 'Il ruolo di Revisore è già di Rita Revisore: uno solo fra gli utenti attivi.']);
+        // Ruoli del CD non si danno da qui
         $this->actingAs($this->presidente)->post(route('utenti.store'), [
-            'name' => 'X', 'email' => 'x@example.it', 'ruoli' => ['consigliere', 'segretario'], 'attivo' => '1',
-        ])->assertSessionHasErrors('ruoli');
+            'cognome' => 'X', 'nome' => 'Y', 'email' => 'x@example.it', 'ruolo' => 'segretario', 'attivo' => '1',
+        ])->assertSessionHasErrors('ruolo');
+        // Cognome e nome obbligatori; email unica
         $this->actingAs($this->presidente)->post(route('utenti.store'), [
-            'name' => 'X', 'email' => 'x@example.it', 'ruoli' => [], 'attivo' => '1',
-        ])->assertSessionHasErrors('ruoli');
+            'email' => 'x@example.it', 'ruolo' => 'amministratore', 'attivo' => '1',
+        ])->assertSessionHasErrors(['cognome', 'nome']);
         $this->actingAs($this->presidente)->post(route('utenti.store'), [
-            'name' => 'X', 'email' => 'paolo@example.it', 'ruoli' => ['segretario'], 'attivo' => '1',
+            'cognome' => 'X', 'nome' => 'Y', 'email' => 'paolo@example.it', 'ruolo' => 'amministratore', 'attivo' => '1',
         ])->assertSessionHasErrors('email');
         $this->assertDatabaseMissing('gl_users', ['email' => 'x@example.it']);
+
+        // Amministratore in più su un utente del CD; non con il Presidente; uno solo
+        $this->actingAs($this->presidente)->put(route('utenti.update', $this->paolo), [
+            'email' => 'paolo@example.it', 'amministratore' => '1', 'attivo' => '1',
+        ])->assertSessionHasNoErrors();
+        $this->assertSame(['segretario', 'tesoriere', 'amministratore'], $this->paolo->fresh()->codiciRuoli());
+        $this->actingAs($this->presidente)->put(route('utenti.update', $this->presidente), [
+            'email' => 'presidente@example.it', 'amministratore' => '1', 'attivo' => '1',
+        ])->assertSessionHasErrors(['ruoli' => "L'Amministratore di sistema non si unisce al Presidente."]);
+        $this->actingAs($this->presidente)->put(route('utenti.update', $this->consigliere), [
+            'email' => 'cons@example.it', 'amministratore' => '1', 'attivo' => '1',
+        ])->assertSessionHasErrors(['ruoli' => 'Il ruolo di Amministratore è già di Paolo Doppio: uno solo fra gli utenti attivi.']);
+        $this->assertSame(['consigliere'], $this->consigliere->fresh()->codiciRuoli());
+        // R2.1: un secondo Revisore di prova (dati vecchi) non blocca modifiche che non lo toccano
+        User::factory()->conRuoli('revisore')->create();
+        $this->actingAs($this->presidente)->put(route('utenti.update', $this->consigliere), [
+            'email' => 'cons2@example.it', 'attivo' => '1',
+        ])->assertSessionHasNoErrors();
+        // L'Amministratore vede tutto in lettura e scrive gli Utenti
+        $p = $this->paolo->fresh();
+        $this->assertTrue($p->soloLettura('audit_log'));
+        $this->assertTrue($p->puoModificare('utenti'));
+        // Il form di un utente del CD non ha i ruoli del CD da scegliere
+        $this->actingAs($this->presidente)->get(route('utenti.edit', $this->paolo))->assertOk()
+            ->assertSee('Ruoli dal Consiglio Direttivo')->assertDontSee('name="ruolo"', false);
     }
 
     public function test_ultimo_presidente_e_se_stessi(): void
     {
-        // Togliersi il ruolo di Presidente: non resta nessuno
-        $this->actingAs($this->presidente)->put(route('utenti.update', $this->presidente), [
-            'name' => 'Andrea Presidente', 'email' => 'presidente@example.it', 'ruoli' => ['segretario'], 'attivo' => '1',
-        ])->assertSessionHasErrors(['ruoli' => 'Deve restare almeno un Presidente attivo: prima dai il ruolo a un altro utente.']);
-        $this->assertSame(['presidente'], $this->presidente->fresh()->codiciRuoli());
         // Disattivarsi
         $this->actingAs($this->presidente)->put(route('utenti.update', $this->presidente), [
-            'name' => 'Andrea Presidente', 'email' => 'presidente@example.it', 'ruoli' => ['presidente'], 'attivo' => '0',
+            'email' => 'presidente@example.it', 'attivo' => '0',
         ])->assertSessionHasErrors('attivo');
         $this->assertTrue($this->presidente->fresh()->attivo);
-        // Con un secondo Presidente si può
+        // Un Presidente in più (dati di prima della v0.42.0) si disattiva; l'ultimo no
         $altro = User::factory()->conRuoli('presidente')->create();
         $this->actingAs($this->presidente)->put(route('utenti.update', $altro), [
-            'name' => $altro->name, 'email' => $altro->email, 'ruoli' => ['presidente'], 'attivo' => '0',
+            'email' => $altro->email, 'attivo' => '0',
         ])->assertSessionHasNoErrors();
         $this->assertFalse($altro->fresh()->attivo);
+        // L'Amministratore modifica l'utente del Presidente (email persa) ma non lo lascia senza Presidente
+        $admin = User::factory()->conRuoli('amministratore')->create(['name' => 'Ada Admin']);
+        $this->actingAs($admin)->get(route('utenti.edit', $this->presidente))->assertOk();
+        $this->actingAs($admin)->put(route('utenti.update', $this->presidente), [
+            'email' => 'nuova@example.it', 'attivo' => '0',
+        ])->assertSessionHasErrors(['attivo' => 'Deve restare almeno un Presidente attivo.']);
+        $this->actingAs($admin)->put(route('utenti.update', $this->presidente), [
+            'email' => 'nuova@example.it', 'attivo' => '1',
+        ])->assertSessionHasNoErrors();
+        $this->assertSame('nuova@example.it', $this->presidente->fresh()->email);
+        $this->actingAs($admin)->post(route('utenti.link-password', $this->presidente))->assertSessionHas('success');
+        // Avviso al Presidente delle modifiche dell'Amministratore
+        Mail::assertSent(OperazioneAvviso::class, fn ($m) => $m->hasTo('nuova@example.it') || $m->hasTo('presidente@example.it'));
     }
 
     public function test_limiti_del_segretario(): void
     {
-        // Non dà il ruolo di Presidente
-        $this->actingAs($this->paolo)->put(route('utenti.update', $this->consigliere), [
-            'name' => 'Massimo Consigliere', 'email' => 'cons@example.it', 'ruoli' => ['presidente'], 'attivo' => '1',
-        ])->assertSessionHasErrors(['ruoli' => 'Il ruolo di Presidente lo dà o lo toglie solo il Presidente.']);
         // Non modifica l'utente del Presidente (né il link)
         $this->actingAs($this->paolo)->get(route('utenti.edit', $this->presidente))->assertRedirect(route('utenti.index'));
         $this->actingAs($this->paolo)->put(route('utenti.update', $this->presidente), [
-            'name' => 'Altro', 'email' => 'presidente@example.it', 'ruoli' => ['presidente'], 'attivo' => '1',
+            'email' => 'altra@example.it', 'attivo' => '1',
         ])->assertSessionHasErrors('ruoli');
         $this->actingAs($this->paolo)->post(route('utenti.link-password', $this->presidente))->assertSessionHas('error');
-        $this->assertSame('Andrea Presidente', $this->presidente->fresh()->name);
-        // Non cambia i propri ruoli, ma nome ed email sì
+        $this->assertSame('presidente@example.it', $this->presidente->fresh()->email);
+        // Non cambia i propri ruoli (Amministratore), ma l'email sì
         $this->actingAs($this->paolo)->put(route('utenti.update', $this->paolo), [
-            'name' => 'Paolo Doppio', 'email' => 'paolo@example.it', 'ruoli' => ['segretario', 'tesoriere', 'consigliere'], 'attivo' => '1',
-        ])->assertSessionHasErrors('ruoli');
+            'email' => 'paolo@example.it', 'amministratore' => '1', 'attivo' => '1',
+        ])->assertSessionHasErrors(['ruoli' => 'I tuoi ruoli li può cambiare solo il Presidente.']);
         $this->actingAs($this->paolo)->put(route('utenti.update', $this->paolo), [
-            'name' => 'Paolo D.', 'email' => 'paolo@example.it', 'ruoli' => ['segretario', 'tesoriere'], 'attivo' => '1',
+            'email' => 'paolo2@example.it', 'attivo' => '1',
         ])->assertSessionHasNoErrors();
-        $this->assertSame('Paolo D.', $this->paolo->fresh()->name);
-        // Cambia i ruoli di un consigliere: il Presidente riceve l'avviso
+        $this->assertSame('paolo2@example.it', $this->paolo->fresh()->email);
+        // Disattiva un consigliere: il Presidente riceve l'avviso, Paolo no
         $this->actingAs($this->paolo)->put(route('utenti.update', $this->consigliere), [
-            'name' => 'Massimo Consigliere', 'email' => 'cons@example.it', 'ruoli' => ['tesoriere'], 'attivo' => '1',
+            'email' => 'cons@example.it', 'attivo' => '0',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(['tesoriere'], $this->consigliere->fresh()->codiciRuoli());
-        Mail::assertSent(OperazioneAvviso::class, fn ($m) => $m->hasTo('presidente@example.it') && str_starts_with($m->autore, 'Paolo')
-            && str_contains($m->render(), 'Consigliere → Tesoriere'));
-        Mail::assertNotSent(OperazioneAvviso::class, fn ($m) => $m->hasTo('paolo@example.it'));
-        // La pagina del form gli mostra il ruolo di Presidente bloccato
-        $this->actingAs($this->paolo)->get(route('utenti.create'))->assertOk()->assertSee('Il ruolo di Presidente lo dà o lo toglie solo il Presidente.');
+        $this->assertFalse($this->consigliere->fresh()->attivo);
+        Mail::assertSent(OperazioneAvviso::class, fn ($m) => $m->hasTo('presidente@example.it') && str_starts_with($m->autore, 'Paolo'));
+        Mail::assertNotSent(OperazioneAvviso::class, fn ($m) => $m->hasTo('paolo2@example.it'));
     }
 
     public function test_password_dimenticata_e_scelta(): void

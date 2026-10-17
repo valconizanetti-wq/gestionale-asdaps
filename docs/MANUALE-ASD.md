@@ -945,6 +945,26 @@ tesoriere, revisore).
 - le operazioni delicate arrivano per email agli altri fra Presidente,
   Segretario e Tesoriere che vedono quella parte (`AvvisiOperazioni`).
 
+**Consiglio Direttivo e utenti** (v0.42.0, 17/10/2026,
+`analisi-collaudo-O.md` §10–§15):
+- pagina **Consiglio Direttivo** (menu Governance):
+  - il CD si compone scegliendo i soci dal libro soci, con la carica:
+    Presidente, Vicepresidente, Segretario, Tesoriere, Segretario e
+    Tesoriere, Consigliere;
+  - **gli utenti del CD nascono da lì**: ruolo uguale alla carica, email
+    dalla scheda, link per la password;
+  - chi esce perde i ruoli del CD; il Presidente si passa con «Cambia
+    carica»;
+  - da tre a cinque membri (art. 15.1);
+- la pagina **Utenti** resta per gli esterni (Revisore, anche non socio),
+  per l'**Amministratore di sistema** (legge tutto, scrive gli Utenti, si
+  somma ai ruoli tranne Presidente e Revisore), per l'email e per
+  attivare o disattivare;
+- cognome e nome separati negli utenti; un utente disattivato che scrive la
+  password giusta legge «Utente non attivo nel gestionale»;
+- errori dei campi più evidenti, con l'elenco in cima e il cursore sul
+  primo campo sbagliato (`ui.md`).
+
 **Importazione dei soci da Excel** (v0.40.0, `analisi-importazione-soci.md`):
 Soci › «Importa da Excel» dal modello, con anteprima degli errori riga per
 riga e conferma solo senza errori; le quote del vecchio gestionale dal 2027
@@ -1244,6 +1264,15 @@ dati del derivato, poi permessi, poi UI — vedi discussione in sessione):
     `gestionale.arciericastello.it` (`dominio-definitivo.md`) e informativa
     1.0 senza segnaposto (SupportHost, server in Germania; niente
     consulente fiscale).
+    **v0.42.0** (17/10/2026): correzioni dal collaudo O.
+    - Pagina **Consiglio Direttivo**, da cui nascono gli utenti del CD.
+    - Ruoli Vicepresidente e Amministratore di sistema; pagina Utenti per
+      gli esterni.
+    - Cognome e nome separati.
+    - Link della password scaduto detto subito; occhio su «Ripeti la
+      password»; messaggio per l'utente disattivato.
+    - Errori dei campi più evidenti; errore del codice fiscale nella scheda
+      del socio che restava dopo la correzione.
 16. **Statuto v1.0** — **chiuso da Paolo il 27/09/2026**. Documento
     "Statuto Compagnia Arcieri Castel Viscardo A.S.D. — v1.0" (Claude
     Docs, esportabile in Word per il notaio), con le note di revisione

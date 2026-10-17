@@ -296,3 +296,71 @@ Mancava la pagina: sul server il CD di prova è stato inserito con SQL. Con i ru
 - ER-1: errori dei campi, come nel §14.
 
 Sostituiscono UT-5…UT-7 di `Tavole-collaudo-O.pdf`.
+
+## 16. Realizzazione (v0.42.0, 17/10/2026)
+
+**Migration `2026_10_17_000104_consiglio_direttivo_utenti`:**
+- ruoli Vicepresidente e Amministratore, con l'ordine dei ruoli rivisto;
+- `gl_users`: `nome`, `cognome` (divisi alla prima parola) e `socio_id`;
+- `gl_governance_cd`: `carica_codice` (ricavato dal testo) e
+  `motivo_fine`;
+- collegamento per email degli utenti ai soci in carica;
+- permessi delle sezioni.
+
+**Codice:**
+- `App\Services\ConsiglioDirettivo` e `ConsiglioDirettivoController`, vista
+  `governance/index` (tavole CD-1…CD-4);
+- `Utenti` e `UtentiController` rivisti, viste `utenti/form` e
+  `utenti/index` (UT-8, UT-9);
+- `AuthController` (O9.1) e `PasswordController::scegli` (O3.4); occhio su
+  «Ripeti la password» (O3.5);
+- `AvvisiOperazioni`: entità `GovernanceCd`, Vicepresidente fra i
+  destinatari;
+- `Azzeramento`: `gl_users` fra le tabelle parziali, `socio_id` rimesso a
+  null (`SCOLLEGATE`);
+- `SociController`: cessazione e eliminazione di un socio del CD;
+- `User`: `booted()` ricompone `name` da nome e cognome (o li divide da
+  `name`), relazione `socio()`, `cognomeNome()`;
+- ER-1: CSS sezione 19, `app.js` (`erroriDeiCampi`), `data-errori-elenco`
+  sui sette riquadri «Controlla i dati.»;
+- O-extra.1, il codice fiscale nella scheda del socio: già nel commit del
+  16/10.
+
+**Test:** 170 verdi. Nuovi `ConsiglioDirettivoTest` (9 prove) e
+`SocioFormTest`; `UtentiTest` riscritto sulle regole nuove;
+`AzzeramentoTest` con l'utente collegato a un socio.
+
+**Prova nel browser** (1440 e 375 px), con i dati del CD di prova:
+- aggiunta dei membri, anche con l'errore del socio senza email (la
+  finestra si riapre);
+- passaggio della Presidenza e uscita dal CD;
+- pagina Utenti, utente esterno;
+- errori della scheda del socio, con l'elenco in cima e il cursore sul
+  primo campo.
+
+Migration provata anche all'indietro e di nuovo in avanti, sui dati.
+
+**Tre giri di revisione.**
+- **Giro 1:**
+  - **R1.1** il Presidente di prova che dà la carica a un'altra persona
+    perdeva l'accesso e finiva su una pagina 403. Ora esce con il
+    messaggio «Il tuo utente non ha più ruoli ed è stato disattivato»
+    (`test_presidente_di_prova_sostituito_esce`);
+  - **R1.2** un Segretario poteva cambiarsi la carica in modo indiretto,
+    dandola a un altro e restando Consigliere. Ora è bloccato come il
+    cambio diretto (`test_il_segretario_non_cede_la_sua_carica`).
+- **Giro 2:**
+  - **R2.1** i controlli «uno solo per ruolo» e «almeno un Presidente»
+    guardavano tutti gli utenti: dati vecchi fuori regola (due Revisori di
+    prova) bloccavano anche modifiche che non c'entravano. Ora controllano
+    solo i ruoli toccati dalla modifica (prova in
+    `test_regole_dei_ruoli_esterni`).
+- **Giro 3:**
+  - **R3.1** chi esce dal CD perché cede la carica ora ha nello storico la
+    nota «Ha lasciato la carica di … al membro n. …», non solo «altro».
+  - Riletti servizio, viste, CSS e JS: nessun altro difetto.
+
+**Differenze rispetto alle tavole:**
+- nella pagina del CD l'email del socio sta sotto il nome, al posto di
+  «socio dal…»;
+- con meno di tre membri o senza Presidente c'è un avviso in cima.

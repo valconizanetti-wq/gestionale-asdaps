@@ -24,7 +24,7 @@
                    :indietro="route('tesseramento.index')" indietro-label="Tessere CSEN" />
 
     @if ($errors->any())
-        <x-avviso tipo="ko" titolo="Controlla i dati.">Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
+        <x-avviso tipo="ko" titolo="Controlla i dati." data-errori-elenco>Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
     @endif
 
     @if ($nuovo && $tipi->isEmpty())

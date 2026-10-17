@@ -403,6 +403,30 @@ non riportare".
   - Audit Log che riparte con una riga `AZZERAMENTO_DATI_PROVA`.
 
   Per il Dante, gli elenchi delle tabelle vanno rifatti sulle sue.
+- [ ] **D19. Utenti del CD che nascono dal Consiglio Direttivo** (v0.42.0,
+  `analisi-collaudo-O.md` §15).
+  - Nel Gestionale APS ruoli degli utenti e cariche del CD sono separati.
+  - Qui la pagina Consiglio Direttivo è l'unica fonte:
+    - il socio entra con la carica e ne nasce l'utente (o si collega quello
+      con la stessa email);
+    - cariche uniche, Segretario e Tesoriere insieme (statuto);
+    - il Presidente si passa con «Cambia carica»;
+    - chi esce perde i ruoli del CD;
+    - socio nel CD non cessabile.
+  - La pagina Utenti tiene solo esterni (Revisore) e Amministratore di
+    sistema (legge tutto, scrive gli Utenti).
+  - Per il Dante: le cariche e il numero dei membri secondo il suo statuto.
+- [ ] **D20. Errori dei campi più evidenti** (v0.42.0, tavola ER-1).
+  - Messaggio a 13 px su striscia colorata con icona.
+  - Riquadro «Controlla i dati» con l'elenco dei campi e i link.
+  - Cursore sul primo campo sbagliato.
+  - Dove: CSS (`.form-error`), `app.js` (`erroriDeiCampi`),
+    `data-errori-elenco`.
+- [ ] **D21. Link della password scaduto detto subito, utente disattivato**
+  (v0.42.0, O3.4 e O9.1).
+  - La pagina del link controlla il token all'apertura
+    (`Password::broker()->tokenExists`).
+  - All'accesso, «Utente non attivo» solo con email e password giuste.
 
 ## E. PDF ed email
 
@@ -431,3 +455,4 @@ non riportare".
 - 12/10/2026 (v0.39.0): aggiunte D12 e D13 dagli Scontrini.
 - 13/10/2026 (v0.40.0): aggiunte D14–D17 da ruoli multipli, password, avvisi e importazione dei soci.
 - 14/10/2026 (v0.41.0): aggiunta D18 dal comando di azzeramento.
+- 17/10/2026 (v0.42.0): aggiunte D19–D21 dal collaudo O (Consiglio Direttivo, errori dei campi, password e accesso).

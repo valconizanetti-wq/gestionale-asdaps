@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ruolo;
 use App\Models\User;
 use App\Services\AuditLogService;
+use App\Services\ConsiglioDirettivo;
 use App\Services\Utenti;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -12,17 +13,21 @@ use Illuminate\Validation\Rule;
 
 /**
  * Utenti del gestionale (v0.40.0, analisi-ruoli-utenti.md §3.4, tavole
- * UT-1…UT-3). Le regole sono nel servizio Utenti.
+ * UT-1…UT-3; v0.42.0, tavole UT-8 e UT-9: gli utenti del CD nascono dal
+ * Consiglio Direttivo, qui solo esterni, email, stato e Amministratore).
+ * Le regole sono nel servizio Utenti.
  */
 class UtentiController extends Controller
 {
-    /** Cosa può fare ciascun ruolo, in breve (tavola UT-2). */
+    /** Cosa può fare ciascun ruolo, in breve (tavole UT-2, UT-8). */
     public const DESCRIZIONI = [
         'presidente' => 'Tutto, compresi Utenti, Audit Log e riapertura degli anni chiusi.',
+        'vicepresidente' => 'Come il Consigliere, più le sezioni del Presidente in lettura.',
         'segretario' => 'Soci, domande, tessere, scadenzario e utenti; Prima Nota in lettura.',
         'tesoriere' => 'Prima Nota, rinnovi quota, bilancio, tessere, scadenzario.',
         'consigliere' => 'Membro del CD senza carica: carica gli scontrini, Prima Nota in lettura.',
-        'revisore' => 'Organo di controllo, in sola lettura (contabilità, Audit Log).',
+        'revisore' => 'Organo di controllo, anche non socio, fuori dal CD: contabilità e Audit Log in lettura. Uno solo.',
+        'amministratore' => 'Legge tutto il gestionale per l\'assistenza; scrive solo gli Utenti e può mandare il link della password anche al Presidente. Non con Presidente o Revisore. Uno solo.',
     ];
 
     public function __construct(private Utenti $utenti)
@@ -32,11 +37,13 @@ class UtentiController extends Controller
     public function index(Request $request)
     {
         return view('utenti.index', [
-            'utenti' => User::with('ruoli')->orderByDesc('attivo')->orderBy('name')->get(),
+            'utenti' => User::with(['ruoli', 'socio'])->orderByDesc('attivo')->orderBy('cognome')->orderBy('nome')->get(),
             'puoModificare' => $request->user()->puoModificare('utenti'),
+            'nelCd' => User::whereIn('socio_id', \App\Models\GovernanceCd::where('in_carica', true)->pluck('socio_id'))->pluck('id')->all(),
         ]);
     }
 
+    /** Nuovo utente: solo esterni (Revisore o Amministratore); quelli del CD nascono dal CD. */
     public function create(Request $request)
     {
         $this->richiediModifica($request);
@@ -57,7 +64,7 @@ class UtentiController extends Controller
         }
 
         return redirect()->route('utenti.index')->with('success', "Utente {$utente->name} creato"
-            . ($inviato ? ": gli è arrivato il link per scegliere la password." : '. Per farlo entrare mandagli il link per la password (icona del lucchetto).'));
+            . ($inviato ? ': gli è arrivato il link per scegliere la password.' : '. Per farlo entrare mandagli il link per la password (icona del lucchetto).'));
     }
 
     public function edit(Request $request, User $utente)
@@ -76,8 +83,9 @@ class UtentiController extends Controller
         $dati = $this->valida($request, $utente);
 
         $this->utenti->salva($utente, $dati, $request->user());
+        $utente->refresh();
 
-        return redirect()->route('utenti.index')->with('success', "Dati di {$utente->name} aggiornati. Ruoli: {$utente->etichettaRuoli()}.");
+        return redirect()->route('utenti.index')->with('success', "Dati di {$utente->name} aggiornati. Ruoli: " . ($utente->etichettaRuoli() ?: 'nessuno') . '.');
     }
 
     public function linkPassword(Request $request, User $utente)
@@ -102,33 +110,52 @@ class UtentiController extends Controller
         return back()->with('success', "Link per la password inviato a {$utente->email}: vale 24 ore.");
     }
 
-    /** @return array{name: string, email: string, ruoli: list<string>, attivo: bool} */
+    /** @return array{cognome?: string, nome?: string, email: string, revisore?: bool, amministratore: bool, attivo: bool} */
     private function valida(Request $request, ?User $utente): array
     {
-        $dati = $request->validate([
-            'name' => ['required', 'string', 'max:200'],
+        $delCd = $utente && Utenti::delCd($utente);
+        $regole = [
             'email' => ['required', 'email', 'max:255', Rule::unique('gl_users', 'email')->ignore($utente?->id)],
-            'ruoli' => ['required', 'array', 'min:1'],
-            'ruoli.*' => ['string', Rule::in(array_keys(Ruolo::etichette()))],
-        ], ['ruoli.required' => 'Scegli almeno un ruolo.', 'email.unique' => 'Questa email è già di un altro utente.'], ['name' => 'nome e cognome']);
+        ];
+        if (! $delCd) {
+            $regole += [
+                'cognome' => ['required', 'string', 'max:100'],
+                'nome' => ['required', 'string', 'max:100'],
+                'ruolo' => ['required', Rule::in(['revisore', 'amministratore'])],
+            ];
+        }
+        $dati = $request->validate($regole, [
+            'email.unique' => 'Questa email è già di un altro utente.',
+            'ruolo.required' => 'Scegli il ruolo.',
+        ]);
 
-        return $dati + ['attivo' => $request->boolean('attivo')];
+        return [
+            'cognome' => $dati['cognome'] ?? null,
+            'nome' => $dati['nome'] ?? null,
+            'email' => $dati['email'],
+            'revisore' => ($dati['ruolo'] ?? null) === 'revisore',
+            'amministratore' => $delCd ? $request->boolean('amministratore') : ($dati['ruolo'] ?? null) === 'amministratore',
+            'attivo' => $request->boolean('attivo'),
+        ];
     }
 
-    /** Ruoli e caselle bloccate per chi compila (tavola UT-2). */
+    /** Dati per il modulo (tavole UT-8a e UT-8b). */
     private function datiForm(Request $request, ?User $utente): array
     {
         $chi = $request->user();
-        $limiti = Utenti::conLimiti($chi);
         $propri = $utente && $utente->is($chi);
+        $codici = $utente?->exists ? $utente->codiciRuoli() : [];
 
         return [
-            'ruoli' => Ruolo::etichette(),
+            'delCd' => $utente?->exists && Utenti::delCd($utente),
+            'ruoliCd' => array_values(array_intersect($codici, ConsiglioDirettivo::RUOLI_CD)),
+            'etichette' => Ruolo::etichette(),
             'descrizioni' => self::DESCRIZIONI,
-            'scelti' => old('ruoli', $utente?->exists ? $utente->codiciRuoli() : []),
-            // Ruoli che chi compila non può cambiare: restano come sono
-            'bloccati' => $propri && $limiti ? array_keys(Ruolo::etichette()) : ($limiti ? ['presidente'] : []),
-            'motivoBloccati' => $propri && $limiti ? 'I tuoi ruoli li cambia solo il Presidente.' : ($limiti ? 'Il ruolo di Presidente lo dà o lo toglie solo il Presidente.' : null),
+            'ruoloEsterno' => old('ruolo', in_array('revisore', $codici, true) ? 'revisore' : ($utente?->exists ? 'amministratore' : 'revisore')),
+            'amministratore' => (bool) old('amministratore', in_array('amministratore', $codici, true)),
+            // L'Amministratore non si unisce a Presidente e Revisore; i propri ruoli li cambia solo il Presidente
+            'adminBloccato' => in_array('presidente', $codici, true) ? 'Non con il Presidente.'
+                : ($propri && Utenti::conLimiti($chi) ? 'I tuoi ruoli li cambia solo il Presidente.' : null),
             'propri' => $propri,
         ];
     }

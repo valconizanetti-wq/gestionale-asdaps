@@ -13,7 +13,7 @@
                    :indietro="$g ? route('prima-nota.show', $g) : route('prima-nota.index')" :indietro-label="$g ? 'Giroconto' : 'Prima Nota'" />
 
     @if ($errors->any())
-        <x-avviso tipo="ko" titolo="Controlla i dati.">Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
+        <x-avviso tipo="ko" titolo="Controlla i dati." data-errori-elenco>Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
     @endif
 
     <form method="POST" action="{{ $g ? route('prima-nota.update', $g) : route('prima-nota.giroconto.store') }}" class="form-pagina" novalidate

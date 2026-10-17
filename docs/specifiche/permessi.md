@@ -193,3 +193,22 @@ modifica.
     «ricade» più in Impostazioni.
   - Combinazioni: Revisore da solo, Consigliere senza cariche.
   - Migration `000103` (permessi compresi); `SezioneSeeder` aggiornato.
+
+- **Consiglio Direttivo, Vicepresidente e Amministratore** (v0.42.0,
+  17/10/2026, `analisi-collaudo-O.md` §10–§15):
+  - ruoli nuovi:
+    - **Vicepresidente**: permessi del Consigliere più, in sola lettura,
+      Soci, Domande, Rinnovi quota, Tesseramento, Scadenzario, Promemoria,
+      Impostazioni, Audit Log e Consiglio Direttivo;
+    - **Amministratore** di sistema: **tutte** le sezioni in sola lettura e
+      Utenti in scrittura; si somma ai ruoli tranne Presidente e Revisore;
+  - sezione `governance_cd` (pagina Consiglio Direttivo):
+    - modificano Presidente e Segretario;
+    - in lettura Vicepresidente, Tesoriere, Consigliere, Revisore e
+      Amministratore;
+    - la carica di Presidente la gestiscono solo il Presidente e
+      l'Amministratore (controllo nel servizio `ConsiglioDirettivo`);
+  - i ruoli del CD nascono dalla carica e non si danno dalla pagina Utenti;
+    da lì solo Revisore e Amministratore, uno ciascuno fra gli utenti attivi.
+  - Migration `000104` (permessi compresi); `RuoloSeeder` e `SezioneSeeder`
+    aggiornati, da non rilanciare sul server.

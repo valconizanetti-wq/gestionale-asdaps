@@ -249,9 +249,13 @@ $u->assegnaRuoli(['presidente']);
 exit
 ```
 Dalla v0.40.0 i ruoli stanno nella tabella `gl_users_ruoli` (un utente può
-averne più d'uno). Solo il primo Presidente si crea con tinker: gli altri
-utenti li crea il Presidente (o il Segretario) dalla pagina **Utenti**, e
-ognuno sceglie la propria password con il link che riceve per email.
+averne più d'uno). Solo il primo Presidente si crea con tinker. Dalla
+v0.42.0 gli utenti del CD nascono dalla pagina **Consiglio Direttivo**:
+- il Presidente aggiunge i soci con la loro carica;
+- l'utente del primo Presidente si collega al suo socio per email.
+
+Revisore e Amministratore si creano dalla pagina **Utenti**. Ognuno sceglie
+la propria password con il link che riceve per email.
 
 ### 3.9 Permessi e ottimizzazione (Terminale)
 
@@ -348,6 +352,20 @@ php artisan gestionale:azzera --esegui   # chiede di scrivere AZZERA, poi azzera
   copia: li hanno i backup giornalieri di SupportHost.
 - La copia contiene i dati di prova e le password cifrate degli utenti:
   va cancellata quando si è controllato che tutto va bene.
+
+**Dopo l'azzeramento (dalla v0.42.0)**, i dati veri si caricano in
+quest'ordine:
+1. Soci › «Importa da Excel» con i soci veri.
+2. **Consiglio Direttivo** › «Aggiungi un membro» per i cinque eletti, ogni
+   socio con la sua carica.
+   - Gli utenti esistenti con la stessa email del socio si collegano e
+     prendono il ruolo della carica.
+   - Agli altri nasce l'utente, con il link per la password.
+   - Un ruolo unico (Presidente, Vicepresidente, Segretario, Tesoriere)
+     dato a un socio si toglie agli utenti di prova che lo avevano ancora;
+     quelli rimasti senza ruoli si disattivano.
+3. Utenti › matita sul tuo utente: «Amministratore di sistema».
+4. Tessere dal CSV del portale CSEN.
 
 ## 6. Interazioni e punti aperti
 
