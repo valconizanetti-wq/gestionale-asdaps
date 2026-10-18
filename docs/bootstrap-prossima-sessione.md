@@ -42,7 +42,8 @@ scelta: analisi breve e domanda prima del codice.
   - CD solo maggiorenni;
   - riquadri Tutore e Tessera.
 - 171 test.
-- Collaudo O-bis da riprendere da OB4 (ripetere OB4 e OB5).
+- **Collaudo O-bis superato il 18/10/2026** (Paolo), con la v0.42.1 sul server.
+- Revisore sempre esterno alla Compagnia (Paolo, 18/10/2026).
 
 ## Stato al 17/10/2026: v0.42.0 consegnata (correzioni del collaudo O)
 Collaudo O concluso da Paolo il 16/10/2026. Osservazioni O2–O12 in

@@ -208,3 +208,5 @@ Installazione: il primo `deploy.zip` era della versione precedente. In Laragon l
 - OB4: togli un membro con «Altro», prima senza nota poi con la nota. Sul membro senza nome nessun errore.
 - «Crea o collega l'utente» su Papini Andrea, dopo aver messo nella sua scheda di socio l'email del suo utente.
 - OB5: nuovo utente esterno con l'email di un socio; aggiunta di un minorenne; scheda di un socio minorenne (Tutore e Tessera).
+
+**Collaudo O-bis superato il 18/10/2026** (Paolo), con la v0.42.1 installata e le prove OB4 e OB5 ripetute. OB8 in Laragon; OB9 con l'azzeramento dopo l'Assemblea.
