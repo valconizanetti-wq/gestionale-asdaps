@@ -94,7 +94,7 @@
 
     <x-card titolo="Come funzionano i ruoli" class="pn-aiuto">
         <p>I ruoli del CD (Presidente, Vicepresidente, Segretario, Tesoriere, Consigliere) vengono dalla carica nella pagina <strong>Consiglio Direttivo</strong>: chi entra nel CD diventa utente, chi esce perde i ruoli del CD. Segretario e Tesoriere possono essere la stessa persona <span class="norma">Statuto, art. 15.2</span>.</p>
-        <p>Da qui si danno solo il <strong>Revisore</strong> (anche non socio, senza altri ruoli <span class="norma">Statuto, art. 20.1</span>) e l'<strong>Amministratore di sistema</strong>, che si aggiunge ai ruoli tranne Presidente e Revisore. Uno solo ciascuno.</p>
+        <p>Da qui si danno solo il <strong>Revisore</strong> (esterno alla Compagnia, senza altri ruoli <span class="norma">Statuto, art. 20.1</span>) e l'<strong>Amministratore di sistema</strong>, che si aggiunge ai ruoli tranne Presidente e Revisore. Uno solo ciascuno.</p>
         <p>Con più ruoli si vede l'unione delle sezioni, e dove un ruolo modifica e l'altro legge soltanto, <strong>modifica</strong>. Un utente non si elimina: si disattiva, e tutto quello che ha registrato resta collegato a lui.</p>
     </x-card>
 @endsection

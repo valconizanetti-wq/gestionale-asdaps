@@ -376,7 +376,7 @@ Migration provata anche all'indietro e di nuovo in avanti, sui dati.
   - Collega per email o crea, con le stesse regole dell'aggiunta.
   - Serve per il CD di prova, e per quando l'email del socio è diversa da quella dell'utente.
 - **OB5.1:** regola sull'email degli esterni in `UtentiController::valida`: non deve essere nella scheda di un socio.
-  - Punto aperto: un Revisore che è anche socio. Oggi deve usare un'email diversa da quella della scheda; se serve, si potrà collegarlo al socio.
+  - **Decisione di Paolo (18/10/2026):** il Revisore è **sempre esterno** alla Compagnia, quindi il controllo è corretto e il caso «Revisore socio» non si pone. Lo statuto (art. 20.1) ammette anche un socio: la regola del gestionale è più stretta, per scelta. Testi di Utenti e manuale aggiornati («esterno alla Compagnia»).
 - **OB5.2:** `isMinorenne($dal)` in `aggiungi`; i minorenni sono tolti anche dal menu.
 - **OB5.3:**
   - `dati-griglia-3` con l'email su due colonne;

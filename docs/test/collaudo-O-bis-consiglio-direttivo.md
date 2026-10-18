@@ -196,7 +196,7 @@ Installazione: il primo `deploy.zip` era della versione precedente. In Laragon l
   - Collega l'utente con quell'email, oppure ne crea uno con il link.
 
 ### OB5 — osservazioni (17/10/2026), corrette nella v0.42.1
-- **OB5.1** Un utente esterno con l'email di un socio ora non si salva: «Questa email è nella scheda del socio …».
+- **OB5.1** Un utente esterno con l'email di un socio ora non si salva: «Questa email è nella scheda del socio …». Confermato da Paolo il 18/10/2026: il Revisore è sempre esterno.
 - **OB5.2** Nel CD entrano solo soci maggiorenni:
   - i minorenni non sono nel menu;
   - se arrivano comunque, compare «… è minorenne: nel Consiglio Direttivo entrano solo soci maggiorenni.».

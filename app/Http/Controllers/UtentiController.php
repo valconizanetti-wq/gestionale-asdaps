@@ -26,7 +26,7 @@ class UtentiController extends Controller
         'segretario' => 'Soci, domande, tessere, scadenzario e utenti; Prima Nota in lettura.',
         'tesoriere' => 'Prima Nota, rinnovi quota, bilancio, tessere, scadenzario.',
         'consigliere' => 'Membro del CD senza carica: carica gli scontrini, Prima Nota in lettura.',
-        'revisore' => 'Organo di controllo, anche non socio, fuori dal CD: contabilità e Audit Log in lettura. Uno solo.',
+        'revisore' => 'Organo di controllo, esterno alla Compagnia e fuori dal CD: contabilità e Audit Log in lettura. Uno solo.',
         'amministratore' => 'Legge tutto il gestionale per l\'assistenza; scrive solo gli Utenti e può mandare il link della password anche al Presidente. Non con Presidente o Revisore. Uno solo.',
     ];
 

@@ -956,7 +956,7 @@ tesoriere, revisore).
   - chi esce perde i ruoli del CD; il Presidente si passa con «Cambia
     carica»;
   - da tre a cinque membri (art. 15.1);
-- la pagina **Utenti** resta per gli esterni (Revisore, anche non socio),
+- la pagina **Utenti** resta per gli esterni (Revisore, che è sempre esterno alla Compagnia),
   per l'**Amministratore di sistema** (legge tutto, scrive gli Utenti, si
   somma ai ruoli tranne Presidente e Revisore), per l'email e per
   attivare o disattivare;

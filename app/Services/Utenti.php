@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
  * Dalla v0.42.0 i ruoli del CD (Presidente, Vicepresidente, Segretario,
  * Tesoriere, Consigliere) nascono dalla pagina Consiglio Direttivo
  * (App\Services\ConsiglioDirettivo) e qui non si cambiano. Qui restano:
- * - gli utenti esterni: Revisore (statuto art. 20.1, anche non socio) o
+ * - gli utenti esterni: Revisore (esterno alla Compagnia, decisione di Paolo del 18/10/2026; statuto art. 20.1) o
  *   solo Amministratore, con cognome e nome scritti a mano;
  * - per tutti: email, stato, Amministratore di sistema in più.
  *
