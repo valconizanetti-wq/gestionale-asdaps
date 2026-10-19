@@ -10,6 +10,84 @@
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-utenti-importazione.pdf`).
 
+## Prossima sessione (dal 19/10/2026 sera): finire il trasloco sul dominio definitivo
+
+**Il gestionale si è spostato di account, non solo di indirizzo.**
+`dominio-definitivo.md` partiva da un dato sbagliato: sito e gestionale
+nello stesso account. In realtà gli account sono due, su server diversi:
+- **`uiynixlg` su `gaia`**: il gestionale vecchio e `arco.valconi.it`, da
+  dismettere (Paolo, 18/10/2026);
+- **`arcieric` su `lia`**: il sito `arciericastello.it`, la posta
+  `portaleacv@`, i DNS. Ora anche il gestionale (strada B, trasloco).
+
+**Fatto il 18–19/10/2026, guidato passo per passo:**
+- **B1–B2**, PHP di `arcieric`:
+  - Select PHP Version **8.3** (estensioni: `nd_pdo_mysql` al posto di
+    `pdo_mysql`, che il selettore segna in conflitto); il comando `php` del
+    Terminale è 8.3 dopo averlo riaperto;
+  - Composer non c'è, ma non serve: `vendor` è copiato.
+- **B3**, database `arcieric_asd` con l'utente `arcieric_asd`.
+- **B4**:
+  - `php artisan down` sul server vecchio, che resta in manutenzione;
+  - `mysqldump` (25 KB, completo) e ZIP della cartella (87 MB);
+  - anche il database vecchio aveva 0 soci e 0 membri del CD: i dati di
+    prova erano già stati svuotati.
+- **B5–B6**:
+  - file portati con il File Manager;
+  - estratti in `~/gestionale-asd`, database importato: 6 utenti, 108
+    migration, fino alla `000104`.
+- **B7**: `~/subdomains/gestionale.arciericastello.it` è un collegamento a
+  `~/gestionale-asd/public`. La cartella del cPanel è in `….bak`, con
+  dentro solo `.htaccess`, `php.ini` e `.user.ini` del registro errori,
+  nessun gestore PHP.
+- **B9**: `.env` con APP_URL, DB_ e MAIL_ nuovi (copia del vecchio in
+  `.env.uiynixlg`).
+- **B10**:
+  - il primo `optimize:clear` è fallito sul percorso
+    `/home/uiynixlg/…/storage/logs` delle cache copiate; al secondo è
+    andato;
+  - poi le tre cache, `migrate:status` tutto Ran, `php artisan up`.
+- **403 Forbidden**: cartelle `gestionale-asd` e `public` chiuse dopo
+  l'unzip. Risolto con `chmod 755` sulle cartelle e `644` sui file di
+  `public`. La pagina d'accesso ora si apre.
+
+**Da fare, in quest'ordine:**
+1. **Posta, errore 535 «Incorrect authentication data»**: la casella
+   `portaleacv@` non accetta la password del `.env`. Suggerito a Paolo:
+   - password nuova solo con lettere, numeri e trattini (niente `$`, che
+     dentro le virgolette doppie del `.env` viene letto come variabile);
+   - prova in Webmail, `MAIL_PASSWORD="…"`, `config:clear` e
+     `config:cache`;
+   - prova di spedizione con `php artisan tinker --execute='…Mail::raw…'`;
+   - se resta 535: `MAIL_HOST` dal riquadro «Connetti dispositivi».
+
+   Esito ancora da sapere.
+2. **SSL**: AutoSSL per `gestionale.arciericastello.it`, da confermare
+   (lucchetto verde).
+3. **Cron** in `arcieric`: `cd ~/gestionale-asd && /usr/local/bin/php
+   artisan schedule:run >> /dev/null 2>&1`, ogni minuto.
+4. **Spegnere il vecchio** in `uiynixlg`:
+   - **togliere il cron**, altrimenti restano promemoria in giro, anche se
+     il gestionale è in manutenzione;
+   - `arco.valconi.it` reindirizzato con il 301 di `dominio-definitivo.md`
+     §8, finché l'account esiste.
+5. **Posta del dominio**: Email Deliverability di `arciericastello.it`
+   (SPF, DKIM, DMARC `p=none`); prova Gmail «Mostra originale», tutto PASS.
+6. Scheda Associazione › Email: `info@arciericastello.it`.
+7. Link «Iscriviti» del sito WordPress → `/iscrizione`.
+8. **Sicurezza**: cancellare `~/asd-trasloco.zip` e `~/asd-trasloco.sql.gz`
+   in **tutti e due** gli account, e le copie scaricate sul PC: lo ZIP
+   contiene il vecchio `.env` con le password. Più avanti anche
+   `.env.uiynixlg` e la cartella `.bak`.
+9. **Controlli finali** di `dominio-definitivo.md` §10.
+10. **Documenti**, a me:
+    - `dominio-definitivo.md` riscritto con quello che è successo davvero
+      (trasloco di account, permessi 403, cache, selettore PHP,
+      `nd_pdo_mysql`);
+    - `deploy.md` §2, §3.4, §3.6, §5 (account `arcieric`, server `lia`,
+      cartella e cron);
+    - memoria del progetto.
+
 ## Prossima sessione: collaudo O-bis e P, poi Fase 0
 Paolo installa la **v0.42.0** e fa il collaudo **O-bis**
 (`docs/test/collaudo-O-bis-consiglio-direttivo.md`, OB1–OB9) e il **P**
