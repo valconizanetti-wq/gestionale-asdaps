@@ -1,4 +1,36 @@
-# Passaggio al dominio definitivo — procedura (14/10/2026)
+# Passaggio al dominio definitivo — procedura (14/10/2026) ed esito (19/10/2026)
+
+## 0. Esito: trasloco di account (18–19/10/2026)
+
+**Fatto il 19/10/2026.** Il gestionale è su `https://gestionale.arciericastello.it`.
+
+La procedura qui sotto partiva da un dato sbagliato: che sito e gestionale
+fossero nello **stesso account cPanel**. Gli account invece erano due, su
+server diversi:
+- `uiynixlg` su `gaia`: il gestionale e `arco.valconi.it`;
+- `arcieric` su `lia`: `arciericastello.it`, la posta, i DNS.
+
+Il sottodominio creato in `arcieric` (§1) non era raggiungibile da
+`uiynixlg`, quindi il collegamento del §2 non era possibile. Paolo ha scelto
+di abbandonare `arco.valconi.it`, e il gestionale si è **trasferito**
+nell'account `arcieric`:
+- database copiato con `mysqldump`;
+- cartella copiata in uno ZIP, `vendor` e `.env` compresi;
+- `.env` aggiornato;
+- cron nuovo, cron vecchio tolto.
+
+Passi, intoppi e rimedi sono in `deploy.md` §0, che descrive l'ambiente
+attuale.
+
+Differenze rispetto ai paragrafi seguenti:
+- §1, §3, §4, §5, §6, §7 e §10 sono stati fatti nell'account `arcieric`,
+  come scritto;
+- §2: collegamento a `/home/arcieric/gestionale-asd/public`, dopo il
+  trasloco;
+- §8: **non fatto**. `arco.valconi.it` non si reindirizza: il gestionale
+  vecchio è rimasto in manutenzione e l'account si abbandona;
+- §9, il link «Iscriviti» del sito: da fare all'apertura delle iscrizioni.
+
 
 Fase 0 del piano (`piano-2027.md`): il gestionale passa da
 `arco.valconi.it` a **`gestionale.arciericastello.it`** con i dati di

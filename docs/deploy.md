@@ -1,9 +1,85 @@
-# Deploy — primo rilascio su arco.valconi.it (ambiente di collaudo)
+# Deploy — gestionale.arciericastello.it
 
-**Stato:** eseguita il 27/09/2026, verifiche del §4 tutte superate
+**Stato:** primo rilascio il 27/09/2026 su `arco.valconi.it`; **trasloco
+sul dominio definitivo il 19/10/2026** (§0).
 **Introdotto in:** v0.25.1 (2026-09-27)
-**Ambiente:** SupportHost, account cPanel `uiynixlg`, sottodominio
-`arco.valconi.it`, PHP 8.3 (CLI e web), Composer in `~/bin`.
+**Ambiente attuale:** SupportHost, account cPanel **`arcieric`** (server
+`lia`), sottodominio **`gestionale.arciericastello.it`**, PHP 8.3 (CLI e
+web, selettore CloudLinux `alt-php83`), database `arcieric_asd`, posta
+`portaleacv@arciericastello.it` (SMTP 465, stesso account).
+
+## 0. Ambiente attuale e trasloco del 19/10/2026
+
+Il gestionale è nato nell'account `uiynixlg` (server `gaia`), sotto
+`arco.valconi.it`. Il dominio definitivo `arciericastello.it` sta invece in
+un **altro account**, `arcieric`, su un altro server (`lia`), con il sito
+WordPress, la posta e i DNS. `dominio-definitivo.md` partiva dal dato
+sbagliato che fossero lo stesso account: il 19/10/2026 il gestionale è
+stato **trasferito** in `arcieric`. `arco.valconi.it` e l'account
+`uiynixlg` si abbandonano (Paolo): il gestionale vecchio è rimasto in
+manutenzione, senza cron, senza reindirizzamento.
+
+Struttura in `arcieric`:
+```
+/home/arcieric/
+├── gestionale-asd/                    applicazione (FUORI dalla radice web)
+│   ├── public/                        unica cartella esposta al web
+│   ├── storage/  .env
+├── public_html/                       sito WordPress arciericastello.it (non si tocca)
+└── subdomains/
+    ├── gestionale.arciericastello.it  →  symlink a ~/gestionale-asd/public
+    └── gestionale.arciericastello.it.bak   cartella creata dal cPanel (solo .ini del log PHP)
+```
+Cron (cPanel › *Cron Jobs*, ogni minuto):
+`cd /home/arcieric/gestionale-asd && /usr/local/bin/php artisan schedule:run >> /dev/null 2>&1`
+
+**Come è andato il trasloco** (passi in `dominio-definitivo.md`, §0):
+1. PHP 8.3 in *Select PHP Version*. Le estensioni come prima; il
+   selettore segna `pdo_mysql` in conflitto con `nd_pdo_mysql`, si usa
+   quest'ultima. Il comando `php` del Terminale passa all'8.3 dopo averlo
+   riaperto.
+2. Database `arcieric_asd` con l'utente omonimo.
+3. Sul vecchio: `php artisan down`, poi `mysqldump --no-tablespaces
+   --single-transaction` e ZIP di `gestionale-asd` (con `vendor` e `.env`,
+   senza sessioni, viste, cache e log).
+4. Copia con il File Manager. Estrazione in `~/gestionale-asd`,
+   importazione del database, creazione delle cartelle di `storage`
+   escluse dallo ZIP.
+5. Collegamento del sottodominio; la cartella del cPanel in `.bak`, con
+   dentro solo le impostazioni del log PHP.
+6. `.env`: APP_URL, DB_*, MAIL_* (copia del vecchio in `.env.uiynixlg`, da
+   cancellare).
+7. **Intoppi:**
+   - il primo `optimize:clear` cade sul percorso `/home/uiynixlg/…/logs`
+     delle cache copiate; rilanciato, va;
+   - **403 Forbidden**: dopo l'unzip `gestionale-asd` e `public` erano
+     chiuse al server web. Rimedio: `chmod 755` sulle due cartelle e sulle
+     sottocartelle di `public`, `644` sui file di `public` (`.env` resta
+     chiuso);
+   - posta, **535 Incorrect authentication data**: rimedio, password
+     nuova della casella fatta solo di lettere, numeri e trattini (un `$`
+     nel `.env` fra virgolette doppie viene letto come variabile), poi
+     `config:cache`.
+8. `php artisan up`, AutoSSL, cron. Email Deliverability: SPF, DKIM e
+   DMARC «Valid». Prova Gmail con tutto PASS. Scheda Associazione con
+   `info@arciericastello.it`.
+9. File del trasloco cancellati da tutti e due gli account e dal PC.
+
+**Composer non è installato in `arcieric`**: `vendor` è stato copiato.
+Serve solo quando cambiano le librerie (`composer.lock`). Installazione in
+`~/bin`, una volta:
+```
+mkdir -p ~/bin && cd ~/bin
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php --filename=composer && rm composer-setup.php
+~/bin/composer -V
+```
+Nei rilasci (§5) il comando diventa `~/bin/composer install --no-dev
+--optimize-autoloader`.
+
+Le sezioni che seguono descrivono il primo rilascio del 27/09/2026 su
+`uiynixlg`: valgono come procedura, sostituendo account, cartella home,
+sottodominio, database (`arcieric_asd`) e indirizzo.
 
 ## 1. Logica
 
@@ -307,7 +383,7 @@ altrimenti Laravel continua a usare la configurazione precedente.
    `build` per intero: vecchio manifest e nuovi file non convivono).
 3. Terminale, in `~/gestionale-asd`:
    ```
-   composer install --no-dev --optimize-autoloader
+   ~/bin/composer install --no-dev --optimize-autoloader   # solo se è cambiato composer.lock (§0)
    php artisan migrate --force
    php artisan optimize:clear
    php artisan config:cache && php artisan route:cache && php artisan view:cache
