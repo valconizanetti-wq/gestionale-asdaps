@@ -2,7 +2,7 @@
 
 Elenco unico delle correzioni e delle funzioni nate nel Gestionale ASD che
 vanno riportate sul Gestionale APS (Società Dante Alighieri — Comitato di
-Orvieto). Aggiornato al 07/10/2026, con la v0.37.1 (correzioni dal collaudo K).
+Orvieto). Aggiornato al 20/10/2026, con la v0.43.0 (anticipi e note di rimborso).
 
 **Come si usa.** Ogni voce dice cosa succede nel Gestionale APS, cosa si è
 fatto qui e dove guardare. I difetti sono stati trovati leggendo il codice
@@ -164,6 +164,43 @@ protezione dei dati personali, poi le funzioni.
   - *Qui*: numeri generati dal gestionale e mostrati solo come testo;
     redirect solo verso rotte interne; download senza effetti.
   - *Dove*: `RinnoviController`.
+
+- [ ] **A14. Note di rimborso: numero senza lock e riusato dopo un annullamento** (v0.43.0).
+  - *Nel Gestionale APS*: `PrimaNotaController::generaNota` calcola
+    `RIMB-ANNO-NNN` come il più alto già usato, senza lock: due note insieme
+    possono avere lo stesso numero. `annullaNota` toglie il numero dalle
+    spese: se la nota annullata era l'ultima, la nota dopo **riprende lo
+    stesso numero**, e il registro `gs_rimborsi_annullati` e la nota nuova
+    hanno lo stesso numero.
+  - *Qui*: tabella `gl_note_rimborso` con vincolo unico e lock; la nota
+    annullata resta una riga «annullata» e il numero non torna.
+  - *Dove*: `App\Services\NoteRimborso::prepara`, migration
+    `2026_10_20_000105`; `anticipi.md`; analisi-moduli-anticipi.md
+    §2.2-bis, difetto 1.
+- [ ] **A15. Note di rimborso: data della nota e annullamento fuori dall'Audit Log** (v0.43.0).
+  - *Nel Gestionale APS*: `data_nota` e l'annullamento si scrivono con
+    `DB::table` (fuori dall'observer): non ne resta traccia.
+  - *Qui*: un evento per passo (`NOTA_RIMBORSO_EMESSA`, `…_FIRMATA`,
+    `…_PAGATA`, `…_ANNULLATA`, `…_PAGAMENTO_ANNULLATO`, rinuncia), a rischio
+    alto pagamento e annullamenti, con l'avviso agli altri.
+  - *Dove*: `NoteRimborso::audit`; difetto 3.
+- [ ] **A16. Pagamento del rimborso senza transazione né controlli** (v0.43.0).
+  - *Nel Gestionale APS*: `confermaPagamento` aggiorna le spese una per una
+    fuori da una transazione, non controlla l'anno chiuso né che la data
+    venga dopo la nota, e lascia la spesa alla sua data: il saldo di un
+    giorno già passato cambia quando si paga.
+  - *Qui*: transazione con lock; data non prima della nota, non futura, non
+    in un anno chiuso; il movimento prende la data del pagamento e la data
+    della spesa resta in `data_spesa` (criterio di cassa, A1).
+  - *Dove*: `NoteRimborso::registraPagamento`; difetto 4.
+- [ ] **A17. PDF della nota rifatto a ogni apertura** (v0.43.0).
+  - *Nel Gestionale APS*: `notaRimborsoPdf` rigenera il PDF dai dati del
+    momento: se cambia una descrizione, la nota firmata e quella del
+    gestionale non sono più uguali.
+  - *Qui*: fotografia dei dati nella nota (`dati`), PDF salvato alla
+    generazione; con l'annullamento si rifà uguale con il timbro.
+  - *Dove*: `NoteRimborso::fotografia`, `pdf/nota-rimborso.blade.php`;
+    difetto 6.
 
 ## B. Dati personali (GDPR)
 
@@ -428,6 +465,19 @@ non riportare".
     (`Password::broker()->tokenExists`).
   - All'accesso, «Utente non attivo» solo con email e password giuste.
 
+- [ ] **D22. Anticipi: il socio al posto del testo, firma, rinuncia** (v0.43.0, tavole AN-1…AN-4b).
+  - Chi ha anticipato è un socio (le spese di «L. Tascio» e «Luigi Tascio»
+    non si separano più), al posto di `anticipato_da` e `tipo_anticipante`.
+  - Passo della copia firmata (diventa il giustificativo del pagamento).
+  - Annullamento motivato di un pagamento sbagliato.
+  - Note e IBAN sulla nota, non su ogni spesa; conto del pagamento fissato
+    dalla modalità scritta nella nota; quietanza per i contanti; visto del
+    Presidente sulla nota del Tesoriere.
+  - Rinuncia al rimborso come donazione (uscita ed entrata in cassa).
+  - Chiusura dell'anno non bloccata dagli anticipi aperti.
+  - Dove: `anticipi.md`, `AnticipiController`, `NoteRimborso`; difetti 2,
+    5, 7, 8 del §2.2-bis dell'analisi.
+
 ## E. PDF ed email
 
 - [ ] **E1. Larghezze delle colonne nei PDF messe su `<col>`**: DomPDF le
@@ -456,3 +506,4 @@ non riportare".
 - 13/10/2026 (v0.40.0): aggiunte D14–D17 da ruoli multipli, password, avvisi e importazione dei soci.
 - 14/10/2026 (v0.41.0): aggiunta D18 dal comando di azzeramento.
 - 17/10/2026 (v0.42.0): aggiunte D19–D21 dal collaudo O (Consiglio Direttivo, errori dei campi, password e accesso).
+- 20/10/2026 (v0.43.0): aggiunte A14–A17 e D22 dagli anticipi e note di rimborso.

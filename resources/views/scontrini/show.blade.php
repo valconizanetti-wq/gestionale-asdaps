@@ -57,6 +57,17 @@
         @endif
     @endforeach
 
+    @if ($nota)
+        <x-avviso tipo="info" titolo="Scontrino nella {{ $nota->isRinuncia() ? 'rinuncia' : 'nota di rimborso' }} {{ $nota->numero }}.">
+            Pagato da {{ $s->anticipante?->cognome }} {{ $s->anticipante?->nome }}: totale, data, conto e divisione si cambiano, e lo scontrino si elimina, solo dopo aver annullato la
+            <a href="{{ route('prima-nota.anticipi.show', $nota) }}">{{ $nota->isRinuncia() ? 'rinuncia' : 'nota' }}</a>.
+        </x-avviso>
+    @elseif ($s->isAnticipo())
+        <x-avviso tipo="warn" titolo="Pagato di tasca propria da {{ $s->anticipante?->cognome }} {{ $s->anticipante?->nome }}.">
+            Spesa da rimborsare: fuori dai saldi finché non si paga la nota. Dopo la divisione si mette in una nota da <a href="{{ route('prima-nota.anticipi.index') }}">Anticipi e note di rimborso</a>.
+        </x-avviso>
+    @endif
+
     <div class="sn-scheda">
         <div class="sn-scheda-sinistra">
             <x-card class="sn-foto-card">
@@ -127,6 +138,10 @@
                                 @foreach (\App\Models\PrimaNota::CONTI as $v => $l)
                                     <option value="{{ $v }}" @selected(($erroriDati->any() ? old('conto') : $s->conto) === $v)>{{ $l }}</option>
                                 @endforeach
+                                @if ($s->anticipante_socio_id)
+                                    {{-- «Pagato da me» (v0.43.0): spesa anticipata dal socio, da rimborsare --}}
+                                    <option value="anticipo" @selected(($erroriDati->any() ? old('conto') : $s->conto) === 'anticipo')>Pagato da {{ $s->anticipante?->cognome }} {{ $s->anticipante?->nome }} (da rimborsare)</option>
+                                @endif
                             </select>
                         </div>
                         <div class="form-field">

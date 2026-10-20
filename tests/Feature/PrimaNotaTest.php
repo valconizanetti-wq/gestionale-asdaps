@@ -82,6 +82,17 @@ class PrimaNotaTest extends TestCase
         return \App\Models\Verbale::create(['tipo' => $tipo, 'titolo' => $titolo, 'data_seduta' => $data, 'corpo_html' => '<p>Verbale</p>']);
     }
 
+    private function socioTascio(): \App\Models\Socio
+    {
+        $s = \App\Models\Socio::where('codice_fiscale', 'TSCLGU70A01C100X')->first() ?? new \App\Models\Socio();
+        if (! $s->exists) {
+            $s->forceFill(['cognome' => 'Tascio', 'nome' => 'Luigi', 'codice_fiscale' => 'TSCLGU70A01C100X', 'tipo' => 'ordinario',
+                'stato' => 'attivo', 'data_nascita' => '1970-01-01', 'data_prima_iscrizione' => '2024-07-24'])->save();
+        }
+
+        return $s;
+    }
+
     private function datiForm(array $extra = []): array
     {
         return $extra + [
@@ -205,7 +216,7 @@ class PrimaNotaTest extends TestCase
         $this->movimento(['tipo' => 'entrata', 'conto' => 'cassa', 'importo' => '30.00', 'categoria_id' => $this->cat('Quote associative', 'entrata')->id, 'descrizione' => 'Quota Bianchi']);
         $this->movimento(['conto' => 'cassa', 'importo' => '18.40', 'descrizione' => 'Colla e nastro']);
         // Anticipo non rimborsato: compare ma non conta nel saldo
-        $this->movimento(['conto' => null, 'importo' => '64.50', 'sospeso' => true, 'anticipato_da' => 'Luigi Tascio', 'descrizione' => 'Benzina']);
+        $this->movimento(['conto' => null, 'importo' => '64.50', 'sospeso' => true, 'anticipante_socio_id' => $this->socioTascio()->id, 'descrizione' => 'Benzina']);
 
         $this->actingAs($this->tesoriere)->post(route('prima-nota.giroconto.store'), [
             'data' => '2027-02-05', 'conto_da' => 'cassa', 'conto_a' => 'banca', 'importo' => '200',
@@ -415,11 +426,18 @@ class PrimaNotaTest extends TestCase
         // Dalla v0.35.1 il nome è codificato (PN…): niente accenti, ma l'intestazione resta valida
         $this->assertStringContainsString('filename=' . $d->nome, $r->headers->get('content-disposition'));
 
-        // Spesa anticipata non rimborsata: non si modifica dal modulo normale
-        $anticipo = $this->movimento(['conto' => null, 'sospeso' => true, 'anticipato_da' => 'Luigi Tascio']);
-        $this->actingAs($this->tesoriere)->get(route('prima-nota.edit', $anticipo))->assertRedirect(route('prima-nota.show', $anticipo));
-        $this->actingAs($this->tesoriere)->put(route('prima-nota.update', $anticipo), $this->datiForm(['data' => '2027-02-10']))->assertSessionHas('error');
-        $this->assertNull($anticipo->fresh()->conto);
+        // Spesa anticipata non ancora in una nota: dalla v0.43.0 si corregge dal
+        // modulo normale (T4); resta anticipata finché la spunta resta
+        $anticipo = $this->movimento(['conto' => null, 'sospeso' => true, 'anticipante_socio_id' => $this->socioTascio()->id, 'data_spesa' => '2027-02-10']);
+        $anticipo->documenti()->create(['path' => 'prima-nota/x.pdf', 'nome' => 'x.pdf']);
+        $this->actingAs($this->tesoriere)->get(route('prima-nota.edit', $anticipo))->assertOk()->assertSee('Anticipata da un socio');
+        $this->actingAs($this->tesoriere)->put(route('prima-nota.update', $anticipo), $this->datiForm([
+            'data' => '2027-02-11', 'anticipata' => '1', 'anticipante_socio_id' => $anticipo->anticipante_socio_id, 'conto' => null,
+        ]))->assertRedirect(route('prima-nota.show', $anticipo));
+        $anticipo->refresh();
+        $this->assertNull($anticipo->conto);
+        $this->assertTrue($anticipo->isAnticipoAperto());
+        $this->assertSame('2027-02-11', $anticipo->data_spesa->toDateString());
 
         // Anno chiuso: aggiungere un giustificativo chiede la motivazione
         AnnoContabile::where('anno', 2027)->update(['stato' => 'chiuso', 'saldo_chiusura_cassa' => 0, 'saldo_chiusura_banca' => 0]);

@@ -305,6 +305,20 @@ Route::middleware(['auth', 'attivo'])->group(function () {
                 Route::delete('/tag/{tag}', 'destroyTag')->name('tag.destroy');
             });
 
+            // Anticipi e note di rimborso (v0.43.0, anticipi.md, tavole AN-1…AN-4b)
+            Route::controller(\App\Http\Controllers\AnticipiController::class)->prefix('anticipi')->name('anticipi.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/nuova', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{nota}', 'show')->whereNumber('nota')->name('show');
+                Route::get('/{nota}/pdf', 'pdf')->whereNumber('nota')->name('pdf');
+                Route::post('/{nota}/firmata', 'firmata')->whereNumber('nota')->name('firmata');
+                Route::get('/{nota}/firmata', 'vediFirmata')->whereNumber('nota')->name('firmata.show');
+                Route::post('/{nota}/pagamento', 'pagamento')->whereNumber('nota')->name('pagamento');
+                Route::post('/{nota}/annulla-pagamento', 'annullaPagamento')->whereNumber('nota')->name('annulla-pagamento');
+                Route::post('/{nota}/annulla', 'annulla')->whereNumber('nota')->name('annulla');
+            });
+
             Route::controller(PrimaNotaController::class)->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/esporta.csv', 'exportCsv')->name('export-csv');

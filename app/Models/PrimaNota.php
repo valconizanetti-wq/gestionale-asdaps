@@ -42,13 +42,11 @@ class PrimaNota extends Model
         'tipo_documento',
         'numero_documento',
         'data_documento',
-        'anticipato_da',
         'sospeso',
-        'tipo_anticipante',
+        'anticipante_socio_id',
+        'nota_rimborso_id',
+        'data_spesa',
         'rimborsato_il',
-        'rimborso_nota_numero',
-        'data_nota',
-        'iban_rimborso',
         'giroconto_id',
         'progetto_id',
         'tag_id',
@@ -67,7 +65,7 @@ class PrimaNota extends Model
             'data' => 'date',
             'data_documento' => 'date',
             'rimborsato_il' => 'date',
-            'data_nota' => 'date',
+            'data_spesa' => 'date',
             'importo' => 'decimal:2',
             'sospeso' => 'boolean',
             'is_locked' => 'boolean',
@@ -93,6 +91,17 @@ class PrimaNota extends Model
     public function scontrino(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrimaNotaScontrino::class, 'scontrino_id');
+    }
+
+    /** Socio che ha pagato di tasca propria una spesa anticipata (v0.43.0). */
+    public function anticipante(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Socio::class, 'anticipante_socio_id')->withTrashed();
+    }
+
+    public function notaRimborso(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(NotaRimborso::class, 'nota_rimborso_id');
     }
 
     public function registratoDa(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -152,9 +161,36 @@ class PrimaNota extends Model
         return $this->sospeso && $this->rimborsato_il === null;
     }
 
+    /** Spesa anticipata (aperta o rimborsata, v0.43.0). */
+    public function isAnticipo(): bool
+    {
+        return (bool) $this->sospeso;
+    }
+
+    /**
+     * Spesa anticipata dentro una nota non annullata: importo, data, conto e
+     * socio non si cambiano, e non si elimina (anticipi.md §3).
+     */
+    public function inNota(): bool
+    {
+        return $this->nota_rimborso_id !== null;
+    }
+
+    /** «Cognome Nome» di chi ha anticipato. */
+    public function anticipanteNome(): string
+    {
+        return $this->anticipante ? trim($this->anticipante->cognome . ' ' . $this->anticipante->nome) : 'socio non indicato';
+    }
+
     public function contoLabel(): string
     {
         return self::CONTI[$this->conto] ?? '—';
+    }
+
+    /** Data della spesa: per un anticipo quella dello scontrino, anche dopo il rimborso (A1). */
+    public function dataSpesa(): \Illuminate\Support\Carbon
+    {
+        return $this->data_spesa ?? $this->data;
     }
 
     // Non "anno()": l'AuditObserver legge $model->anno e lo prenderebbe per una relazione.

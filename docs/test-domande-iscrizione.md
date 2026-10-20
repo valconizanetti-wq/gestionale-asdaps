@@ -202,6 +202,7 @@ Dal 12/10/2026 ogni blocco nuovo ha un suo file in `docs/test/` (e una copia in 
 - **O** — Più ruoli per utente, pagina Utenti, password con il link, avvisi delle operazioni e importazione dei soci da Excel (v0.40.0): `collaudo-O-utenti-importazione.md`. Concluso il 16/10/2026; osservazioni corrette nella v0.42.0 (blocco O-bis). Azzeramento: O14.
 - **P** — Azzeramento dei dati di prova con il comando `php artisan gestionale:azzera` (v0.41.0): `collaudo-P-azzeramento.md`. Prende il posto di J12, K11, L12, M12, N12 e O14.
 - **O-bis** — Consiglio Direttivo, utenti del CD, Amministratore, correzioni del collaudo O ed errori dei campi (v0.42.0, v0.42.1): `collaudo-O-bis-consiglio-direttivo.md`. **Superato il 18/10/2026.**
+- **Q** — Anticipi e note di rimborso, «Pagato da me», rinuncia al rimborso, chiusura dell'anno con anticipi aperti (v0.43.0): `collaudo-Q-anticipi.md`. Azzeramento: Q17 (con il blocco P).
 
 ## CD di prova (SQL)
 Controllo dei soci:

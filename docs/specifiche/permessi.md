@@ -212,3 +212,15 @@ modifica.
     da lì solo Revisore e Amministratore, uno ciascuno fra gli utenti attivi.
   - Migration `000104` (permessi compresi); `RuoloSeeder` e `SezioneSeeder`
     aggiornati, da non rilanciare sul server.
+
+- **Anticipi e note di rimborso** (v0.43.0, 20/10/2026, `anticipi.md`):
+  nessuna sezione nuova, stanno dentro `prima_nota`:
+  - consultano la pagina, le note, i PDF e le copie firmate tutti quelli che
+    vedono la Prima Nota (Revisore, Segretario, Consigliere, Vicepresidente);
+  - spese anticipate, note, firme, pagamenti, rinunce e annullamenti li
+    registrano Presidente e Tesoriere (`puoModificare('prima_nota')`),
+    anche per sé stessi (A5): pagamento, annullamenti e rinuncia sono a
+    rischio alto e arrivano per email agli altri (`AvvisiOperazioni`, voce
+    `NotaRimborso`);
+  - «Pagato da me» negli scontrini: chi ha la sezione `scontrini` piena ed
+    è collegato a un socio attivo maggiorenne (E5).

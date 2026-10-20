@@ -120,8 +120,9 @@
             @if ($daChiudere)
                 <x-card :titolo="'Chiudi l\'anno ' . $daChiudere->anno">
                     <ul class="pn-controlli">
-                        @foreach ($controlli as [$testo, $fatto, $nota])
-                            <li @class(['pn-controllo', 'fatto' => $fatto, 'manca' => ! $fatto])>
+                        @foreach ($controlli as $c)
+                            @php [$testo, $fatto, $nota] = $c; $soloAvviso = ! $fatto && ($c[3] ?? false); @endphp
+                            <li @class(['pn-controllo', 'fatto' => $fatto, 'manca' => ! $fatto && ! $soloAvviso, 'avviso' => $soloAvviso])>
                                 <x-icona :nome="$fatto ? 'ok' : 'avviso'" />
                                 <div><strong>{{ $testo }}</strong><span>{{ $nota }}</span></div>
                             </li>

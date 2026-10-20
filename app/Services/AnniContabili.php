@@ -109,15 +109,17 @@ class AnniContabili
     }
 
     /**
-     * Cosa manca per chiudere l'anno: elenco di [testo, fatto, nota].
+     * Cosa manca per chiudere l'anno: elenco di [testo, fatto, nota, solo avviso].
+     * Un controllo «solo avviso» non fatto non blocca la chiusura.
      *
-     * @return array<int, array{0: string, 1: bool, 2: string}>
+     * @return array<int, array{0: string, 1: bool, 2: string, 3?: bool}>
      */
     public function controlliChiusura(int $anno): array
     {
         $daClassificare = PrimaNota::query()->anno($anno)
             ->whereHas('categoria', fn ($q) => $q->where('codice', PrimaNotaCategoria::DA_CLASSIFICARE))->count();
         $anticipi = PrimaNota::query()->anno($anno)->where('sospeso', true)->whereNull('rimborsato_il')->count();
+        $importoAnticipi = (string) PrimaNota::query()->anno($anno)->where('sospeso', true)->whereNull('rimborsato_il')->sum('importo');
         // Scontrini con le righe che non tornano al totale (v0.39.0, scontrini.md §7)
         $daQuadrare = \App\Models\PrimaNotaScontrino::where('anno', $anno)->where('stato', 'da_quadrare')->count();
         $prima = $this->precedente($anno);
@@ -130,7 +132,11 @@ class AnniContabili
             ['Saldi di apertura impostati', ! $apertura['da_impostare'], $apertura['da_impostare'] ? 'Mancano i saldi di apertura di cassa e banca' : ($apertura['da_anno_prima'] ? 'Dai saldi finali del ' . $prima?->anno : 'Scritti a mano')],
             ['Nessun movimento da classificare', $daClassificare === 0, $daClassificare === 0 ? 'Tutti i movimenti hanno la loro categoria' : $daClassificare . ' ' . ($daClassificare === 1 ? 'movimento' : 'movimenti') . ' in «Uscite da classificare»'],
             ['Nessuno scontrino da quadrare', $daQuadrare === 0, $daQuadrare === 0 ? 'I movimenti di ogni scontrino tornano al suo totale' : $daQuadrare . ' ' . ($daQuadrare === 1 ? 'scontrino' : 'scontrini') . ' da quadrare (Scontrini)'],
-            ['Nessun anticipo da rimborsare', $anticipi === 0, $anticipi === 0 ? 'Nessuna spesa anticipata in sospeso' : $anticipi . ' ' . ($anticipi === 1 ? 'spesa anticipata' : 'spese anticipate') . ' da rimborsare'],
+            // A2 (v0.43.0): avviso, non blocco. Una spesa aperta entra nell'anno
+            // in cui si rimborsa; nel rendiconto è un debito verso i soci.
+            ['Anticipi da rimborsare', $anticipi === 0, $anticipi === 0 ? 'Nessuna spesa anticipata in sospeso'
+                : $anticipi . ' ' . ($anticipi === 1 ? 'spesa anticipata' : 'spese anticipate') . ' ancora da rimborsare ('
+                . \App\Support\Importo::it($importoAnticipi, true) . '): non bloccano la chiusura, entrano nell\'anno del rimborso e nel rendiconto sono debiti verso i soci', true],
         ];
     }
 
@@ -139,7 +145,7 @@ class AnniContabili
         $riga = $this->trova($anno);
 
         return $riga && ! $riga->isChiuso()
-            && collect($this->controlliChiusura($anno))->every(fn ($c) => $c[1]);
+            && collect($this->controlliChiusura($anno))->every(fn ($c) => $c[1] || ($c[3] ?? false));
     }
 
     /**

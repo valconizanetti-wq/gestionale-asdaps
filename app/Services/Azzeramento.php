@@ -92,6 +92,7 @@ class Azzeramento
         'gl_governance_cd',
         'gl_lettere',
         'gl_lettere_invii',
+        'gl_note_rimborso',
         'gl_password_reset_tokens',
         'gl_prima_nota',
         'gl_prima_nota_documenti',
@@ -148,6 +149,7 @@ class Azzeramento
         'gl_promemoria_invii' => 'Promemoria inviati',
         'gl_prima_nota' => 'Movimenti di Prima Nota',
         'gl_prima_nota_documenti' => 'Giustificativi',
+        'gl_note_rimborso' => 'Note di rimborso',
         'gl_anni_contabili' => 'Anni contabili',
         'gl_tag' => 'Tag',
         'gl_soggetti' => 'Fornitori',                       // D5

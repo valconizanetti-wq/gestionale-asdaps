@@ -20,6 +20,7 @@
             <a href="{{ route('prima-nota.export-csv', $parametri + ['anno' => $anno]) }}" class="btn btn-secondary solo-desktop">
                 <x-icona nome="download" width="14" height="14" /> CSV
             </a>
+            <a href="{{ route('prima-nota.anticipi.index') }}" class="btn btn-secondary">Anticipi e note</a>
             <a href="{{ route('prima-nota.anni.index') }}" class="btn btn-secondary">Anni e saldi</a>
             <a href="{{ route('prima-nota.categorie.index') }}" class="btn btn-secondary">Categorie</a>
             @if (! $chiuso && auth()->user()->puoModificare('scontrini') && Route::has('scontrini.create'))
@@ -57,12 +58,12 @@
     @endif
 
     @if (! $chiuso && ($kpi['da_classificare'] || $kpi['anticipi_n']))
-        <x-avviso tipo="warn" titolo="Da sistemare prima della chiusura dell'anno.">
+        <x-avviso tipo="warn" :titolo="$kpi['da_classificare'] ? 'Da sistemare prima della chiusura dell\'anno.' : 'Da sistemare.'">
             @if ($kpi['da_classificare'])
                 <a href="{{ route('prima-nota.index', ['anno' => $anno, 'tipo' => 'da_classificare']) }}">{{ $kpi['da_classificare'] }} {{ $kpi['da_classificare'] === 1 ? 'movimento' : 'movimenti' }} da classificare</a>@if ($kpi['anticipi_n']) · @endif
             @endif
             @if ($kpi['anticipi_n'])
-                <a href="{{ route('prima-nota.index', ['anno' => $anno, 'tipo' => 'anticipi']) }}">{{ $kpi['anticipi_n'] }} {{ $kpi['anticipi_n'] === 1 ? 'spesa anticipata' : 'spese anticipate' }} da rimborsare</a>
+                <a href="{{ route('prima-nota.anticipi.index') }}">{{ $kpi['anticipi_n'] }} {{ $kpi['anticipi_n'] === 1 ? 'spesa anticipata' : 'spese anticipate' }} da rimborsare</a>
             @endif
         </x-avviso>
     @endif
@@ -81,7 +82,8 @@
                :sub="$kpi['uscite_n'] . ' ' . ($kpi['uscite_n'] === 1 ? 'movimento' : 'movimenti')"
                :href="route('prima-nota.index', ['anno' => $anno, 'tipo' => 'uscita'])" :attivo="$filtri['tipo'] === 'uscita'" />
         <x-kpi label="Anticipi da rimborsare" :valore="Importo::it($kpi['anticipi'], true)" :variante="$kpi['anticipi'] > 0 ? 'warn' : null"
-               :sub="$kpi['anticipi_n'] ? $kpi['anticipi_n'] . ' ' . ($kpi['anticipi_n'] === 1 ? 'spesa' : 'spese') : 'Nessuno'" />
+               :sub="$kpi['anticipi_n'] ? $kpi['anticipi_n'] . ' ' . ($kpi['anticipi_n'] === 1 ? 'spesa' : 'spese') : 'Nessuno'"
+               :href="route('prima-nota.anticipi.index')" />
     </div>
 
     <form method="GET" action="{{ route('prima-nota.index') }}" class="filter-bar pn-filtri" x-data="{ aperti: false }">
@@ -206,7 +208,7 @@
                                             $m->soggetto,
                                             $m->socio ? $m->socio->cognome . ' ' . $m->socio->nome : null,
                                             trim(implode(' ', array_filter([\App\Models\PrimaNota::TIPI_DOCUMENTO[$m->tipo_documento] ?? null, $m->numero_documento]))) ?: null,
-                                            $m->sospeso ? 'anticipata da ' . $m->anticipato_da : null,
+                                            $m->sospeso ? 'anticipata da ' . $m->anticipanteNome() . ($m->notaRimborso ? ' · ' . $m->notaRimborso->numero : '') : null,
                                         ]);
                                     @endphp
                                     @if ($sotto)<span class="td-sub">{{ implode(' · ', $sotto) }}</span>@endif

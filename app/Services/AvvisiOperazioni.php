@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
  * (AuditLogService::scrivi): importazione dei soci, ruoli e stato degli
  * utenti, eliminazione e ripristino delle schede, annullamento delle
  * ricevute, correzioni e riapertura degli anni chiusi, eliminazione dei
- * movimenti, saldi di apertura cambiati. Prende il posto della vecchia
+ * movimenti, saldi di apertura cambiati, pagamento, annullamento e rinuncia
+ * delle note di rimborso (v0.43.0). Prende il posto della vecchia
  * notifica «al Presidente» dell'observer, che arrivava anche a chi aveva
  * fatto l'operazione.
  *
@@ -42,6 +43,7 @@ class AvvisiOperazioni
         'PrimaNota' => ['prima_nota', 'prima-nota.index'],
         'AnnoContabile' => ['prima_nota', 'prima-nota.anni.index'],
         'PrimaNotaScontrino' => ['prima_nota', 'scontrini.index'],
+        'NotaRimborso' => ['prima_nota', 'prima-nota.anticipi.index'],
         'GovernanceCd' => ['governance_cd', 'governance.index'],
     ];
 

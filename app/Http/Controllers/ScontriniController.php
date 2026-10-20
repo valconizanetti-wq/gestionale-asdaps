@@ -207,6 +207,7 @@ class ScontriniController extends Controller
             'letto' => $letto,
             'riconosciuto' => $fornitori->riconosci($letto['fornitore'] ?? null, $letto['partita_iva'] ?? null),
             'elenco' => $this->elencoFornitori(),
+            'pagatoDaMe' => $this->socioCheAnticipa($request->user()) !== null,
         ]);
     }
 
@@ -231,10 +232,16 @@ class ScontriniController extends Controller
         }
 
         $nuovo = $request->input('fornitore') === 'nuovo';
+        // «Pagato da me» (AN-1b, v0.43.0): solo per chi è collegato a un socio attivo maggiorenne
+        $socio = $this->socioCheAnticipa($request->user());
+        $conti = array_keys(PrimaNota::CONTI);
+        if ($socio) {
+            $conti[] = PrimaNotaScontrino::ANTICIPO;
+        }
         $dati = Validator::make($request->all(), [
             'importo' => ['required', Importo::regola()],
             'data' => ['required', 'date_format:Y-m-d', 'after_or_equal:2000-01-01', 'before_or_equal:' . today()->toDateString()],
-            'conto' => ['required', Rule::in(array_keys(PrimaNota::CONTI))],
+            'conto' => ['required', Rule::in($conti)],
             'nota' => ['required', 'string', 'max:500'],
             'fornitore' => ['required', function ($a, $v, $fail) {
                 if ($v !== 'nuovo' && ! Soggetto::whereKey((int) $v)->exists()) {
@@ -257,6 +264,7 @@ class ScontriniController extends Controller
             'nuovo_nome.required' => 'Scrivi la ragione sociale del fornitore nuovo.',
             'nuovo_partita_iva.regex' => 'La partita IVA ha 11 cifre.',
             'nota.required' => 'Scrivi che cosa hai comprato.',
+            'conto.in' => 'Scegli come è stato pagato: cassa, banca' . ($socio ? ' o «Pagato da me»' : '') . '.',
         ], ['importo' => 'totale', 'conto' => 'pagato con'])->validate();
 
         $anno = (int) substr($dati['data'], 0, 4);
@@ -272,6 +280,7 @@ class ScontriniController extends Controller
             'importo' => Importo::leggi($dati['importo']),
             'data' => $dati['data'],
             'conto' => $dati['conto'],
+            'anticipante_socio_id' => $socio?->id,
             'nota' => trim($dati['nota']),
             'fornitore_id' => $nuovo ? null : (int) $dati['fornitore'],
             'nuovo' => $nuovo ? [
@@ -306,7 +315,7 @@ class ScontriniController extends Controller
 
     public function show(Request $request, PrimaNotaScontrino $scontrino)
     {
-        $scontrino->load(['soggetto', 'registratoDa:id,name', 'file', 'righe.categoria:id,nome',
+        $scontrino->load(['soggetto', 'registratoDa:id,name', 'file', 'anticipante', 'righe.categoria:id,nome',
             'movimenti' => fn ($q) => $q->with('categoria:id,nome,codice')->orderBy('id')]);
         $puo = $this->puoVerificare($request->user());
         $categorie = PrimaNotaCategoria::perMovimenti('uscita');
@@ -318,6 +327,7 @@ class ScontriniController extends Controller
 
         return view('scontrini.show', [
             's' => $scontrino,
+            'nota' => $scontrino->notaRimborso(),
             'puo' => $puo,
             'chiuso' => $this->anni->chiuso($scontrino->anno),
             'categorie' => $categorie,
@@ -337,7 +347,7 @@ class ScontriniController extends Controller
                     $fail("La data deve restare nel {$scontrino->anno}: lo scontrino è numerato in quell'anno.");
                 }
             }],
-            'conto' => ['required', Rule::in(array_keys(PrimaNota::CONTI))],
+            'conto' => ['required', Rule::in(array_merge(array_keys(PrimaNota::CONTI), $scontrino->anticipante_socio_id ? [PrimaNotaScontrino::ANTICIPO] : []))],
             'soggetto_id' => ['required', 'integer', 'exists:gl_soggetti,id'],
             'motivazione' => [Rule::requiredIf($chiuso), 'nullable', 'string', 'min:15', 'max:1000'],
         ], [
@@ -346,13 +356,13 @@ class ScontriniController extends Controller
             'motivazione.min' => 'La motivazione deve avere almeno 15 caratteri.',
         ], ['importo' => 'totale', 'soggetto_id' => 'fornitore'])->validateWithBag('dati');
 
-        $this->scontrini->salvaDati($scontrino, [
+        $this->conBorsa('dati', fn () => $this->scontrini->salvaDati($scontrino, [
             'importo' => Importo::leggi($dati['importo']),
             'data' => $dati['data'],
             'conto' => $dati['conto'],
             'soggetto_id' => (int) $dati['soggetto_id'],
             'motivazione' => $dati['motivazione'] ?? null,
-        ]);
+        ]));
         $scontrino->refresh();
 
         return redirect()->route('scontrini.show', $scontrino)->with('success', $scontrino->stato === 'da_quadrare'
@@ -404,7 +414,7 @@ class ScontriniController extends Controller
         });
         $v->validateWithBag('divisione');
 
-        $conti = $this->scontrini->dividi($scontrino, $righe, $request->input('motivazione'));
+        $conti = $this->conBorsa('divisione', fn () => $this->scontrini->dividi($scontrino, $righe, $request->input('motivazione')));
         $n = count(array_unique(array_column($righe, 'categoria_id')));
 
         return redirect()->route('scontrini.show', $scontrino)->with('success', "Divisione registrata: {$n} "
@@ -464,7 +474,7 @@ class ScontriniController extends Controller
         ]);
         $codice = $scontrino->codice();
         $anno = $scontrino->anno;
-        $this->scontrini->elimina($scontrino, $request->input('motivazione'));
+        $this->conBorsa('elimina', fn () => $this->scontrini->elimina($scontrino, $request->input('motivazione')));
 
         return redirect()->route('scontrini.index', ['anno' => $anno])->with('success', "Scontrino {$codice} eliminato con i suoi movimenti.");
     }
@@ -499,6 +509,24 @@ class ScontriniController extends Controller
                 'partita_iva' => $s->partita_iva,
                 'usi' => (int) ($usi[$s->nome] ?? 0),
             ])->all();
+    }
+
+    /** Socio dell'utente, se può anticipare una spesa (attivo e maggiorenne, E5). */
+    private function socioCheAnticipa(User $u): ?\App\Models\Socio
+    {
+        $socio = $u->socio_id ? \App\Models\Socio::find($u->socio_id) : null;
+
+        return \App\Services\NoteRimborso::puoAnticipare($socio) ? $socio : null;
+    }
+
+    /** Errori del servizio nella borsa della finestra da cui arriva la richiesta. */
+    private function conBorsa(string $borsa, \Closure $operazione): mixed
+    {
+        try {
+            return $operazione();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e->errorBag($borsa);
+        }
     }
 
     private function puoVerificare(User $u): bool

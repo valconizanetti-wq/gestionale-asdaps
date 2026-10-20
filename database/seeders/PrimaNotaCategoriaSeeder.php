@@ -24,6 +24,8 @@ use Illuminate\Database\Seeder;
  * - codici AFFILIAZIONE_EPS e POLIZZE su "Affiliazione EPS" e "Polizze
  *   Assicurative": le proposte dello Scadenzario per affiliazione e polizza
  *   RC (v0.38.0);
+ * - codice DONAZIONI su "Contributi e donazioni da terzi": l'entrata della
+ *   rinuncia al rimborso di una spesa anticipata (v0.43.0, E6);
  * - "Disavanzo/Attivo anno precedente" solo per preventivo e rendiconto;
  * - due entrate con natura da verificare per il regime 398 dal 2028.
  *
@@ -61,7 +63,7 @@ class PrimaNotaCategoriaSeeder extends Seeder
 
             ['entrata', 'Attivo anno precedente', true, 'ATTIVO_PREC', 'solo_bilancio', false],
             ['entrata', 'Quote associative', true, PrimaNotaCategoria::QUOTE, 'movimenti', false],
-            ['entrata', 'Contributi e donazioni da terzi', true, null, 'movimenti', false],
+            ['entrata', 'Contributi e donazioni da terzi', true, PrimaNotaCategoria::DONAZIONI, 'movimenti', false],
             ['entrata', 'Interessi attivi su depositi bancari', true, null, 'movimenti', false],
             ['entrata', 'Gare, manifestazioni e iniziative', true, null, 'movimenti', true],
             ['entrata', 'Donazioni', false, null, 'movimenti', false],

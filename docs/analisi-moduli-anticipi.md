@@ -135,7 +135,7 @@ gli restituisce i soldi più tardi, in contanti o con un bonifico. Serve:
 Materiale allegato da Paolo il 20/10/2026: `Controllers_SDA.zip`,
 `Models_SDA.zip`, `Services_SDA.zip`, `Middleware_SDA.zip`,
 `views_SDA.zip` (questo contiene solo le viste del bilancio: mancano
-`prima-nota/rimborsa` e `nota-rimborso-pdf`).
+`prima-nota/rimborsa` e `nota-rimborso-pdf`; lette poi in §2.8).
 
 Come funziona (`PrimaNotaController`: `store`, `rimborsa`, `generaNota`,
 `confermaPagamento`, `annullaNota`, `notaRimborsoPdf`; `PrimaNota`:
@@ -356,3 +356,109 @@ EPS, e nessuno dei due si spegne prima della migrazione del Dante.
 **Proposta: il registro dei moduli passa alla Fase 2**, insieme ai moduli
 del Dante che lo rendono utile. Novembre resta agli anticipi e poi a
 Verbali e Assemblee.
+
+## 2.8 Esame delle tavole (20/10/2026)
+
+Paolo ha riallegato `Tavole-anticipi.pdf` e il codice del Dante, questa
+volta con `resources.zip` (tutte le viste), `routes.zip` e `app.zip`. Si
+leggono così anche le due viste che mancavano:
+- `prima-nota/rimborsa.blade.php`: la pagina «Rimborsa movimento», con
+  l'accorpamento delle altre spese della stessa persona e le due fasi;
+- `prima-nota/nota-rimborso-pdf.blade.php`: il PDF.
+
+Del PDF del Dante si riprende:
+- il codice della riga del Modello D accanto alla categoria, quando ci sarà
+  la mappa delle categorie (Fase 1);
+- tipo, numero e data del documento, se ci sono;
+- la causale del bonifico.
+
+Si lascia la promessa «il rimborso sarà effettuato entro il …».
+
+Nel Dante c'è anche un modulo diverso, **Rimborsi ai volontari**
+(`RimborsiVolontariController`, `gs_rimborsi_volontari`, numero
+`RIM-ANNO-NNN`). Ha voci a km ACI, viaggio e vitto, un avviso oltre i
+1.500 € di km nell'anno e una sola uscita in Prima Nota al pagamento. Non è
+l'anticipo di una spesa ma il rimborso dell'attività del volontario: va con
+il modulo Volontari (Fase 2), non nella v0.43.0.
+
+### Difetti delle tavole (si correggono nel codice)
+
+- **T1**, AN-1b. «Di tasca mia: te li rimborsa la Compagnia» diventa «Di
+  tasca mia: me li rimborsa la Compagnia».
+- **T2**, AN-4b. Il passo «Firma» non ha la data. Diventa «Firma · caricata
+  il …», come in AN-4.
+- **T3**, AN-2. Il codice fiscale del piè di pagina è un segnaposto: si
+  legge dal profilo dell'ente.
+- **T4**, AN-3. Manca il modo di classificare, correggere o eliminare una
+  spesa aperta: la tavola dice «Prima va scelta la categoria», ma non dove.
+  Serve anche nel caso della nota RIMB-2027-003 annullata per una «spesa
+  scritta due volte».
+
+  **Proposta**: la descrizione della spesa apre la sua scheda in Prima
+  Nota. Finché la spesa non è in una nota, Presidente e Tesoriere la
+  modificano o la eliminano, con le regole della Prima Nota.
+- **T5**, AN-3. Le note si accumulano negli anni. Si aggiunge la scelta
+  dell'anno della nota, con l'anno in corso come predefinito. Le «Spese
+  senza nota» si vedono tutte, di qualunque anno.
+- **T6**, AN-4. «Annulla la nota» compare anche con la nota firmata.
+  Regola: una nota si annulla finché non è pagata, cioè quando è emessa o
+  firmata.
+
+### Domande per Paolo
+
+- **E1. Quietanza dei contanti.** La nota si firma prima del pagamento,
+  quindi è una richiesta di rimborso. Con i contanti nessun foglio prova che
+  il socio ha ricevuto i soldi: il Dante, per il CD, faceva firmare «dichiara
+  di aver ricevuto».
+
+  **Proposta**: solo per i contanti, nel PDF una seconda riga «Per
+  quietanza: ricevuti € … il __/__/____», firmata dal socio quando riceve i
+  soldi. La copia caricata al passo 2 porta le due firme. Per il bonifico
+  basta la contabile della banca.
+- **E2. Visto sulla propria nota.** Se ha anticipato il Tesoriere, il PDF
+  ha «Il socio Paolo Zanetti» e «Visto, il Tesoriere Paolo Zanetti».
+
+  **Proposta**: in quel caso il visto è del Presidente. La registrazione
+  resta come in A5 (a).
+- **E3. Modalità della nota e conto del pagamento.** La nota firmata dice
+  «In contanti, dalla cassa», ma AN-4 lascia scegliere Banca.
+
+  **Proposta**: il conto è fissato dalla modalità scritta nella nota. Per
+  cambiarla si annulla la nota e se ne fa un'altra; il numero annullato
+  resta. Il documento firmato e il movimento restano così sempre uguali.
+- **E4. Giustificativo obbligatorio.** In AN-1 è facoltativo, ma la nota
+  dichiara «i giustificativi allegati sono gli originali».
+
+  **Proposta**: almeno un giustificativo è obbligatorio per una spesa
+  anticipata. Dal telefono la foto c'è sempre.
+- **E5. Chi può anticipare.** **Proposta**: solo i soci maggiorenni attivi,
+  prima i membri del CD.
+- **E6. Categoria della donazione** (AN-4b). L'unica categoria di donazioni
+  attiva è «Contributi e donazioni da terzi»; «Donazioni» (899) è
+  disattivata.
+
+  **Proposta**: si usa «Contributi e donazioni da terzi», senza riattivare
+  l'altra.
+
+Tavole per il telefono di AN-4 e AN-4b: non disegnate, si verificano a
+375 px nel codice.
+
+**Risposte di Paolo (20/10/2026)**: E1–E6 tutte «ok»; nessuna obiezione
+alle correzioni T1–T6.
+
+## 2.9 Realizzazione (v0.43.0, 20/10/2026)
+
+Scheda: `specifiche/anticipi.md`. In breve:
+- tabella `gl_note_rimborso` con la fotografia della nota; su
+  `gl_prima_nota` il socio, la nota e la data della spesa al posto delle
+  cinque colonne del Dante;
+- servizio `NoteRimborso`, controller `AnticipiController`, viste AN-3,
+  passo 1, AN-4/AN-4b, PDF AN-2; spunta AN-1 nel modulo del movimento;
+  «Pagato da me» negli scontrini (AN-1b);
+- A2: la chiusura dell'anno avvisa degli anticipi aperti senza bloccare;
+- T1–T6 fatti: testo di «Pagato da me», data della firma nei passi,
+  codice fiscale dalla scheda Associazione (carta intestata), spesa
+  aperta modificabile ed eliminabile dal modulo, scelta dell'anno delle
+  note, nota annullabile anche firmata.
+- Tre giri di revisione: `anticipi.md` §7. 181 test verdi.
+- Collaudo: blocco **Q**, `docs/test/collaudo-Q-anticipi.md`.

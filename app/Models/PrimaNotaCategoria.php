@@ -20,6 +20,8 @@ class PrimaNotaCategoria extends Model
     /** Uscite delle scadenze dell'associazione (v0.38.0, scadenzario.md). */
     public const AFFILIAZIONE = 'AFFILIAZIONE_EPS';
     public const POLIZZE = 'POLIZZE';
+    /** Entrata della rinuncia al rimborso di una spesa anticipata (v0.43.0, anticipi.md). */
+    public const DONAZIONI = 'DONAZIONI';
 
     public const USI = [
         'movimenti' => 'Movimenti',

@@ -121,7 +121,9 @@ l'immagine grande o il PDF, «Apri in una nuova scheda» e «Scarica». Su
 telefono il PDF non si incorpora (molti browser non lo mostrano): la
 finestra lo dice e offre i due pulsanti.
 Un movimento della quota di un socio o di uno scontrino non si elimina da
-qui; una spesa anticipata non ancora rimborsata non si modifica dal modulo.
+qui. Dalla v0.43.0 una spesa anticipata aperta si corregge dal modulo
+normale (T4); in una nota di rimborso importo, data, conto e socio restano
+quelli della nota e il movimento non si elimina (`anticipi.md` §3).
 
 **Giroconto**: data, da, a, importo, descrizione (proposta se vuota). Due
 righe collegate da `giroconto_id`; modifica ed eliminazione valgono per
@@ -138,7 +140,9 @@ entrambe.
   (un anno senza movimenti non ha riga e il saldo passa intatto);
 - **chiusura** (dal più vecchio aperto) solo se: l'anno è finito, quello
   prima è chiuso, i saldi di apertura ci sono, nessun movimento da
-  classificare, nessun anticipo da rimborsare; il **verbale dell'Assemblea**
+  classificare; gli anticipi ancora da rimborsare **non bloccano** dalla
+v0.43.0 (A2): la lista li segnala come avviso, entrano nell'anno del
+rimborso e nel rendiconto sono debiti verso i soci; il **verbale dell'Assemblea**
   che approva il rendiconto **si sceglie dall'elenco** (v0.35.1): verbali
   di tipo «assemblea» con seduta nell'anno in corso, dopo la fine dell'anno
   da chiudere e non futura; data e titolo si copiano dal verbale. Senza
@@ -233,7 +237,12 @@ Revisore consulta tutto (anche esportazioni e giustificativi).
   nell'elenco e non si eliminano da qui; la chiusura controlla anche gli
   scontrini da quadrare; Segretario e Consigliere leggono la Prima Nota;
   il campo «Fornitore» propone solo i fornitori in elenco;
-  **Anticipi** (da fare): `sospeso`, `rimborsato_il`, già esclusi dai saldi.
+- **Anticipi e note di rimborso** (v0.43.0, `anticipi.md`): spunta
+  «Anticipata da un socio» nel nuovo movimento (AN-1): niente conto, il
+  socio (`anticipante_socio_id`), la data della spesa (`data_spesa`),
+  almeno un giustificativo; fuori dai saldi finché la nota non è pagata,
+  poi il movimento prende data e conto del pagamento (A1). Indicatore e
+  pulsante «Anticipi e note» portano alla pagina AN-3.
 - **Bilancio/Rendiconto** (da fare): voci per categoria; tag sulle voci del
   preventivo; approvazione collegata al verbale.
 - **Azzeramento prima dell'apertura**: svuotare anche `gl_prima_nota`,

@@ -13,13 +13,24 @@
     $chiuso = $chiuso ?? false;
     $categoriaScelta = (string) old('categoria_id', $m->categoria_id);
     $importo = old('importo', $m->importo !== null ? \App\Support\Importo::it($m->importo) : '');
+    // Spesa anticipata da un socio (AN-1, v0.43.0): niente conto, il socio
+    // che l'ha pagata; in una nota di rimborso importo, data, conto e socio
+    // restano quelli della nota.
+    $anticipata = (bool) old('anticipata', $m->sospeso);
+    $inNota = $m->exists && $m->inNota();
     // Movimento di uno scontrino: tipo, conto, data e importo dalla scheda dello scontrino
-    $bloccati = (bool) $m->scontrino_id;
+    $bloccati = (bool) $m->scontrino_id || $inNota;
 @endphp
 
-@if ($bloccati)
+@if ($m->scontrino_id)
     <x-avviso tipo="info" titolo="Movimento dello scontrino {{ $m->scontrino?->codice() }}.">
         Importo, data e conto si cambiano dalla <a href="{{ route('scontrini.show', $m->scontrino_id) }}">scheda dello scontrino</a>; qui categoria, descrizione e il resto.
+        @if ($m->sospeso && ! $inNota) Spesa pagata da {{ $m->anticipanteNome() }}, da rimborsare. @endif
+    </x-avviso>
+@endif
+@if ($inNota)
+    <x-avviso tipo="info" titolo="Movimento della {{ $m->notaRimborso->isRinuncia() ? 'rinuncia' : 'nota' }} {{ $m->notaRimborso->numero }}.">
+        Importo, data e conto restano quelli della <a href="{{ route('prima-nota.anticipi.show', $m->nota_rimborso_id) }}">{{ $m->notaRimborso->isRinuncia() ? 'rinuncia' : 'nota di rimborso' }}</a>@if ($m->sospeso) (spesa pagata da {{ $m->anticipanteNome() }})@endif; qui categoria, descrizione e il resto.
     </x-avviso>
 @endif
 
@@ -27,7 +38,7 @@
     <x-avviso tipo="ko" titolo="Controlla i dati." data-errori-elenco>Alcuni campi non sono validi: li trovi evidenziati qui sotto.</x-avviso>
 @endif
 
-<div class="pn-colonne" x-data="{ tipo: @js($tipo) }">
+<div class="pn-colonne" x-data="{ tipo: @js($tipo), anticipata: @js($anticipata) }">
     <div class="pn-colonna">
         @if ($chiuso)
             <x-card titolo="Correzione su anno chiuso">
@@ -52,7 +63,9 @@
                         </label>
                     </div>
                 </fieldset>
-                <fieldset @class(['scelta-gruppo', 'has-error' => $errors->has('conto')])>
+                {{-- Bloccati (scontrino, nota): il conto si vede se c'è; altrimenti sparisce con la spunta dell'anticipo --}}
+                @if (! $bloccati || $m->conto)
+                <fieldset @class(['scelta-gruppo', 'has-error' => $errors->has('conto')]) @unless ($bloccati) x-show="! (tipo === 'uscita' && anticipata)" @if ($tipo === 'uscita' && $anticipata) x-cloak @endif @endunless>
                     <legend>Conto <span class="obbligatorio" aria-hidden="true">*</span></legend>
                     <div class="scelta-opzioni">
                         <label class="scelta">
@@ -66,7 +79,27 @@
                     </div>
                     @error('conto')<div class="form-error">{{ $message }}</div>@enderror
                 </fieldset>
+                @endif
             </div>
+            @unless ($bloccati)
+                <div class="an-anticipo" x-show="tipo === 'uscita'" @if ($tipo !== 'uscita') x-cloak @endif>
+                    <label class="form-check">
+                        <input type="hidden" name="anticipata" value="0">
+                        <input type="checkbox" name="anticipata" value="1" x-model="anticipata">
+                        Anticipata da un socio (pagata di tasca propria)
+                    </label>
+                    <div x-show="anticipata" @unless ($anticipata) x-cloak @endunless>
+                        <x-campo name="anticipante_socio_id" label="Chi l'ha pagata" tipo="select" vuota="Scegli il socio…" obbligatorio-se="anticipata"
+                                 :value="$m->anticipante_socio_id"
+                                 :opzioni="$anticipanti->mapWithKeys(fn ($s) => [$s->id => $s->cognome . ' ' . $s->nome . ($s->carica_cd ? ' · ' . $s->carica_cd : '')])->all()"
+                                 aiuto="Prima i membri del CD, poi gli altri soci attivi maggiorenni." />
+                        <x-avviso tipo="info" titolo="Niente conto adesso.">
+                            La spesa resta fuori dai saldi. Cassa o banca si scelgono con la nota di rimborso; il pagamento dà anche la data del movimento.
+                            Serve almeno un giustificativo.
+                        </x-avviso>
+                    </div>
+                </div>
+            @endunless
         </x-card>
 
         <x-card titolo="Importo e categoria">

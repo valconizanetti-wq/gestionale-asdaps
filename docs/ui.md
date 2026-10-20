@@ -597,3 +597,30 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
     «Chiedi un altro link»; occhio anche su «Ripeti la password», con il
     suo stato.
   - Verificato a 1440 e 375 px.
+
+- **v0.43.0 — Anticipi e note di rimborso** (20/10/2026, tavole AN-1…AN-4b,
+  `Tavole-anticipi.pdf` fuori dal repository; CSS sezione 20):
+  - **AN-1** nel modulo del movimento: casella «Anticipata da un socio
+    (pagata di tasca propria)» sotto Tipo e Conto (`an-anticipo`), solo per
+    le uscite; spuntata nasconde il Conto e mostra «Chi l'ha pagata» (prima
+    il CD) e l'avviso «Niente conto adesso». Per i movimenti bloccati
+    (scontrino, nota) il Conto si vede se c'è, e la casella non c'è.
+  - **AN-1b** al passo 2 degli scontrini: tre scelte una sotto l'altra
+    (`sn-tre`), la terza «Pagato da me».
+  - **AN-3** `prima-nota/anticipi`: quattro riquadri, «Spese senza nota»
+    con una card per socio (casella per spesa, `an-azioni` con i due
+    pulsanti spenti se non c'è una scelta o se c'è una spesa «da
+    classificare»), «Note» con la scelta dell'anno; su telefono le tabelle
+    diventano schede e i pulsanti vanno a tutta larghezza.
+  - Passo 1 `prima-nota/anticipi/nuova`: modulo a due colonne come il
+    movimento, con «Come funziona» (numero proposto, visto).
+  - **AN-4 / AN-4b**: passi con la data (`<x-passi>` ora prende nomi,
+    etichetta e classe; `an-passi` manda a capo i nomi sul telefono), il
+    passo corrente a sinistra, «Dati della nota» a destra, spese sotto. Il
+    conto del pagamento è fissato dalla nota: l'altra scelta è spenta
+    (`scelta.spenta`).
+  - **AN-2** PDF sulla carta intestata, con la riga «Per quietanza» per i
+    contanti (E1).
+  - Lista di chiusura dell'anno: un controllo «solo avviso» ha l'icona blu
+    (`pn-controllo.avviso`).
+  - Verificato a 1440 e 375 px, senza scorrimento orizzontale.

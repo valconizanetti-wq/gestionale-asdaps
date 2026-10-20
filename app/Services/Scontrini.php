@@ -45,7 +45,7 @@ class Scontrini
 
     /**
      * @param array{path: string, ext: string, originale: string, ridotta: ?string, ocr: array, letto: ?array} $bozza
-     * @param array{importo: string, data: string, conto: string, nota: string, fornitore_id: ?int,
+     * @param array{importo: string, data: string, conto: string, anticipante_socio_id?: ?int, nota: string, fornitore_id: ?int,
      *              nuovo: ?array{nome: string, partita_iva: ?string, indirizzo: ?string, comune: ?string},
      *              aggiungi_piva: ?string} $dati
      */
@@ -67,6 +67,7 @@ class Scontrini
                 'data_scontrino' => $dati['data'],
                 'importo_totale' => $dati['importo'],
                 'conto' => $dati['conto'],
+                'anticipante_socio_id' => $dati['conto'] === PrimaNotaScontrino::ANTICIPO ? $dati['anticipante_socio_id'] : null,
                 'nota' => $dati['nota'],
                 'soggetto_id' => $soggetto->id,
                 'ragione_sociale_raw' => $letto['fornitore'] ?? null,
@@ -87,9 +88,8 @@ class Scontrini
             PrimaNotaScontrino::withoutEvents(fn () => $s->save());
 
             $m = new PrimaNota();
-            $m->fill([
+            $m->fill(self::pagamento($s) + [
                 'tipo' => 'uscita',
-                'conto' => $dati['conto'],
                 'data' => $dati['data'],
                 'importo' => $dati['importo'],
                 'categoria_id' => $categoria->id,
@@ -195,6 +195,9 @@ class Scontrini
         DB::transaction(function () use ($s, $dati, $chiuso) {
             $s = PrimaNotaScontrino::lockForUpdate()->findOrFail($s->id);
             $soggetto = Soggetto::findOrFail($dati['soggetto_id']);
+            if ($nota = $s->notaRimborso()) {
+                throw ValidationException::withMessages(['conto' => "Lo scontrino è nella nota {$nota->numero}: totale, data e conto si cambiano dopo aver annullato la nota."]);
+            }
             $s->fill([
                 'importo_totale' => $dati['importo'],
                 'data_scontrino' => $dati['data'],
@@ -204,7 +207,7 @@ class Scontrini
 
             $movimenti = $s->movimenti()->get();
             foreach ($movimenti as $m) {
-                $m->fill(['data' => $dati['data'], 'data_documento' => $dati['data'], 'conto' => $dati['conto'], 'soggetto' => $soggetto->nome]);
+                $m->fill(self::pagamento($s) + ['data' => $dati['data'], 'data_documento' => $dati['data'], 'soggetto' => $soggetto->nome]);
                 if ($movimenti->count() === 1) {
                     $m->importo = $dati['importo'];
                 }
@@ -237,6 +240,9 @@ class Scontrini
 
         return DB::transaction(function () use ($s, $righe, $motivazione, $chiuso) {
             $s = PrimaNotaScontrino::with('soggetto')->lockForUpdate()->findOrFail($s->id);
+            if ($nota = $s->notaRimborso()) {
+                throw ValidationException::withMessages(['righe' => "Lo scontrino è nella nota {$nota->numero}: la divisione si rifà dopo aver annullato la nota."]);
+            }
             $esistenti = $s->movimenti()->orderBy('id')->lockForUpdate()->get();
             $piano = self::piano($righe, $esistenti->map(fn ($m) => ['id' => $m->id, 'categoria_id' => $m->categoria_id])->all());
 
@@ -244,9 +250,8 @@ class Scontrini
             $perCategoria = [];
             foreach ($piano['gruppi'] as $g) {
                 $m = $g['movimento_id'] ? $esistenti->firstWhere('id', $g['movimento_id']) : new PrimaNota();
-                $m->fill([
+                $m->fill(self::pagamento($s) + [
                     'tipo' => 'uscita',
-                    'conto' => $s->conto,
                     'data' => $s->data_scontrino->toDateString(),
                     'importo' => $g['importo'],
                     'categoria_id' => $g['categoria_id'],
@@ -393,6 +398,9 @@ class Scontrini
 
         DB::transaction(function () use ($s, $chiuso, $motivazione) {
             $s = PrimaNotaScontrino::lockForUpdate()->findOrFail($s->id);
+            if ($nota = $s->notaRimborso()) {
+                throw ValidationException::withMessages(['conferma' => "Lo scontrino è nella nota {$nota->numero}: si elimina dopo aver annullato la nota."]);
+            }
             $movimenti = $s->movimenti()->pluck('id')->all();
             if ($chiuso) {
                 $this->correzioneAnnoChiuso($s, 'eliminazione', (string) $motivazione);
@@ -418,6 +426,24 @@ class Scontrini
         foreach ($file as $path) {
             Storage::disk('local')->delete($path);
         }
+    }
+
+    /**
+     * Come è stato pagato, per i suoi movimenti: cassa o banca, oppure
+     * «Pagato da me» (v0.43.0), cioè una spesa anticipata da rimborsare,
+     * fuori dai saldi, senza conto, alla data dello scontrino (A1).
+     */
+    public static function pagamento(PrimaNotaScontrino $s): array
+    {
+        $anticipo = $s->isAnticipo();
+
+        return [
+            'conto' => $anticipo ? null : $s->conto,
+            'sospeso' => $anticipo,
+            'anticipante_socio_id' => $anticipo ? $s->anticipante_socio_id : null,
+            'data_spesa' => $anticipo ? $s->data_scontrino->toDateString() : null,
+            'rimborsato_il' => null,
+        ];
     }
 
     // ----------------------------------------------------------------

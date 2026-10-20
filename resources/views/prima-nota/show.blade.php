@@ -9,7 +9,7 @@
         $puoModificare = auth()->user()->puoModificare('prima_nota');
         $giroconto = $m->isGiroconto();
         $daClassificare = $m->categoria?->codice === \App\Models\PrimaNotaCategoria::DA_CLASSIFICARE;
-        $eliminabile = ! $m->rinnovo_id && ! $m->scontrino_id;
+        $eliminabile = ! $m->rinnovo_id && ! $m->scontrino_id && ! $m->inNota();
     @endphp
 
     <x-page-header :titolo="$giroconto ? 'Giroconto' : 'Movimento'" :evidenza="'n. ' . $m->id"
@@ -29,9 +29,7 @@
         @if ($puoModificare)
             <x-slot:azioni>
                 <a href="{{ route('prima-nota.create', ['tipo' => $giroconto ? 'uscita' : $m->tipo]) }}" class="btn btn-secondary"><x-icona nome="piu" width="14" height="14" /> Nuovo movimento</a>
-                @unless ($m->isAnticipoAperto())
                 <a href="{{ route('prima-nota.edit', $m) }}" class="btn btn-primary"><x-icona nome="matita" width="14" height="14" /> {{ $chiuso ? 'Correggi' : 'Modifica' }}</a>
-                @endunless
                 @if ($eliminabile)
                     <button type="button" class="btn btn-danger-outline" @click="$dispatch('apri-modale', 'elimina')"><x-icona nome="cestino" width="14" height="14" /> Elimina</button>
                 @endif
@@ -52,6 +50,22 @@
         </x-avviso>
     @endif
 
+    @if ($m->sospeso || $m->inNota())
+        @php $nota = $m->notaRimborso; @endphp
+        <x-avviso :tipo="$m->isAnticipoAperto() ? 'warn' : 'info'" :titolo="$m->sospeso ? 'Spesa anticipata da ' . $m->anticipanteNome() . '.' : 'Donazione della rinuncia ' . $nota?->numero . '.'">
+            @if ($m->isAnticipoAperto() && ! $nota)
+                Da rimborsare: fuori dai saldi finché non si paga. La nota si prepara da <a href="{{ route('prima-nota.anticipi.index') }}">Anticipi e note di rimborso</a>.
+            @elseif ($m->isAnticipoAperto())
+                Nella {{ $nota->isRinuncia() ? 'rinuncia' : 'nota' }} <a href="{{ route('prima-nota.anticipi.show', $nota) }}">{{ $nota->numero }}</a> ({{ mb_strtolower($nota->statoTesto()) }}): fuori dai saldi fino al {{ $nota->isRinuncia() ? 'passo 3' : 'pagamento' }}.
+            @elseif ($m->sospeso)
+                {{ $nota?->isRinuncia() ? 'Il socio ha rinunciato al rimborso (donazione)' : 'Rimborsata' }} il {{ $m->rimborsato_il->format('d/m/Y') }} con <a href="{{ route('prima-nota.anticipi.show', $m->nota_rimborso_id) }}">{{ $nota?->numero }}</a>@if ($nota?->firmata_path), <a href="{{ route('prima-nota.anticipi.firmata.show', $nota) }}" target="_blank" rel="noopener">copia firmata</a>@endif.
+                Data della spesa: {{ $m->dataSpesa()->format('d/m/Y') }}.
+            @else
+                Entrata collegata alla <a href="{{ route('prima-nota.anticipi.show', $nota) }}">rinuncia {{ $nota?->numero }}</a>: si toglie annullando la sua registrazione.
+            @endif
+        </x-avviso>
+    @endif
+
     @if ($m->rinnovo_id)
         <x-avviso tipo="info" titolo="Quota associativa.">
             Movimento della quota {{ $m->rinnovo?->anno }}@if ($m->socio) di {{ $m->socio->cognome }} {{ $m->socio->nome }}@endif: non si elimina da qui.
@@ -61,7 +75,10 @@
     <div class="scheda-griglia">
         <x-card titolo="Dati del movimento">
             <dl class="dati-griglia">
-                <x-dato label="Data" :valore="$m->data->format('d/m/Y')" />
+                <x-dato :label="$m->isAnticipoAperto() ? 'Data della spesa' : 'Data'" :valore="$m->data->format('d/m/Y')" />
+                @if ($m->sospeso && ! $m->isAnticipoAperto() && $m->data_spesa && ! $m->data_spesa->equalTo($m->data))
+                    <x-dato label="Data della spesa" :valore="$m->data_spesa->format('d/m/Y')" />
+                @endif
                 <x-dato label="Importo">
                     <span class="{{ $giroconto ? 'importo-neutro' : ($m->isEntrata() ? 'importo-entrata' : 'importo-uscita') }}">{{ Importo::it($m->importo, true) }}</span>
                 </x-dato>
@@ -69,7 +86,7 @@
                     <x-dato label="Da" :valore="$m->contoLabel()" />
                     <x-dato label="A" :valore="$m->giroconto?->contoLabel()" />
                 @else
-                    <x-dato label="Conto" :valore="$m->sospeso && ! $m->rimborsato_il ? 'Da rimborsare a ' . $m->anticipato_da : $m->contoLabel()" />
+                    <x-dato label="Conto" :valore="$m->isAnticipoAperto() ? 'Da rimborsare a ' . $m->anticipanteNome() : $m->contoLabel()" />
                     <x-dato label="Categoria" :valore="$m->categoria?->nome" />
                 @endif
                 <x-dato label="Descrizione" :valore="$m->descrizione" class="col-span-2" />

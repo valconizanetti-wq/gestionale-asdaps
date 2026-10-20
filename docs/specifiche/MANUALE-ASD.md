@@ -308,7 +308,7 @@ Normativa: D.Lgs. 36/2021 art. 29, corretto da D.Lgs. 163/2022 e D.Lgs.
 | Ruoli/Utenti | riuso diretto — **confermato** | vedi §6.11 |
 | Soci | riuso diretto — **confermato** | nessuna modifica allo schema; le nuove tabelle del modulo Tesseramento si collegano con FK verso `gl_soci`, non viceversa (solo relazioni Eloquent inverse aggiunte su `Socio.php`). Verifica prima delle viste in scheda `soci.md`: regole di uscita del socio, minore età calcolata dalla data di nascita, correzione del default di `anno_iscrizione`; tessera interna ancora da decidere |
 | Rinnovi quota | riuso diretto — **confermato** | vedi §6.8; tracciabilità già coperta via `gl_prima_nota`, dicitura esenzione IVA è dettaglio template PDF |
-| Prima Nota | adattamento — **completato** | modulo Scontrini/OCR (§6) + monitoraggio plafond/tracciabilità 398/91 (§6.1), nessuna nuova tabella oltre a quelle di §6 |
+| Prima Nota | adattamento — **completato** | modulo Scontrini/OCR (§6) + monitoraggio plafond/tracciabilità 398/91 (§6.1); anticipi e note di rimborso dal Gestionale APS, corretti (§6.14, v0.43.0, tabella `gl_note_rimborso`) |
 | Progetti | riuso diretto — **confermato** | vedi §6.9; `codice_dm39`/`codice_documento` residui RUNTS non applicabili, lasciati inutilizzati |
 | Governance CD | adattamento — **completato** | vedi §6.3: eliminata ridondanza anagrafica (FK `socio_id` obbligatoria), verbale nomina, incompatibilità art. 11 |
 | Assemblee, Verbali | riuso diretto | |
@@ -969,6 +969,28 @@ tesoriere, revisore).
 Soci › «Importa da Excel» dal modello, con anteprima degli errori riga per
 riga e conferma solo senza errori; le quote del vecchio gestionale dal 2027
 entrano senza ricevuta né movimento.
+
+### 6.14 Anticipi e note di rimborso (v0.43.0, 20/10/2026)
+
+Ripresi dal Gestionale APS del Dante (`PrimaNotaController`: nota
+`RIMB-ANNO-NNN` in due fasi, accorpamento, annullamento) e corretti: otto
+difetti in `analisi-moduli-anticipi.md` §2.2-bis, risposte di Paolo A1–A6
+ed E1–E6 (§2.4, §2.8). Scheda: `specifiche/anticipi.md`; tavole AN-1…AN-4b.
+
+- Spesa anticipata: un **socio** attivo maggiorenne, niente conto, almeno
+  un giustificativo; fuori dai saldi fino al pagamento, che dà data e conto
+  del movimento (criterio di cassa). Anche dal telefono con «Pagato da me».
+- Nota in tre passi: nota (numero con lock, mai riusato), copia firmata,
+  pagamento con il conto scritto nella nota. Annullamento motivato della
+  nota non pagata e del pagamento. PDF salvato dalla fotografia dei dati,
+  quietanza per i contanti, visto del Presidente sulla nota del Tesoriere.
+- Rinuncia al rimborso come donazione: uscita ed entrata uguali in cassa
+  nella stessa data («Contributi e donazioni da terzi», codice
+  `DONAZIONI`).
+- Chiusura dell'anno non più bloccata dagli anticipi aperti: avviso; nel
+  rendiconto sono debiti verso i soci.
+- Diverso dai **rimborsi ai volontari** del Dante (`RIM-ANNO-NNN`, km,
+  vitto): quelli vanno con il modulo Volontari (Fase 2).
 
 ## 7. Correzioni da riportare su `MANUALE-CORE.md`
 

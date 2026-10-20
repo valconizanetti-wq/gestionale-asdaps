@@ -104,7 +104,15 @@ la riga da cui viene), data (avviso se tagliata o vecchia), riquadro
    di un altro fornitore si segnala invece di creare un doppione;
 5. «Scegli dalla lista dei fornitori» (finestra con ricerca).
 Poi nota, pagato con (proposto da «PAGAMENTO CONTANTE/ELETTRONICO»), righe
-lette. «Registra» (anno aperto, data non futura, anno dall'avvio della
+lette. Dalla v0.43.0 (tavola AN-1b) «Pagato con» ha una terza scelta,
+**«Pagato da me»** («Di tasca mia: me li rimborsa la Compagnia»), solo per
+chi è collegato a un socio attivo maggiorenne (gli utenti del CD): lo
+scontrino ha `conto = 'anticipo'` e `anticipante_socio_id`, i suoi
+movimenti nascono come spese anticipate (senza conto, fuori dai saldi) e
+seguono `Scontrini::pagamento()` anche dopo «Salva i dati» e la divisione.
+Quando un suo movimento è in una nota di rimborso, totale, data, conto,
+divisione ed eliminazione sono bloccati finché la nota non si annulla
+(`anticipi.md` §3). «Registra» (anno aperto, data non futura, anno dall'avvio della
 contabilità nel gestionale: 2027, o prima se c'è un anno contabile di
 prova; fino ad allora gli scontrini veri restano in `gestionale-acv` e il
 passo 1 lo dice): in una transazione

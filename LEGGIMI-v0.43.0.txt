@@ -1,0 +1,71 @@
+Gestionale ASD - v0.43.0 (20/10/2026)
+Anticipi e note di rimborso: spesa pagata di tasca propria da un socio, nota in tre passi
+(nota con il PDF, copia firmata, pagamento), rinuncia al rimborso come donazione,
+"Pagato da me" negli scontrini dal telefono, chiusura dell'anno non bloccata dagli anticipi
+
+Da applicare sopra la v0.42.1.
+UNA migration (2026_10_20_000105); nessun seeder da lanciare (la migration mette da sola il
+codice DONAZIONI su "Contributi e donazioni da terzi"); nessun pacchetto Composer nuovo;
+CSS cambiato (npm run build).
+Dettaglio: docs/specifiche/anticipi.md; analisi docs/analisi-moduli-anticipi.md (parte 2,
+par. 2.2-bis, 2.4, 2.8, 2.9). Tavole AN-1...AN-4b: Tavole-anticipi.pdf (fuori dal repository).
+Collaudo: docs/test/collaudo-Q-anticipi.md (Q1-Q17).
+
+COSA CAMBIA
+  Prima Nota
+  - Nuovo movimento di uscita: spunta "Anticipata da un socio (pagata di tasca propria)".
+    Niente conto, si sceglie il socio (attivo e maggiorenne, prima il CD), almeno un
+    giustificativo. La spesa resta fuori dai saldi fino al pagamento del rimborso, che le da'
+    la data e il conto (criterio di cassa); la data della spesa resta.
+  - Pulsante "Anticipi e note" e indicatore "Anticipi da rimborsare" -> pagina nuova.
+  - Una spesa aperta si corregge dal modulo; dentro una nota importo, data, conto e socio sono
+    bloccati e non si elimina.
+  - Chiusura dell'anno: gli anticipi aperti sono un avviso, non bloccano piu'.
+  Anticipi e note di rimborso (Prima Nota > Anticipi e note)
+  - Spese senza nota per socio; "Prepara la nota di rimborso" o "Rinuncia al rimborso".
+  - Nota RIMB-ANNO-NNN (mai riusato, anche dopo un annullamento), PDF salvato, cassa o banca
+    (con l'IBAN controllato): il conto del pagamento e' quello scritto nella nota.
+  - PDF: firma del socio e visto del Tesoriere (del Presidente se ha anticipato il
+    Tesoriere); con i contanti la riga "Per quietanza".
+  - Passo 2: si carica la copia firmata. Passo 3: data del pagamento (non prima della nota,
+    non in un anno chiuso).
+  - Annulla la nota (emessa o firmata) e annulla il pagamento: motivo obbligatorio, Audit Log a
+    rischio alto, email agli altri del CD.
+  - Rinuncia: uscita delle spese ed entrata "Contributi e donazioni da terzi" in cassa nella
+    stessa data; il saldo non cambia.
+  Scontrini dal telefono
+  - Terza scelta "Pagato da me" per gli utenti del CD collegati a un socio. Uno scontrino in
+    una nota non cambia totale, data, conto e divisione e non si elimina.
+  Soci
+  - La scheda di un socio con spese anticipate o note non si elimina.
+
+LOCALE (Laragon)
+  1. git pull                    (oppure: estrarre lo ZIP nella radice e fare un commit)
+  2. php artisan migrate
+  3. npm run build
+  4. php artisan test           -> 181 superati
+  5. git archive -o deploy.zip HEAD   e   build.zip con public/build (come di solito)
+
+SERVER (deploy.md par. 5)
+  1. unzip deploy.zip in ~/gestionale-asd (sovrascrivendo) e build.zip in public
+  2. php artisan migrate --force
+  3. php artisan optimize:clear   poi le tre cache (config, route, view)
+  4. Controllo: php artisan route:list --name=anticipi   -> 10 rotte (se 0: deploy.zip
+     vecchio o non sovrascritto)
+  Poi collaudo Q. Il pagamento si registra solo da un anno aperto dall'avvio della
+  contabilita': con l'anno contabile 2026 di prova vanno bene le date del 2026.
+
+FILE PRINCIPALI
+  Nuovi: app/Models/NotaRimborso.php; app/Services/NoteRimborso.php;
+    app/Http/Controllers/AnticipiController.php; resources/views/anticipi/index, create, show;
+    resources/views/pdf/nota-rimborso.blade.php; database/migrations/2026_10_20_000105_...;
+    tests/Feature/AnticipiTest.php; docs/specifiche/anticipi.md, test/collaudo-Q-anticipi.md.
+  Modificati: app/Models/PrimaNota.php, PrimaNotaScontrino.php, PrimaNotaCategoria.php;
+    app/Services/Scontrini.php, AnniContabili.php, AvvisiOperazioni.php, Azzeramento.php;
+    app/Http/Controllers/PrimaNotaController.php, ScontriniController.php, SociController.php;
+    PrimaNotaCategoriaSeeder; resources/views/prima-nota/_form, show, index, anni;
+    scontrini/conferma, show; components/passi; resources/css/app.css (sezione 20);
+    routes/web.php; tests/Feature/PrimaNotaTest.php;
+    docs: analisi-moduli-anticipi.md, specifiche/prima-nota.md, scontrini.md, permessi.md,
+    ui.md, MANUALE-ASD.md (due copie), test-domande-iscrizione.md (due copie),
+    da-riportare-gestionale-aps.md (A14-A17, D22), bootstrap-prossima-sessione.md.

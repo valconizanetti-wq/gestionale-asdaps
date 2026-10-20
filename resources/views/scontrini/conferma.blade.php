@@ -163,7 +163,7 @@
         <fieldset @class(['scelta-gruppo', 'has-error' => $errors->has('conto')])>
             <legend>Pagato con <span class="obbligatorio" aria-hidden="true">*</span></legend>
             @php $conto = old('conto', $letto['conto'] ?? 'cassa'); @endphp
-            <div class="scelta-opzioni sn-due">
+            <div @class(['scelta-opzioni', 'sn-due' => ! $pagatoDaMe, 'sn-tre' => $pagatoDaMe])>
                 <label class="scelta">
                     <input type="radio" name="conto" value="cassa" @checked($conto === 'cassa')>
                     <span class="scelta-testo">Cassa <span class="scelta-sub">Contanti</span></span>
@@ -172,7 +172,17 @@
                     <input type="radio" name="conto" value="banca" @checked($conto === 'banca')>
                     <span class="scelta-testo">Banca <span class="scelta-sub">Carta o bancomat</span></span>
                 </label>
+                @if ($pagatoDaMe)
+                    {{-- AN-1b (v0.43.0): spesa anticipata, da rimborsare con una nota --}}
+                    <label class="scelta">
+                        <input type="radio" name="conto" value="anticipo" @checked($conto === 'anticipo')>
+                        <span class="scelta-testo">Pagato da me <span class="scelta-sub">Di tasca mia: me li rimborsa la Compagnia</span></span>
+                    </label>
+                @endif
             </div>
+            @if ($pagatoDaMe)
+                <div class="form-help">«Pagato da me» c'è solo per gli utenti del CD collegati a un socio. La spesa nasce da classificare e da rimborsare; la nota la prepara il Tesoriere.</div>
+            @endif
             @error('conto')<div class="form-error">{{ $message }}</div>@enderror
         </fieldset>
 

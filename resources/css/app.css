@@ -2036,3 +2036,44 @@
     .dati-griglia-3 { grid-template-columns: 1fr; }
     .dati-griglia-3 .dato-largo { grid-column: auto; }
 }
+
+/* --------------------------------------------------------------------------
+   20. ANTICIPI E NOTE DI RIMBORSO (v0.43.0)
+   Tavole AN-1…AN-4b (Tavole-anticipi.pdf), specifiche/anticipi.md.
+   -------------------------------------------------------------------------- */
+@layer components {
+    /* AN-3: titoli delle due parti, scelta dell'anno delle note */
+    .an-titolo { margin: 20px 0 10px; font-size: 15px; font-weight: 600; color: var(--color-notte); }
+    .an-titolo-riga { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .an-titolo-riga .an-titolo { margin-bottom: 10px; }
+    .an-anno .form-select { min-width: 110px; }
+    .an-gruppo + .an-gruppo { margin-top: 14px; }
+    .an-spunta { width: 40px; }
+    .an-spunta input { width: 18px; height: 18px; accent-color: var(--color-primario); }
+    .an-azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px; border-top: 1px solid var(--color-bordo); }
+    .an-scelte { font-size: 13px; color: var(--color-etichetta); }
+    .an-piede { margin-top: 12px; }
+
+    /* AN-1: spunta «Anticipata da un socio» nel modulo del movimento */
+    .an-anticipo { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--color-bordo); }
+
+    /* AN-4: conto fissato dalla nota (E3), l'altro spento */
+    .scelta.spenta { opacity: .5; background: var(--color-neutro-bg); }
+    .form-actions-fine { padding-top: 4px; }
+    .an-sostituisci summary { cursor: pointer; font-size: 13px; color: var(--color-primario); font-weight: 600; }
+
+    /* AN-1b: tre modi di pagamento uno sotto l'altro */
+    .sn-tre { grid-template-columns: 1fr; }
+
+    /* Chiusura dell'anno: anticipi aperti come avviso, non come blocco (A2) */
+    .pn-controllo.avviso svg { color: var(--color-primario); }
+}
+
+@media (max-width: 768px) {
+    .an-azioni { flex-direction: column; align-items: stretch; }
+    .an-azioni .btn { width: 100%; justify-content: center; }
+    .an-spunta { width: auto; }
+    /* Passi della nota: nomi lunghi (con la data) che vanno a capo */
+    .an-passi { gap: 6px; }
+    .an-passi .passo { flex: 1 1 0; min-width: 0; text-align: center; font-size: 11.5px; }
+}

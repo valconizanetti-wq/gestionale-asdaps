@@ -1,42 +1,49 @@
 # Bootstrap — Gestionale ASD, prossima sessione
 
 ## Repository su GitHub (fatto il 13/10/2026)
-- Codice su **GitHub**: `valconizanetti-wq/gestionale-asdaps` (da rendere privato: il 20/10/2026 risultava pubblico), ramo
+- Codice su **GitHub**: `valconizanetti-wq/gestionale-asdaps` (privato dal 20/10/2026), ramo
   `master`, tutta la storia (push del 13/10/2026 dal bundle `65ece88`).
 - Il bundle non serve più. A inizio sessione: `add_repo` (accesso «push»)
   e clone da GitHub; a fine sessione push dei commit.
 - Controllato prima del primo push: niente `.env`, chiavi o password nella
   storia; codici fiscali solo di fantasia nei test.
 - Tavole fuori dal repository: le conserva Paolo (ultime:
-  `Tavole-utenti-importazione.pdf`).
+  `Tavole-anticipi.pdf`).
 
-## Prossima sessione: esame delle tavole degli anticipi, poi codice v0.43.0
-**Da fare per primo**: Paolo esamina `Tavole-anticipi.pdf` (AN-1, AN-1b,
-AN-2, AN-3, AN-4, AN-4b; fuori dal repository, la allega lui) e manda le
-correzioni. Poi codice della **v0.43.0** partendo dal codice del Dante
-(allegati `*_SDA.zip`, da riallegare), tre giri di revisione, LEGGIMI e
-ZIP, collaudo **Q** in `docs/test/collaudo-Q-anticipi.md` (forma estesa).
-- Leggere prima `docs/analisi-moduli-anticipi.md` parte 2: risposte di
-  Paolo (§2.4), il codice del Dante e i suoi 8 difetti (§2.2-bis), il
-  percorso (§2.3), le tavole (§2.5). La parte 1 (registro dei moduli) è
-  per la Fase 2.
-- Sorgenti delle tavole: viste Blade temporanee (`_tavole/*.blade.php`,
-  rotta provvisoria, screenshot con Playwright), non nel repository: si
-  rifanno se servono.
+## Prossima sessione: collaudo Q, poi Verbali e Assemblee
+Paolo installa la **v0.43.0** (LEGGIMI: una migration, `npm run build`) e
+fa il collaudo **Q** (`docs/test/collaudo-Q-anticipi.md`, Q1–Q17, forma
+estesa). Come sempre: esiti prova per prova, correzioni in una v0.43.x,
+push su GitHub e copie nel progetto. Se un difetto chiede una scelta:
+analisi breve e domanda prima del codice.
+- Poi **Verbali e Assemblee** dal Dante (regola di Paolo: si recupera il
+  suo codice e lo si corregge), con analisi e tavole prima del codice;
+  poi il primo passo del Bilancio. Dal 1° dicembre solo correzioni.
+- Materiale del Dante da riallegare in una sessione nuova: `app.zip`,
+  `resources.zip`, `routes.zip` (allegati il 20/10/2026, più completi dei
+  vecchi `*_SDA.zip`), `bilancio-consuntivo.md_SDA.zip`.
+- Nel Dante c'è anche il modulo **Rimborsi ai volontari**
+  (`RimborsiVolontariController`, `RIM-ANNO-NNN`, km ACI, vitto): va con
+  il modulo Volontari, Fase 2 (`analisi-moduli-anticipi.md` §2.8).
 - Domanda di Paolo del 20/10/2026 (una piattaforma per APS e A.S.D.):
   risposta in `analisi-impianto-asd-aps.md` §9.
 
-## Lavoro in corso (20/10/2026): anticipi e note di rimborso
-- Analisi `docs/analisi-moduli-anticipi.md` (copia nel progetto), con il
-  codice del Dante letto (§2.2-bis) e le risposte di Paolo (§2.4). Il
-  registro dei moduli passa alla Fase 2.
-- **Regola di Paolo**: si recupera sempre il codice del Dante e lo si
-  corregge o migliora (in vista della migrazione). Codice del Dante:
-  allegati `Controllers_SDA.zip`, `Models_SDA.zip`, `Services_SDA.zip`,
-  `Middleware_SDA.zip`, `views_SDA.zip` (solo viste del bilancio: chieste
-  le altre il 20/10/2026), da riallegare in una sessione nuova.
-- Dopo gli anticipi: **Verbali e Assemblee** dal Dante, poi il primo passo
-  del Bilancio. Dal 1° dicembre solo correzioni.
+## Stato al 20/10/2026: v0.43.0 consegnata (anticipi e note di rimborso)
+- Tavole AN-1…AN-4b esaminate da Paolo il 20/10/2026: correzioni T1–T6 e
+  risposte E1–E6 tutte accettate (`analisi-moduli-anticipi.md` §2.8, §2.9).
+- Scheda `docs/specifiche/anticipi.md`: tabella `gl_note_rimborso`
+  (fotografia dei dati, PDF salvato, numero mai riusato), spesa anticipata
+  con il socio (`anticipante_socio_id`, `data_spesa`), nota in tre passi,
+  rinuncia come donazione (codice `DONAZIONI`), «Pagato da me» negli
+  scontrini, chiusura dell'anno non bloccata dagli anticipi (A2).
+- Tre giri di revisione (`anticipi.md` §7): scheda del socio con anticipi
+  non eliminabile; conto visibile nella modifica di una spesa rimborsata;
+  passi della nota a capo sul telefono; sola lettura verificata.
+- 181 test verdi (10 nuovi in `AnticipiTest`). Una migration (`000105`).
+- `da-riportare-gestionale-aps.md`: A14–A17 e D22.
+- Pagine verificate a 1440 e 375 px con Playwright (script e dati di prova
+  nella cartella temporanea della sessione: si rifanno se servono).
+- Il registro dei moduli (parte 1 dell'analisi) resta per la Fase 2.
 
 ## Stato al 19/10/2026 (sera): gestionale su gestionale.arciericastello.it
 **Trasloco concluso il 19/10/2026.**

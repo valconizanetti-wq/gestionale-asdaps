@@ -11,6 +11,7 @@ use App\Models\Soggetto;
 use App\Models\Tag;
 use App\Services\AnniContabili;
 use App\Services\AuditLogService;
+use App\Services\NoteRimborso;
 use App\Support\Importo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
@@ -44,6 +45,9 @@ class PrimaNotaController extends Controller
         'anticipi' => 'Anticipi da rimborsare',
     ];
 
+    /** Campi di una spesa in una nota di rimborso che si cambiano solo dalla nota (v0.43.0). */
+    private const CAMPI_DELLA_NOTA = ['tipo', 'conto', 'data', 'importo', 'sospeso', 'anticipante_socio_id', 'data_spesa', 'rimborsato_il', 'socio_id'];
+
     public function __construct(private AnniContabili $anni)
     {
     }
@@ -58,7 +62,7 @@ class PrimaNotaController extends Controller
         $anno = $filtri['anno'];
 
         $movimenti = $this->query($filtri)
-            ->with(['categoria:id,nome,codice,tipo', 'tag:id,nome', 'socio:id,nome,cognome', 'giroconto:id,conto'])
+            ->with(['categoria:id,nome,codice,tipo', 'tag:id,nome', 'socio:id,nome,cognome', 'giroconto:id,conto', 'anticipante:id,nome,cognome', 'notaRimborso:id,numero'])
             ->withCount('documenti')
             ->orderByDesc('data')->orderByDesc('id')
             ->paginate(25)->withQueryString();
@@ -174,7 +178,7 @@ class PrimaNotaController extends Controller
             return redirect()->route('prima-nota.show', $movimento->giroconto_id);
         }
 
-        $movimento->load(['categoria', 'tag', 'socio', 'progetto', 'rinnovo', 'registratoDa', 'giroconto', 'scontrino.file', 'scontrino.movimenti:id,scontrino_id',
+        $movimento->load(['categoria', 'tag', 'socio', 'progetto', 'rinnovo', 'registratoDa', 'giroconto', 'scontrino.file', 'scontrino.movimenti:id,scontrino_id', 'anticipante', 'notaRimborso',
             'documenti' => fn ($q) => $q->orderBy('created_at')]);
 
         return view('prima-nota.show', [
@@ -196,6 +200,8 @@ class PrimaNotaController extends Controller
             'conto' => 'banca',
             'data' => today(),
         ]);
+        // «Spesa anticipata» dalla pagina degli anticipi (AN-1)
+        $m->sospeso = $m->tipo === 'uscita' && $request->boolean('anticipata');
 
         return view('prima-nota.create', $this->datiForm($m) + ['m' => $m]);
     }
@@ -233,9 +239,6 @@ class PrimaNotaController extends Controller
     public function edit(Request $request, PrimaNota $movimento)
     {
         $this->richiediModifica($request);
-        if ($risposta = $this->anticipoAperto($movimento)) {
-            return $risposta;
-        }
 
         if ($movimento->isGiroconto()) {
             $uscita = $movimento->isEntrata() ? $movimento->giroconto : $movimento;
@@ -254,9 +257,6 @@ class PrimaNotaController extends Controller
     public function update(Request $request, PrimaNota $movimento)
     {
         $this->richiediModifica($request);
-        if ($risposta = $this->anticipoAperto($movimento)) {
-            return $risposta;
-        }
 
         if ($movimento->isGiroconto()) {
             return $this->aggiornaGiroconto($request, $movimento->isEntrata() ? $movimento->giroconto : $movimento);
@@ -264,13 +264,17 @@ class PrimaNotaController extends Controller
 
         // Movimento di uno scontrino: importo, data e conto si cambiano solo
         // dalla scheda dello scontrino (scontrini.md §4); qui categoria,
-        // descrizione, tag e il resto.
-        if ($movimento->scontrino_id) {
+        // descrizione, tag e il resto. Lo stesso per una spesa in una nota di
+        // rimborso o per l'entrata di una rinuncia (anticipi.md §3): importo,
+        // data, conto e socio restano quelli della nota.
+        if ($movimento->scontrino_id || $movimento->inNota()) {
             $request->merge([
-                'tipo' => 'uscita',
+                'tipo' => $movimento->tipo,
                 'conto' => $movimento->conto,
                 'data' => $movimento->data->toDateString(),
                 'importo' => Importo::it($movimento->importo),
+                'anticipata' => $movimento->sospeso ? '1' : '0',
+                'anticipante_socio_id' => $movimento->anticipante_socio_id,
             ]);
         }
 
@@ -286,7 +290,11 @@ class PrimaNotaController extends Controller
 
         $this->archiviaInSicurezza(function () use ($movimento, $dati, $request, $annoDopo, $chiusoPrima, $annoPrima) {
             $this->anni->assicura($annoDopo);
-            $movimento->fill($this->campi($dati))->save();
+            $campi = $this->campi($dati);
+            if ($movimento->inNota()) {
+                $campi = array_diff_key($campi, array_flip(self::CAMPI_DELLA_NOTA));
+            }
+            $movimento->fill($campi)->save();
             $this->salvaFile($movimento, $dati['file_temp'] ?? [], $request);
             if ($movimento->scontrino_id) {
                 // Le righe dello scontrino seguono la categoria del loro movimento
@@ -312,6 +320,9 @@ class PrimaNotaController extends Controller
         }
         if ($movimento->scontrino_id) {
             return back()->with('error', 'Il movimento fa parte di uno scontrino: si toglie dalla scheda dello scontrino.');
+        }
+        if ($movimento->inNota()) {
+            return back()->with('error', "Il movimento è nella nota {$movimento->notaRimborso?->numero}: si toglie solo dopo aver annullato la nota (e il suo pagamento).");
         }
 
         $anno = $movimento->annoMovimento();
@@ -553,6 +564,7 @@ class PrimaNotaController extends Controller
             'soggetti' => Soggetto::where(fn ($q) => $q->where('attivo', true)->when($m->soggetto, fn ($w) => $w->orWhere('nome', $m->soggetto)))->orderBy('nome')->pluck('nome'),
             'tags' => Tag::orderBy('nome')->pluck('nome'),
             'progetti' => Progetto::orderByDesc('id')->get(),
+            'anticipanti' => NoteRimborso::sociAnticipanti($m->anticipante_socio_id),
         ];
     }
 
@@ -562,10 +574,18 @@ class PrimaNotaController extends Controller
     {
         $tipo = $request->input('tipo') === 'entrata' ? 'entrata' : 'uscita';
         $categoriaAttuale = $attuale && $attuale->tipo === $tipo ? $attuale->categoria_id : null;
+        // Spesa anticipata da un socio (AN-1): niente conto, il socio che l'ha pagata
+        $anticipata = $tipo === 'uscita' && $request->boolean('anticipata');
+        $anticipanteAttuale = $attuale?->anticipante_socio_id;
 
         $dati = Validator::make($request->all(), [
             'tipo' => ['required', 'in:entrata,uscita'],
-            'conto' => ['required', Rule::in(array_keys(PrimaNota::CONTI))],
+            'conto' => [Rule::requiredIf(! $anticipata), 'nullable', Rule::in(array_keys(PrimaNota::CONTI))],
+            'anticipante_socio_id' => [Rule::requiredIf($anticipata), 'nullable', 'integer', function ($attr, $valore, $fail) use ($anticipata, $anticipanteAttuale) {
+                if ($anticipata && (int) $valore !== (int) $anticipanteAttuale && ! NoteRimborso::puoAnticipare(Socio::find($valore))) {
+                    $fail('Scegli il socio che ha pagato tra quelli in elenco (soci attivi maggiorenni).');
+                }
+            }],
             'data' => ['required', 'date_format:Y-m-d', 'after_or_equal:2000-01-01', 'before_or_equal:' . today()->addYear()->toDateString()],
             'importo' => ['required', Importo::regola()],
             'categoria_id' => ['required', 'integer', function ($attr, $valore, $fail) use ($tipo, $categoriaAttuale) {
@@ -594,15 +614,26 @@ class PrimaNotaController extends Controller
             'motivazione.required' => "L'anno è chiuso: scrivi perché correggi il movimento.",
             'motivazione.min' => 'La motivazione deve avere almeno 15 caratteri.',
             'file_temp.max' => 'Al massimo ' . self::MAX_FILE . ' giustificativi per volta.',
+            'conto.required' => 'Scegli il conto: cassa o banca.',
+            'anticipante_socio_id.required' => 'Scegli il socio che ha pagato la spesa.',
         ], [
             'categoria_id' => 'categoria', 'progetto_id' => 'progetto', 'socio_id' => 'socio',
             'tipo_documento' => 'tipo di documento', 'numero_documento' => 'numero', 'data_documento' => 'data del documento',
-        ])->after(fn ($v) => array_map(fn ($e) => $v->errors()->add('documenti', $e), $erroriFile))->validate();
+            'anticipante_socio_id' => 'chi l\'ha pagata',
+        ])->after(function ($v) use ($erroriFile, $anticipata, $attuale) {
+            array_map(fn ($e) => $v->errors()->add('documenti', $e), $erroriFile);
+            // E4: la nota dichiara che i giustificativi allegati sono gli originali
+            $giaAllegati = $attuale && ($attuale->scontrino_id || $attuale->documenti()->exists());
+            if ($anticipata && ! $erroriFile && ! $giaAllegati && count((array) ($v->getData()['file_temp'] ?? [])) === 0) {
+                $v->errors()->add('documenti', 'Allega almeno un giustificativo: la nota di rimborso dichiara che i giustificativi allegati sono gli originali.');
+            }
+        })->validate();
 
         $dati['importo'] = Importo::leggi($dati['importo']);
         if ($dati['tipo'] === 'uscita') {
             $dati['socio_id'] = null;
         }
+        $dati['anticipata'] = $anticipata;
 
         return $dati;
     }
@@ -639,9 +670,16 @@ class PrimaNotaController extends Controller
             $soggetto = $esistente ? $esistente->nome : Soggetto::create(['nome' => mb_substr($soggetto, 0, 200)])->nome;
         }
 
+        $anticipata = (bool) ($dati['anticipata'] ?? false);
+
         return [
             'tipo' => $dati['tipo'],
-            'conto' => $dati['conto'],
+            'conto' => $anticipata ? null : $dati['conto'],
+            // Spesa anticipata aperta (A1): resta fuori dai saldi alla data della spesa
+            'sospeso' => $anticipata,
+            'anticipante_socio_id' => $anticipata ? (int) $dati['anticipante_socio_id'] : null,
+            'data_spesa' => $anticipata ? $dati['data'] : null,
+            'rimborsato_il' => null,
             'data' => $dati['data'],
             'importo' => $dati['importo'],
             'categoria_id' => (int) $dati['categoria_id'],
@@ -655,14 +693,6 @@ class PrimaNotaController extends Controller
             'data_documento' => $dati['data_documento'] ?? null,
             'note' => $dati['note'] ?? null,
         ];
-    }
-
-    /** Spesa anticipata non ancora rimborsata: si gestisce dal rimborso (v0.37.0), non dal modulo. */
-    private function anticipoAperto(PrimaNota $m)
-    {
-        return $m->isAnticipoAperto()
-            ? redirect()->route('prima-nota.show', $m)->with('error', 'Spesa anticipata ancora da rimborsare: si gestisce dalla nota di rimborso.')
-            : null;
     }
 
     /** Un movimento di un anno chiuso resta nel suo anno; nessuno entra in un anno chiuso. */

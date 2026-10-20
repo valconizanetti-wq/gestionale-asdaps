@@ -379,6 +379,10 @@ class SociController extends Controller
         if ($socio->tesseramenti()->exists()) {
             $blocchi[] = 'ha tessere CSEN';
         }
+        // v0.43.0: spese anticipate e note di rimborso (anticipi.md)
+        if (\App\Models\PrimaNota::where('anticipante_socio_id', $socio->id)->exists() || \App\Models\NotaRimborso::where('socio_id', $socio->id)->exists()) {
+            $blocchi[] = 'ha spese anticipate o note di rimborso';
+        }
 
         return $blocchi;
     }

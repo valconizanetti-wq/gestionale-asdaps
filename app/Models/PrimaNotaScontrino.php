@@ -29,6 +29,9 @@ class PrimaNotaScontrino extends Model
         'verificato' => 'Verificato',
     ];
 
+    /** Valore di `conto` per «Pagato da me» (v0.43.0). */
+    public const ANTICIPO = 'anticipo';
+
     public const ESITI_OCR = [
         'letto' => 'Letto dalla foto',
         'non_letto' => 'Foto non letta',
@@ -43,6 +46,7 @@ class PrimaNotaScontrino extends Model
         'data_scontrino',
         'importo_totale',
         'conto',
+        'anticipante_socio_id',
         'nota',
         'anno',
         'soggetto_id',
@@ -81,6 +85,12 @@ class PrimaNotaScontrino extends Model
         return $this->belongsTo(User::class, 'registrato_da');
     }
 
+    /** Socio che l'ha pagato di tasca propria («Pagato da me», AN-1b, v0.43.0). */
+    public function anticipante(): BelongsTo
+    {
+        return $this->belongsTo(Socio::class, 'anticipante_socio_id')->withTrashed();
+    }
+
     public function movimenti(): HasMany
     {
         return $this->hasMany(PrimaNota::class, 'scontrino_id');
@@ -114,7 +124,29 @@ class PrimaNotaScontrino extends Model
 
     public function contoLabel(): string
     {
+        if ($this->conto === self::ANTICIPO) {
+            return 'Pagato da ' . ($this->anticipante ? trim($this->anticipante->cognome . ' ' . $this->anticipante->nome) : 'un socio');
+        }
+
         return PrimaNota::CONTI[$this->conto] ?? '—';
+    }
+
+    /** Pagato di tasca propria da un socio: i movimenti sono spese anticipate. */
+    public function isAnticipo(): bool
+    {
+        return $this->conto === self::ANTICIPO;
+    }
+
+    /**
+     * Numero della nota di rimborso in cui sono i suoi movimenti, o null.
+     * Finché la nota non è annullata, totale, data, conto, divisione ed
+     * eliminazione sono bloccati (anticipi.md §3).
+     */
+    public function notaRimborso(): ?NotaRimborso
+    {
+        $id = $this->movimenti()->whereNotNull('nota_rimborso_id')->value('nota_rimborso_id');
+
+        return $id ? NotaRimborso::find($id) : null;
     }
 
     /** Nome del fornitore come si vede: quello in elenco o, se tolto, quello letto. */
