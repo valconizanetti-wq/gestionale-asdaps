@@ -381,3 +381,53 @@ Inizio 2027:
 
 Nel 2027: Governance CD, Comunicazioni e gli altri moduli del Dante, verso
 il modello unico; poi la prova di migrazione del Dante su una copia.
+
+## 9. Una sola piattaforma per APS e A.S.D.: come si concilia (20/10/2026)
+
+Domanda di Paolo: si riesce a fare un'unica piattaforma per un'APS del
+Terzo settore (RUNTS) e per un'A.S.D.? **Sì**, nel senso di un solo codice
+con un'installazione e un database per ente (non un database condiviso).
+
+**La legge stessa li tiene insieme**: un'A.S.D. può iscriversi al RUNTS
+come APS e restare A.S.D. (art. 6 D.Lgs. 36/2021). La piattaforma quindi
+non sceglie fra «tipo APS» e «tipo A.S.D.»: descrive l'ente con le sue
+**qualifiche**, che possono sommarsi. Il profilo dell'ente per periodi lo
+fa già (forma giuridica, regime fiscale, qualifica sportiva;
+`ProfiloEnte::haModulo('runts' | 'rasd' | 'l398')`).
+
+**Comune (circa l'80%)**: soci e libro soci, domande, quote e ricevute,
+Prima Nota per cassa, anticipi, scontrini, Consiglio Direttivo, Assemblee
+e Verbali, privacy, Audit Log, scadenzario, promemoria, utenti e ruoli;
+bilancio sul Modello D per tutti (obbligatorio per l'APS, schema ordinato
+per l'A.S.D.).
+
+**Diverso, ma circoscritto:**
+
+| Aspetto | APS (Terzo settore) | A.S.D. |
+|---|---|---|
+| Registro | RUNTS: deposito del rendiconto, aggiornamenti, numero di soci e volontari | RASD: iscrizione, comunicazioni, rimborsi ai volontari sportivi |
+| Libri | anche il registro dei volontari (art. 17 CTS) | quelli dello statuto |
+| Fisco | regime del CTS (artt. 79, 86) | L. 398/1991 e art. 148 TUIR, se in 398 |
+| Raccolte | 5 per mille, erogazioni liberali | 5 per mille se iscritta |
+| Sport | — | tesseramento EPS, lavoro sportivo, tutela dei tesserati (D.Lgs. 39/2021) |
+| Testi | diciture di ricevute e documenti | diciture proprie (detrazione sportiva dei ragazzi) |
+
+**Come, senza due rami di codice** (§7): moduli di legge accesi dal
+profilo e per periodo (anche il passaggio della B.A.S. ad A.S.D. nel 2028
+non tocca il codice); facoltativi dal registro dei moduli (Fase 2);
+diciture scelte dal periodo dell'ente alla data del documento, come la
+ricevuta della quota; regole contabili uguali per tutti (cassa, catena
+dell'audit, numerazioni).
+
+**Attenzioni:**
+1. **Il caso misto (A.S.D. iscritta al RUNTS)** è il più delicato sul
+   fisco: per esempio il rapporto fra regime 398 ed ente del Terzo settore
+   (il CTS lo esclude per gli ETS, con modifiche normative recenti). Si
+   modella come qualifiche che si sommano, ma **le regole fiscali vanno
+   verificate con il commercialista prima di scriverle nel codice**.
+2. **Le norme cambiano** (riforma dello sport, correttivi del Terzo
+   settore): regole nel profilo e nei testi, non sparse nel codice.
+3. **Test** in almeno due configurazioni tipo (APS con RUNTS, A.S.D. in
+   398): più verifiche, non il doppio.
+4. **La migrazione del Dante** è la prova: se riparte con i dati intatti e
+   fa le sue scadenze (RUNTS, rendiconto, 770), il modello unico regge.

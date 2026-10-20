@@ -10,6 +10,22 @@
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-utenti-importazione.pdf`).
 
+## Prossima sessione: esame delle tavole degli anticipi, poi codice v0.43.0
+**Da fare per primo**: Paolo esamina `Tavole-anticipi.pdf` (AN-1, AN-1b,
+AN-2, AN-3, AN-4, AN-4b; fuori dal repository, la allega lui) e manda le
+correzioni. Poi codice della **v0.43.0** partendo dal codice del Dante
+(allegati `*_SDA.zip`, da riallegare), tre giri di revisione, LEGGIMI e
+ZIP, collaudo **Q** in `docs/test/collaudo-Q-anticipi.md` (forma estesa).
+- Leggere prima `docs/analisi-moduli-anticipi.md` parte 2: risposte di
+  Paolo (§2.4), il codice del Dante e i suoi 8 difetti (§2.2-bis), il
+  percorso (§2.3), le tavole (§2.5). La parte 1 (registro dei moduli) è
+  per la Fase 2.
+- Sorgenti delle tavole: viste Blade temporanee (`_tavole/*.blade.php`,
+  rotta provvisoria, screenshot con Playwright), non nel repository: si
+  rifanno se servono.
+- Domanda di Paolo del 20/10/2026 (una piattaforma per APS e A.S.D.):
+  risposta in `analisi-impianto-asd-aps.md` §9.
+
 ## Lavoro in corso (20/10/2026): anticipi e note di rimborso
 - Analisi `docs/analisi-moduli-anticipi.md` (copia nel progetto), con il
   codice del Dante letto (§2.2-bis) e le risposte di Paolo (§2.4). Il
