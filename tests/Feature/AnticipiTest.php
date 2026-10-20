@@ -216,7 +216,8 @@ class AnticipiTest extends TestCase
         $this->assertSame('emessa', $n->stato);
         $this->assertSame('77.40', (string) $n->totale);
         $this->assertSame('Consigliere', $n->dati['socio']['carica']);
-        $this->assertSame(['carica' => 'il Tesoriere', 'nome' => 'Paolo Zanetti'], $n->dati['visto']);
+        // assertEquals: MySQL riordina le chiavi delle colonne JSON (MariaDB no)
+        $this->assertEquals(['carica' => 'il Tesoriere', 'nome' => 'Paolo Zanetti'], $n->dati['visto']);
         Storage::disk('local')->assertExists('prima-nota/rimborsi/2027/RIMB-2027-001.pdf');
         $this->assertSame($n->id, $benzina->fresh()->nota_rimborso_id);
         $this->assertTrue(DB::table('gl_audit_log')->where('evento', 'NOTA_RIMBORSO_EMESSA')->where('entita_id', $n->id)->exists());
@@ -369,7 +370,7 @@ class AnticipiTest extends TestCase
     {
         $m = $this->spesa($this->zanetti, '38,90', '2027-02-20', 'Toner', 'Spese ufficio');
         $n = $this->nota($this->zanetti, [$m], ['data_nota' => '2027-02-24']);
-        $this->assertSame(['carica' => 'il Presidente', 'nome' => 'Andrea Papini'], $n->dati['visto']);
+        $this->assertEquals(['carica' => 'il Presidente', 'nome' => 'Andrea Papini'], $n->dati['visto']);
         $this->assertStringContainsString('Visto, il Presidente', view('pdf.nota-rimborso', ['n' => $n, 'dataDocumento' => $n->data_nota])->render());
     }
 

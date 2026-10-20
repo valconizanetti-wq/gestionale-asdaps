@@ -279,3 +279,8 @@ verso i soci.
      «Note da firmare» e «da pagare» elencavano tutti i numeri: ora al più
      tre.
 - Test: 181 verdi (10 nuovi in `AnticipiTest`).
+- 20/10/2026, test in Laragon: due prove fallivano per l'ordine delle
+  chiavi del visto. MySQL riordina le chiavi delle colonne JSON (prima le
+  più corte), MariaDB no. Il codice le legge per nome; i test ora
+  confrontano senza badare all'ordine (`assertEquals`). Nessun cambio al
+  gestionale.
