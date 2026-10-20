@@ -285,6 +285,17 @@ Sono tutte vuote: niente da migrare.
 
 ## 5. Domande per Paolo
 
+**Risposte di Paolo (20/10/2026):**
+- **V1**: progressivo nell'anno, per libro;
+- **V2**: **firma digitale** (CIE o PAdES), come nel Dante;
+- **V4**: ok;
+- **V8**: la consultazione telematica per le delibere generiche si fa
+  **subito**, nella v0.44.0, per non accumulare lavoro;
+- **V13**: ok;
+- versioni: v0.44.0 ok; v0.45.0 ok, ma si rivede alla fine della v0.44.0.
+
+V3, V5, V6, V7, V9, V10, V11 e V12: in attesa di conferma (§5-bis).
+
 **V1. Numero dei verbali.** Proposta: progressivo **per libro e per anno**
 («Assemblee 2027 n. 1», «CD 2027 n. 4»), assegnato quando il verbale
 diventa definitivo; mai riusato. In alternativa un progressivo unico che
@@ -350,6 +361,46 @@ insieme («Rendi definitivi i 3 verbali chiusi»), con il numero.
 **V13. Verbali registrati da fuori** (§4.4): servono per l'Assemblea del
 16/11/2026 e per il primo CD? Proposta: sì, nella stessa versione.
 
+## 5-bis. Conseguenze delle risposte e domande nuove
+
+**Firma digitale (V2).** La copia firmata si accetta solo se
+`FirmaDigitale::rileva` vi trova una firma PAdES o CAdES (`.p7m`). Il
+gestionale non verifica il certificato, come per l'Audit Log. Domande:
+- **V14.** Il verbale lo firmano il presidente e il segretario della
+  seduta. Se uno dei due non ha la firma digitale (per esempio il
+  segretario di un'Assemblea), basta quella dell'altro? Proposta: basta
+  **almeno una firma digitale** nel file, di norma del Presidente. Il
+  gestionale non sa contare le firme in modo affidabile.
+- **V15.** Per i verbali registrati da fuori (V13), per esempio
+  l'Assemblea del 16/11/2026, serve anche lì la firma digitale? Proposta:
+  sì, la stessa regola, così il libro è uniforme.
+
+**Consultazione telematica nella v0.44.0 (V8).** Si rende generale il
+motore delle domande (`VotazioneCd`):
+- proposta di delibera con testo e documenti;
+- email con link personale a ogni membro in carica;
+- termine di almeno 3 giorni;
+- voto favorevole, contrario o astenuto, con data, ora e link;
+- chiusura alla scadenza o quando hanno votato tutti; validità con il voto
+  della maggioranza dei componenti, esito a maggioranza dei voti espressi,
+  in parità prevale il Presidente;
+- se almeno un terzo dei consiglieri chiede la discussione in riunione, la
+  consultazione si ferma;
+- il verbale si genera da solo nel libro del CD.
+
+Non si usa per il rendiconto né per l'esclusione di un socio (art. 16.5).
+La avviano il Presidente e il Segretario. Le domande di adesione restano
+nel loro flusso, che già funziona: lo si allinea al motore comune solo se
+non cambia nulla per chi vota.
+- **V16.** La consultazione la avvia solo il Presidente (lo statuto dice
+  «su iniziativa del Presidente», art. 16.4) o anche il Segretario per
+  lui? Proposta: solo il Presidente; il Segretario può prepararla in bozza.
+
+**v0.44.0 (aggiornata):** libri e numerazione, verbale definitivo con firma
+digitale e rettifica, riunioni del CD con il voto di ciascuno,
+**consultazione telematica generale**, verbali registrati da fuori, verbali
+delle domande nel libro, collegamento con la chiusura dell'anno.
+
 ## 6. Tavole da disegnare (dopo le risposte)
 
 - **VB-1** Libri dei verbali: due schede (Assemblee, CD), numero, data,
@@ -368,6 +419,9 @@ insieme («Rendi definitivi i 3 verbali chiusi»), con il numero.
 - **VB-4** PDF del verbale (Assemblea e CD).
 - **VB-5** Registra un verbale già redatto.
 - **RS-1** Pagina pubblica della conferma di presenza (telefono).
+- **CT-1** Consultazione telematica: proposta, termine, documenti
+  (computer); **CT-2** pagina del voto dal link (telefono); **CT-3**
+  stato dei voti e chiusura.
 
 ## 7. Stima
 
