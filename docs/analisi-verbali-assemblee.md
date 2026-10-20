@@ -470,6 +470,30 @@ riformulata:
   (computer); **CT-2** pagina del voto dal link (telefono); **CT-3**
   stato dei voti e chiusura.
 
+**Disegnate il 20/10/2026** per la v0.44.0 (`Tavole-verbali.pdf`, fuori dal
+repository), con il CSS vero del gestionale e l'editor Jodit 4.17.1:
+- VB-1 Libri dei verbali (computer e telefono);
+- CD-5 Riunione del CD: convocazione e presenze, con quorum e avviso
+  dell'art. 15.5;
+- VB-2 Verbale per punti con l'editor, il voto di ciascun consigliere e
+  l'esito calcolato;
+- CT-1 Consultazione telematica in bozza; CT-2 voto dal link (telefono);
+  CT-3 consultazione in corso, voti ed esito;
+- VB-3 Verbale definitivo: copia firmata digitalmente e rettifica;
+- VB-5 Registra un verbale già redatto;
+- VB-4 PDF del verbale del CD.
+
+Le tavole dell'Assemblea (AS-1…AS-4, RS-1) restano per la v0.45.0.
+
+**Domande nate dalle tavole:**
+- **V17.** Riunione del CD, «maggioranza dei presenti» (art. 16.3).
+  Proposta: gli astenuti contano tra i presenti, quindi pesano come un voto
+  non favorevole; chi non partecipa per conflitto di interessi no.
+  Esempio: 3 presenti, 2 favorevoli e 1 astenuto: approvata.
+- **V18.** Consultazione telematica, «maggioranza dei voti espressi» (art.
+  16.4 c). Proposta: l'astenuto conta per la validità (ha votato) ma non
+  tra i voti espressi (favorevoli contro contrari).
+
 ## 7. Stima
 
 Lavoro più grande degli anticipi. Proposta in due versioni, ognuna con il
