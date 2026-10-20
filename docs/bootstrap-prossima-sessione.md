@@ -23,6 +23,10 @@ analisi breve e domanda prima del codice.
   `attiva` (es. `prima-nota.anticipi.*`) e il modo di escludere gli anticipi
   dalla voce Prima Nota, altrimenti si accendono tutte e due. Aggiornare
   `ui.md` e il collaudo Q (Q2/Q4).
+- **Analisi di Verbali e Assemblee** scritta il 20/10/2026, in parallelo
+  al collaudo Q: `docs/analisi-verbali-assemblee.md` (copia nel progetto).
+  Aspetta le risposte di Paolo a V1–V13; poi tavole (§6) e codice in due
+  versioni (v0.44.0 Verbali e CD, v0.45.0 Assemblee, §7).
 - Poi **Verbali e Assemblee** dal Dante (regola di Paolo: si recupera il
   suo codice e lo si corregge), con analisi e tavole prima del codice;
   poi il primo passo del Bilancio. Dal 1° dicembre solo correzioni.
