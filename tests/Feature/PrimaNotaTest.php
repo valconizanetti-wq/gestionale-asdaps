@@ -77,9 +77,15 @@ class PrimaNotaTest extends TestCase
         return $m;
     }
 
-    private function verbale(string $data, string $titolo, string $tipo = 'assemblea'): \App\Models\Verbale
+    /** Verbale nel libro (v0.44.0): di norma firmato, delle Assemblee, che approva il rendiconto 2027. */
+    private function verbale(string $data, string $titolo, string $libro = 'assemblee', string $stato = 'firmato', ?int $rendiconto = 2027): \App\Models\Verbale
     {
-        return \App\Models\Verbale::create(['tipo' => $tipo, 'titolo' => $titolo, 'data_seduta' => $data, 'corpo_html' => '<p>Verbale</p>']);
+        static $numero = 0;
+        $v = new \App\Models\Verbale(['tipo' => $libro === 'cd' ? 'cd_riunione' : 'assemblea', 'libro' => $libro, 'organo' => $libro === 'cd' ? 'cd' : 'ordinaria',
+            'titolo' => $titolo, 'data_seduta' => $data, 'corpo_html' => '<p>Verbale</p>', 'approva_rendiconto_anno' => $libro === 'cd' ? null : $rendiconto]);
+        $v->forceFill(['stato' => $stato] + ($stato === 'bozza' ? [] : ['anno_libro' => (int) substr($data, 0, 4), 'numero_libro' => ++$numero]))->save();
+
+        return $v;
     }
 
     private function socioTascio(): \App\Models\Socio
@@ -282,14 +288,18 @@ class PrimaNotaTest extends TestCase
         $daClass->update(['categoria_id' => $this->cat('Altre spese')->id]);
         $this->assertTrue($anni->chiudibile(2027));
 
-        // Il verbale si sceglie tra le Assemblee dell'anno in corso (collaudo J11)
+        // Il verbale si sceglie tra le Assemblee dell'anno in corso (collaudo J11),
+        // firmate e con «Approva il rendiconto dell'anno 2027» (v0.44.0)
         $this->actingAs($this->tesoriere)->get(route('prima-nota.anni.index'))->assertSee('Nessun verbale da scegliere.');
         $vecchio = $this->verbale('2027-12-01', 'Assemblea di dicembre');
-        $cd = $this->verbale('2028-02-01', 'Consiglio direttivo', 'cd_delibera');
+        $cd = $this->verbale('2028-02-01', 'Consiglio direttivo', 'cd');
+        $bozza = $this->verbale('2028-03-01', 'Assemblea in bozza', 'assemblee', 'bozza');
+        $senza = $this->verbale('2028-03-10', 'Assemblea senza rendiconto', 'assemblee', 'firmato', null);
         $giusto = $this->verbale('2028-04-18', 'Assemblea ordinaria, verbale n. 2/2028');
         $this->actingAs($this->tesoriere)->get(route('prima-nota.anni.index'))
-            ->assertSee('18/04/2028 — Assemblea ordinaria, verbale n. 2/2028 (bozza)')->assertDontSee('Assemblea di dicembre')->assertDontSee('Consiglio direttivo');
-        foreach ([$vecchio, $cd] as $v) {
+            ->assertSee('del 18/04/2028 — Assemblea ordinaria, verbale n. 2/2028')->assertDontSee('Assemblea di dicembre')->assertDontSee('Consiglio direttivo')
+            ->assertDontSee('Assemblea in bozza')->assertDontSee('Assemblea senza rendiconto');
+        foreach ([$vecchio, $cd, $bozza, $senza] as $v) {
             $this->actingAs($this->tesoriere)->post(route('prima-nota.anni.chiudi', 2027), ['verbale_id' => $v->id])->assertSessionHasErrors('verbale_id');
         }
         $this->actingAs($this->tesoriere)->post(route('prima-nota.anni.chiudi', 2027), ['verbale_id' => $giusto->id])

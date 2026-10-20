@@ -45,6 +45,9 @@ class AvvisiOperazioni
         'PrimaNotaScontrino' => ['prima_nota', 'scontrini.index'],
         'NotaRimborso' => ['prima_nota', 'prima-nota.anticipi.index'],
         'GovernanceCd' => ['governance_cd', 'governance.index'],
+        'Verbale' => ['verbali', 'verbali.index'],
+        'Seduta' => ['verbali', 'verbali.index'],
+        'Consultazione' => ['verbali', 'verbali.index'],
     ];
 
     /** Eventi del registro che hanno già un loro avviso (verifica mensile). */

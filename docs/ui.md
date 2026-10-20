@@ -624,3 +624,41 @@ larghezza, cronologia su due righe, pulsanti a tutta larghezza.
   - Lista di chiusura dell'anno: un controllo «solo avviso» ha l'icona blu
     (`pn-controllo.avviso`).
   - Verificato a 1440 e 375 px, senza scorrimento orizzontale.
+
+- **v0.44.0 — Verbali, riunioni del CD e consultazioni** (21/10/2026,
+  tavole VB-1…VB-5, CD-5, CT-1…CT-3, `Tavole-verbali.pdf` fuori dal
+  repository; CSS sezione 21):
+  - **Menu**: nuova voce **Anticipi** sotto Prima Nota (Contabilità). In
+    `config/navigazione.php` una voce può avere `accendi` (rotte che la
+    accendono) e `tranne` (rotte che non la accendono): Prima Nota non si
+    accende sulle pagine degli anticipi e Anticipi solo lì. Riunioni e
+    consultazioni stanno sotto la voce **Verbali**.
+  - **VB-1** `verbali`: schede dei due libri (`vb-schede`, `vb-scheda`),
+    «In corso» (`vb-aperte`), anno, tre riquadri, elenco con numero, data,
+    stato e copia firmata.
+  - **CD-5** scheda della riunione: passi (bozza, convocata, presenze,
+    verbale), convocazione con i destinatari e il controllo dei termini,
+    presenze in tabella con i pallini (`td-centro`) e il quorum che si
+    aggiorna (`vb-quorum`); a destra ordine del giorno, dati, documenti.
+    Modulo della bozza con i punti che si aggiungono e tolgono
+    (`vb-punti`).
+  - **VB-2** verbale per punti: una card per punto, editor, spunta
+    «Su questo punto il Consiglio delibera» (`vb-spunta`), riquadro della
+    delibera (`vb-delibera-campi`) con il voto di ciascuno e il conto;
+    barra dei pulsanti fissa in basso sul computer, non sul telefono
+    (`vb-piede`).
+  - **VB-3** scheda del verbale: passi bozza → definitivo → firmato;
+    «Rendi definitivo» con le mancanze; copia firmata con «Chi ha
+    firmato» e la sostituzione in un `details`; testo del verbale (lo
+    stesso parziale `_corpo` del PDF); rettifiche (`vb-rettifica`).
+  - **Editor** `<x-editor>` (Jodit 4.17.1, `resources/js/editor.js`
+    caricato solo nelle pagine che scrivono testi con
+    `@push('head') @vite('resources/js/editor.js')`): barra corta
+    (paragrafo, grassetto, corsivo, sottolineato, elenchi, rientri, link,
+    tabella, linea, annulla, ripeti, pulisci), niente sorgente HTML.
+  - **CT-2** pagina pubblica del voto (tema del sito): come il voto delle
+    domande, quattro scelte (`voto-scelta.neutro` per astenuto e
+    riunione), nota facoltativa, documenti (`ct-documenti`).
+  - **VB-4** PDF sulla carta intestata, con la scritta BOZZA
+    sull'anteprima e le righe per le due firme.
+  - Verificato a 1440 e 375 px, senza scorrimento orizzontale.

@@ -64,3 +64,14 @@ Route::prefix('privacy')->name('privacy-link.')->group(function () {
     Route::post('/{token}', [PrivacyLinkController::class, 'conferma'])
         ->middleware('throttle:pubblico-azioni')->name('conferma');
 });
+
+/*
+| Consultazione telematica del CD dal link personale (v0.44.0, tavola CT-2,
+| statuto art. 16.4). Pagina pubblica: il link è la chiave. I documenti
+| della proposta si scaricano dallo stesso link.
+*/
+Route::prefix('consultazione')->name('consultazione.')->controller(\App\Http\Controllers\ConsultazioneVotoController::class)->group(function () {
+    Route::get('/{token}', 'mostra')->middleware('throttle:pubblico-pagine')->name('mostra');
+    Route::get('/{token}/documenti/{documento}', 'documento')->whereNumber('documento')->middleware('throttle:pubblico-pagine')->name('documento');
+    Route::post('/{token}', 'vota')->middleware('throttle:pubblico-azioni')->name('vota');
+});

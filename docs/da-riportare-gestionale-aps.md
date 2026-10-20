@@ -2,7 +2,7 @@
 
 Elenco unico delle correzioni e delle funzioni nate nel Gestionale ASD che
 vanno riportate sul Gestionale APS (Società Dante Alighieri — Comitato di
-Orvieto). Aggiornato al 20/10/2026, con la v0.43.0 (anticipi e note di rimborso).
+Orvieto). Aggiornato al 21/10/2026, con la v0.44.0 (verbali e Consiglio Direttivo).
 
 **Come si usa.** Ogni voce dice cosa succede nel Gestionale APS, cosa si è
 fatto qui e dove guardare. I difetti sono stati trovati leggendo il codice
@@ -201,6 +201,34 @@ protezione dei dati personali, poi le funzioni.
     generazione; con l'annullamento si rifà uguale con il timbro.
   - *Dove*: `NoteRimborso::fotografia`, `pdf/nota-rimborso.blade.php`;
     difetto 6.
+
+- [ ] **A18. Verbali senza numero nel libro** (v0.44.0, difetto 1).
+  - *Nel Gestionale APS*: `gs_verbali` non ha un numero per libro; l'elenco
+    è per data di creazione, il «libro dei verbali» non esiste.
+  - *Qui*: due libri (CD, Assemblee), numero progressivo nell'anno
+    assegnato quando il verbale diventa definitivo, preso con
+    `lockForUpdate` e protetto dal vincolo unico `libro + anno_libro +
+    numero_libro`; mai riusato.
+  - *Dove*: `verbali.md`, `Verbali::rendiDefinitivo()`, migration `000106`.
+- [ ] **A19. Verbale «approvato» che si modifica ancora** (v0.44.0,
+  difetto 2).
+  - *Nel Gestionale APS*: `update()` su un verbale approvato cancella il PDF
+    e lo rifà con il testo nuovo; l'approvazione non va nell'Audit Log.
+  - *Qui*: dal definitivo il testo non cambia (controllo nei servizi e
+    nelle rotte); il PDF si genera una volta e si salva con l'impronta;
+    gli errori si correggono con una **rettifica** datata e motivata, con
+    il suo PDF da firmare. Evento `VERBALE_DEFINITIVO` a rischio alto.
+  - *Dove*: `verbali.md` §3, `Verbali::rettifica()`.
+- [ ] **A20. Voti del CD senza controllo** (v0.44.0, difetto 5).
+  - *Nel Gestionale APS*: nelle delibere del CD favorevoli, contrari e
+    astenuti si scrivono come numeri, possono superare i presenti, e
+    l'esito si sceglie a mano.
+  - *Qui*: il voto di ciascun presente (art. 16.6), «non partecipa» per il
+    conflitto di interessi, esito calcolato con una regola sola
+    (`Votazioni::esito`): maggioranza tra favorevoli e contrari, astenuti
+    fuori, parità al Presidente, esclusione con la maggioranza dei
+    componenti. Va adattata allo statuto della Dante.
+  - *Dove*: `verbali.md` §1, `Votazioni`, `Riunioni::salvaVerbale()`.
 
 ## B. Dati personali (GDPR)
 
@@ -478,6 +506,26 @@ non riportare".
   - Dove: `anticipi.md`, `AnticipiController`, `NoteRimborso`; difetti 2,
     5, 7, 8 del §2.2-bis dell'analisi.
 
+- [ ] **D23. Convocazione con i termini e rinvio che non perde la storia**
+  (v0.44.0, difetti 6 e 9).
+  - *Nel Gestionale APS*: si convoca anche il giorno prima o per una data
+    passata; dopo l'invio data e luogo si cambiano senza riconvocare; il
+    rinvio cancella i link RSVP e la storia delle risposte.
+  - *Qui* (per ora il CD; l'Assemblea nella v0.45.0): almeno 3 giorni, o 24
+    ore con «urgente» e il motivo; dopo la convocazione data, luogo e
+    ordine del giorno non cambiano: si rinvia con il motivo (e l'avviso) e
+    si riconvoca; la seduta rinviata resta nella storia.
+  - *Dove*: `Riunioni::controllaTermine()`, `rinvia()`, `riconvoca()`.
+- [ ] **D24. Dettaglio dell'Audit Log dei verbali senza dati personali**
+  (v0.44.0, difetto 12; stessa voce di B1): titoli e motivi nei valori,
+  fuori dal dettaglio che entra nell'hash; un evento per passo.
+  *Dove*: `verbali.md` §4.
+- [ ] **D25. Consultazione telematica generale del CD** (v0.44.0, art.
+  16.4 dello statuto della Compagnia): proposta con documenti, avvio del
+  Presidente, link personale con il token come impronta, chiusura
+  automatica, verbale nel libro. Da valutare per la Dante se lo statuto lo
+  prevede. *Dove*: `Consultazioni`, tavole CT-1…CT-3.
+
 ## E. PDF ed email
 
 - [ ] **E1. Larghezze delle colonne nei PDF messe su `<col>`**: DomPDF le
@@ -507,3 +555,4 @@ non riportare".
 - 14/10/2026 (v0.41.0): aggiunta D18 dal comando di azzeramento.
 - 17/10/2026 (v0.42.0): aggiunte D19–D21 dal collaudo O (Consiglio Direttivo, errori dei campi, password e accesso).
 - 20/10/2026 (v0.43.0): aggiunte A14–A17 e D22 dagli anticipi e note di rimborso.
+- 21/10/2026 (v0.44.0): aggiunte A18–A20 e D23–D25 dai verbali e dal CD (difetti 1, 2, 5, 6, 9 e 12 dell'analisi dei verbali).

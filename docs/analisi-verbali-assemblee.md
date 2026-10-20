@@ -534,3 +534,19 @@ suo collaudo:
   conferma di presenza, rinvio, presenze con il diritto di voto, quorum,
   elezioni, invio ai soci. Serve per l'Assemblea di aprile 2027: se non
   sta in novembre, va a gennaio.
+
+## 8. Esito (21/10/2026)
+
+**v0.44.0 consegnata**: scheda `specifiche/verbali.md`, collaudo
+`test/collaudo-R-verbali.md`. Scelte prese scrivendo il codice, da
+confermare nel collaudo:
+- un verbale di riunione diventa definitivo solo se ogni punto ha la
+  discussione (anche «nessun intervento») o la delibera;
+- alla chiusura della consultazione il verbale nasce **in bozza** e
+  prende il numero con «Rendi definitivo», come gli altri;
+- il verbale nasce anche per le consultazioni fermate per la richiesta di
+  riunione o non valide; non per quelle ritirate;
+- la chiusura dell'anno contabile propone solo i verbali **firmati** del
+  libro delle Assemblee con «Approva il rendiconto dell'anno …»;
+- i documenti della convocazione non si allegano all'email: i membri li
+  leggono nella scheda della riunione (hanno l'utente del CD).

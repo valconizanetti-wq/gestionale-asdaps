@@ -151,7 +151,10 @@ class AnniContabili
     /**
      * Verbali dell'Assemblea tra cui scegliere quello che approva il
      * rendiconto di $anno (collaudo J11): sedute dell'anno in corso,
-     * successive al 31/12 di $anno e non future.
+     * successive al 31/12 di $anno e non future. Dalla v0.44.0 solo i
+     * verbali firmati del libro delle Assemblee con la delibera «Approva il
+     * rendiconto dell'anno $anno» (analisi verbali §4.5, difetto 13 del
+     * Dante): non più tutte le Assemblee dell'anno.
      *
      * @return \Illuminate\Support\Collection<int, Verbale>
      */
@@ -159,18 +162,20 @@ class AnniContabili
     {
         $inizio = max($anno + 1, now()->year) . '-01-01';
 
-        return Verbale::where('tipo', 'assemblea')
+        return Verbale::where('libro', 'assemblee')
+            ->where('approva_rendiconto_anno', $anno)
+            ->where('stato', 'firmato')
             ->whereNotNull('data_seduta')
             ->whereBetween('data_seduta', [$inizio, today()->toDateString()])
             ->orderByDesc('data_seduta')->orderByDesc('id')
-            ->get(['id', 'titolo', 'data_seduta', 'stato']);
+            ->get(['id', 'titolo', 'data_seduta', 'stato', 'anno_libro', 'numero_libro', 'libro']);
     }
 
     /** @throws \RuntimeException */
     public function chiudi(int $anno, Verbale $verbale, User $utente): AnnoContabile
     {
         if (! $this->verbaliApprovazione($anno)->contains('id', $verbale->id)) {
-            throw new \RuntimeException("Il verbale scelto non è un'Assemblea di quest'anno successiva alla fine del {$anno}.");
+            throw new \RuntimeException("Il verbale scelto non è un verbale firmato dell'Assemblea che approva il rendiconto {$anno}.");
         }
         $dataApprovazione = $verbale->data_seduta->toDateString();
         $riferimento = mb_substr($verbale->titolo, 0, 255);

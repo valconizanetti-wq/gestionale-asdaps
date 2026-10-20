@@ -13,7 +13,8 @@
                 ->filter(fn ($v) => Route::has($v['rotta']) && $utente->puoAccedere($v['sezione'])
                     && (! isset($v['se']) || \App\Services\ProfiloEnte::haModulo($v['se'])))
                 ->map(fn ($v) => $v + [
-                    'attiva' => request()->routeIs(\Illuminate\Support\Str::before($v['rotta'], '.') . '.*'),
+                    'attiva' => request()->routeIs($v['accendi'] ?? \Illuminate\Support\Str::before($v['rotta'], '.') . '.*')
+                        && ! (isset($v['tranne']) && request()->routeIs($v['tranne'])),
                 ]);
             return $gruppo;
         })

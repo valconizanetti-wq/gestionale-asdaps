@@ -1,0 +1,88 @@
+Gestionale ASD - v0.44.0 (21/10/2026)
+Verbali e Consiglio Direttivo: libri dei verbali con il numero nell'anno, verbale definitivo
+che non cambia piu', copia firmata digitalmente, rettifiche, riunioni del CD con il voto di
+ciascuno, consultazione telematica del CD, verbali registrati da fuori; voce "Anticipi" nel menu
+
+Da applicare sopra la v0.43.0.
+UNA migration (2026_10_21_000106, permessi compresi); nessun seeder da lanciare; nessun
+pacchetto Composer nuovo; UN pacchetto npm nuovo (jodit 4.17.1, l'editor dei testi):
+in locale "npm install" prima di "npm run build". Sul server niente npm: basta build.zip.
+Il cron c'e' gia': da ora lancia anche "consultazioni:scadenze" ogni 15 minuti.
+Dettaglio: docs/specifiche/verbali.md; analisi docs/analisi-verbali-assemblee.md (V1-V18,
+regola delle votazioni, par. 8). Tavole VB-1...VB-5, CD-5, CT-1...CT-3: Tavole-verbali.pdf
+(fuori dal repository). Collaudo: docs/test/collaudo-R-verbali.md (R1-R24).
+
+COSA CAMBIA
+  Menu
+  - Voce "Anticipi" sotto "Prima Nota": si accende solo sulle pagine degli anticipi.
+  Verbali (Governance > Verbali)
+  - Due libri: Consiglio Direttivo e Assemblee. Numero progressivo nell'anno ("CD 2027/4")
+    quando il verbale diventa definitivo; mai riusato.
+  - Bozza -> Definitivo (numero, PDF salvato con l'impronta, non si modifica piu') ->
+    Firmato (copia con la firma digitale PAdES o .p7m). Con una firma sola, solo del
+    segretario verbalizzante, con l'avviso "Manca la firma del presidente della seduta".
+  - Rettifica: nota datata e motivata in fondo, con il suo PDF da firmare.
+  - "Registra un verbale gia' redatto" (anche l'Assemblea B.A.S. del 16/11/2026): dati
+    essenziali, delibere in breve, copia firmata, numero proposto o scelto se libero,
+    "Approva il rendiconto dell'anno ...".
+  - Verbali delle domande nel libro del CD: "Rendi definitivi i N verbali" in un colpo.
+  Riunioni del CD
+  - Bozza con ordine del giorno a punti, videoconferenza, documenti PDF.
+  - Convocazione per email: almeno 3 giorni prima, o 24 ore se urgente con il motivo.
+    Dopo la convocazione non si modifica: si rinvia (motivo, avviso) e si riconvoca, o si
+    annulla con il motivo.
+  - Presenze dal giorno della riunione, con il quorum (art. 16.3), chi presiede e chi
+    verbalizza; avviso alla terza assenza di fila senza giustificazione (art. 15.5).
+  - Verbale per punti con l'editor, il voto di ciascun presente e l'esito calcolato:
+    maggioranza tra favorevoli e contrari, astenuti fuori, parita' al Presidente;
+    esclusione di un socio con la maggioranza dei componenti (art. 9.1 c).
+  Consultazione telematica del CD (art. 16.4)
+  - La prepara il Segretario, la avvia solo il Presidente (o il Vicepresidente in sua
+    sostituzione): link personale a ogni componente, termine di almeno 3 giorni.
+  - Voto dal telefono: favorevole, contrario, astenuto o "ne discutiamo in riunione".
+  - Si chiude da sola (tutti hanno votato, un terzo chiede la riunione, scadenza); esito
+    per email e verbale in bozza nel libro del CD. Sollecito e ritiro.
+  Altro
+  - Chiusura dell'anno contabile: si sceglie solo un verbale firmato del libro delle
+    Assemblee con "Approva il rendiconto dell'anno ...".
+  - Consiglio Direttivo > Aggiungi un membro: "Verbale della nomina".
+  - Permessi: Vicepresidente, Tesoriere, Consigliere e Revisore leggono i verbali.
+
+LOCALE (Laragon)
+  1. git pull                    (oppure: estrarre lo ZIP nella radice e fare un commit)
+  2. npm install                 (arriva jodit 4.17.1)
+  3. php artisan migrate
+  4. npm run build
+  5. php artisan test           -> 194 superati
+  6. git archive -o deploy.zip HEAD   e   build.zip con public/build (come di solito)
+
+SERVER (deploy.md par. 5)
+  1. unzip deploy.zip in ~/gestionale-asd (sovrascrivendo) e build.zip in public
+  2. php artisan migrate --force
+  3. php artisan optimize:clear   poi le tre cache (config, route, view)
+  4. Controllo: php artisan route:list --name=verbali.   -> 42 rotte (se 0: deploy.zip
+     vecchio o non sovrascritto); php artisan consultazioni:scadenze -> "Consultazioni
+     chiuse: 0"
+  Poi collaudo R (serve un PDF firmato digitalmente, con una e con due firme).
+
+FILE PRINCIPALI
+  Nuovi: app/Models/Seduta, SedutaPresenza, VerbalePunto, VerbaleVoto, VerbaleRettifica,
+    Consultazione, ConsultazioneVoto, OrganoDocumento; app/Services/Verbali, Riunioni,
+    Consultazioni, Votazioni, DocumentiOrgani; app/Support/HtmlSanitizer;
+    app/Http/Controllers/VerbaliController, RiunioniController, ConsultazioniController,
+    ConsultazioneVotoController; app/Mail/ConvocazioneSeduta, ConsultazioneInvito,
+    ConsultazioneEsito; resources/views/verbali/* (index, show, scrivi, registra, _corpo,
+    _firmato, riunioni/form, show, consultazioni/form, show), consultazione-voto/pagina,
+    emails/organi/*, pdf/verbale, pdf/rettifica, components/editor; resources/js/editor.js;
+    database/migrations/2026_10_21_000106_...; tests/Feature/VerbaliTest.php;
+    docs/specifiche/verbali.md, docs/test/collaudo-R-verbali.md.
+  Modificati: app/Models/Verbale; app/Support/FirmaDigitale; app/Services/VerbaleAmmissione,
+    AnniContabili, ConsiglioDirettivo, AvvisiOperazioni, Azzeramento;
+    app/Http/Controllers/AnniContabiliController, ConsiglioDirettivoController;
+    SezioneSeeder; config/navigazione.php; resources/views/layouts/app,
+    domande/verbale, governance/index, prima-nota/anni, components/campo-giustificativi;
+    resources/css/app.css (sezione 21); routes/web.php, iscrizione.php, console.php;
+    package.json, package-lock.json, vite.config.js; tests/Feature/PrimaNotaTest.php;
+    docs: analisi-verbali-assemblee.md, specifiche/permessi.md, ui.md, MANUALE-ASD.md (due
+    copie), test-domande-iscrizione.md (due copie), test/collaudo-Q-anticipi.md,
+    da-riportare-gestionale-aps.md (A18-A20, D23-D25), bootstrap-prossima-sessione.md.

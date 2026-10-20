@@ -13,8 +13,10 @@ use App\Models\Verbale;
  * motivazione del diniego.
  *
  * Si crea alla chiusura della votazione e si aggiorna finché è in bozza
- * (diniego inviato, decisione del Presidente). Un verbale approvato non si
- * tocca più. Il testo è HTML generato da una vista con i dati escapati.
+ * (diniego inviato, decisione del Presidente). Dalla v0.44.0 sta nel libro
+ * del CD: il Segretario lo rende definitivo (con il numero) dal libro dei
+ * verbali, anche insieme agli altri chiusi (V11); da lì non si tocca più.
+ * Il testo è HTML generato da una vista con i dati escapati.
  */
 class VerbaleAmmissione
 {
@@ -27,8 +29,15 @@ class VerbaleAmmissione
             return $verbale;
         }
 
+        $occupati = ConsiglioDirettivo::occupati();
+        $nome = fn (string $r) => isset($occupati[$r]) && $occupati[$r]->socio
+            ? trim($occupati[$r]->socio->nome . ' ' . $occupati[$r]->socio->cognome) : null;
         $dati = [
             'tipo' => 'cd_ammissione',
+            'libro' => 'cd',
+            'organo' => 'cd',
+            'presidente_assemblea' => $nome('presidente'),
+            'segretario_verbalizzante' => $nome('segretario'),
             'domanda_id' => $domanda->id,
             'titolo' => 'Consultazione telematica del Consiglio Direttivo — domanda di adesione di ' . $domanda->nomeCognome(),
             'periodo_da' => $domanda->created_at?->toDateString(),

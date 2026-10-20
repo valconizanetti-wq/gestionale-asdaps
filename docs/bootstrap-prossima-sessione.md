@@ -8,36 +8,57 @@
 - Controllato prima del primo push: niente `.env`, chiavi o password nella
   storia; codici fiscali solo di fantasia nei test.
 - Tavole fuori dal repository: le conserva Paolo (ultime:
-  `Tavole-anticipi.pdf`).
+  `Tavole-verbali.pdf`).
 
-## Prossima sessione: collaudo Q, poi Verbali e Assemblee
-Paolo installa la **v0.43.0** (LEGGIMI: una migration, `npm run build`) e
-fa il collaudo **Q** (`docs/test/collaudo-Q-anticipi.md`, Q1–Q17, forma
-estesa). Come sempre: esiti prova per prova, correzioni in una v0.43.x,
-push su GitHub e copie nel progetto. Se un difetto chiede una scelta:
-analisi breve e domanda prima del codice.
-- **Nel prossimo deploy (Paolo, 20/10/2026)**: voce «Anticipi» nel menu,
-  sotto Contabilità dopo Scontrini (`config/navigazione.php`, rotta
-  `prima-nota.anticipi.index`, sezione `prima_nota`). Il layout evidenzia la
-  voce con `Str::before(rotta, '.') . '.*'`: servono una chiave facoltativa
-  `attiva` (es. `prima-nota.anticipi.*`) e il modo di escludere gli anticipi
-  dalla voce Prima Nota, altrimenti si accendono tutte e due. Aggiornare
-  `ui.md` e il collaudo Q (Q2/Q4).
-- **Analisi di Verbali e Assemblee** scritta il 20/10/2026, in parallelo
-  al collaudo Q: `docs/analisi-verbali-assemblee.md` (copia nel progetto).
-  Aspetta le risposte di Paolo a V1–V13; poi tavole (§6) e codice in due
-  versioni (v0.44.0 Verbali e CD, v0.45.0 Assemblee, §7).
-- Poi **Verbali e Assemblee** dal Dante (regola di Paolo: si recupera il
-  suo codice e lo si corregge), con analisi e tavole prima del codice;
-  poi il primo passo del Bilancio. Dal 1° dicembre solo correzioni.
+## Prossima sessione: collaudi Q e R, poi le Assemblee (v0.45.0)
+Paolo installa la **v0.44.0** (LEGGIMI: `npm install` per l'editor Jodit,
+`npm run build`, una migration, cache) e prosegue il collaudo **Q**
+(anticipi) e fa il collaudo **R** (`docs/test/collaudo-R-verbali.md`,
+R1–R24, forma estesa). Come sempre: esiti prova per prova, correzioni in
+una v0.44.x, push su GitHub e copie nel progetto. Se un difetto chiede una
+scelta: analisi breve e domanda prima del codice.
+- Per R12, R13 e R21 serve un PDF firmato digitalmente (una e due firme
+  PAdES) fatto da Paolo con il suo programma di firma.
+- **v0.45.0 — Assemblee** (analisi §4.2, tavole AS-1…AS-4 e RS-1 ancora
+  da disegnare): convocazione dei soci con i termini (10/15 giorni),
+  destinatari (genitori, elenco per la posta, avviso da affiggere),
+  conferma di presenza con link, rinvio, presenze con il diritto di voto
+  calcolato e il quorum, delibere con i tipi dell'Assemblea (2/3, 3/4),
+  elezioni a scrutinio segreto, «Invia ai soci» (V10). Paolo ha detto «ok,
+  ma vediamo al termine di questi sviluppi»: chiedere prima di partire.
+  Si riusano `Seduta`, `Votazioni`, il libro delle Assemblee e l'editor.
+- Poi il primo passo del Bilancio. Dal 1° dicembre solo correzioni.
 - Materiale del Dante da riallegare in una sessione nuova: `app.zip`,
-  `resources.zip`, `routes.zip` (allegati il 20/10/2026, più completi dei
-  vecchi `*_SDA.zip`), `bilancio-consuntivo.md_SDA.zip`.
+  `resources.zip`, `routes.zip`, `bilancio-consuntivo.md_SDA.zip`.
 - Nel Dante c'è anche il modulo **Rimborsi ai volontari**
   (`RimborsiVolontariController`, `RIM-ANNO-NNN`, km ACI, vitto): va con
   il modulo Volontari, Fase 2 (`analisi-moduli-anticipi.md` §2.8).
 - Domanda di Paolo del 20/10/2026 (una piattaforma per APS e A.S.D.):
   risposta in `analisi-impianto-asd-aps.md` §9.
+
+## Stato al 21/10/2026: v0.44.0 consegnata (verbali e Consiglio Direttivo)
+- Scheda `docs/specifiche/verbali.md`; analisi
+  `docs/analisi-verbali-assemblee.md` (V1–V18 e regola delle votazioni);
+  tavole `Tavole-verbali.pdf` (fuori dal repository, le conserva Paolo).
+- Libri del CD e delle Assemblee con il numero nell'anno; definitivo
+  immutabile con PDF e impronta; copia firmata digitalmente (una firma
+  sola solo del verbalizzante, con l'avviso); rettifiche.
+- Riunioni del CD: convocazione con i termini, rinvio, annullamento,
+  presenze con il quorum, verbale per punti con il voto di ciascuno ed
+  esito calcolato (`Votazioni`).
+- Consultazione telematica generale: la avvia il Presidente (o il
+  Vicepresidente in sostituzione), voto dal link, chiusura automatica
+  (comando `consultazioni:scadenze` ogni 15 minuti, nel cron che c'è già).
+- Verbali delle domande nel libro del CD (definitivi insieme), verbali
+  registrati da fuori (anche l'Assemblea B.A.S. del 16/11/2026), chiusura
+  dell'anno solo con il verbale firmato che «approva il rendiconto», verbale
+  della nomina nel CD.
+- Voce «Anticipi» nel menu (chiavi `accendi` e `tranne` in
+  `config/navigazione.php`), come chiesto da Paolo.
+- Editor Jodit 4.17.1 da npm (`resources/js/editor.js`, entrata Vite a
+  parte), senza sorgente HTML; `HtmlSanitizer` dal Dante su ogni testo.
+- Test: 194 verdi (13 nuovi in `VerbaliTest`). Tre giri di revisione
+  scritti in `verbali.md` §7.
 
 ## Stato al 20/10/2026: v0.43.0 consegnata (anticipi e note di rimborso)
 - Tavole AN-1…AN-4b esaminate da Paolo il 20/10/2026: correzioni T1–T6 e

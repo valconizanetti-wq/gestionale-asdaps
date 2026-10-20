@@ -37,3 +37,11 @@ Artisan::command('tessere:pulisci', function () {
     $this->info("File tolti: {$tolti}");
 })->purpose('Cancella i file del CSEN e dei soci rimasti in anteprima da più di un giorno');
 Schedule::command('tessere:pulisci')->dailyAt('03:30');
+
+// Consultazioni telematiche del CD (v0.44.0, specifiche/verbali.md): ogni 15
+// minuti si chiudono quelle arrivate al termine; nasce il verbale in bozza
+// e l'esito parte per email ai componenti.
+Artisan::command('consultazioni:scadenze', function (\App\Services\Consultazioni $consultazioni) {
+    $this->info('Consultazioni chiuse: ' . $consultazioni->chiudiScadute());
+})->purpose('Chiude le consultazioni telematiche del CD arrivate al termine');
+Schedule::command('consultazioni:scadenze')->everyFifteenMinutes()->withoutOverlapping();

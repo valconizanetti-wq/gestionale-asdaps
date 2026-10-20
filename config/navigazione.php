@@ -12,6 +12,9 @@
 | 'sezione' = codice in gl_sezioni; 'rotta' = nome della pagina principale.
 | 'se' (facoltativo) = modulo che dipende dal periodo dell'ente in vigore
 | oggi (ProfiloEnte::haModulo: 'rasd', 'l398', 'runts'; profilo-ente.md).
+| 'accendi' (facoltativo) = rotte che accendono la voce (di norma
+| «<prefisso>.*» della rotta); 'tranne' = rotte che non la accendono (così
+| Prima Nota e Anticipi non si accendono insieme).
 | L'ordine qui è l'ordine nel menu.
 */
 
@@ -29,7 +32,8 @@ return [
     [
         'gruppo' => 'Contabilità',
         'voci' => [
-            ['label' => 'Prima Nota',    'sezione' => 'prima_nota',    'rotta' => 'prima-nota.index'],
+            ['label' => 'Prima Nota',    'sezione' => 'prima_nota',    'rotta' => 'prima-nota.index', 'tranne' => 'prima-nota.anticipi.*'],
+            ['label' => 'Anticipi',      'sezione' => 'prima_nota',    'rotta' => 'prima-nota.anticipi.index', 'accendi' => 'prima-nota.anticipi.*'],
             ['label' => 'Scontrini',     'sezione' => 'scontrini',     'rotta' => 'scontrini.index'],
             ['label' => 'Rinnovi quota', 'sezione' => 'rinnovi_quota', 'rotta' => 'rinnovi.index'],
             ['label' => 'Bilancio',      'sezione' => 'bilancio',      'rotta' => 'bilancio.index'],

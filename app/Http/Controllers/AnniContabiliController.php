@@ -146,7 +146,7 @@ class AnniContabiliController extends Controller
             'verbale_id' => ['required', 'integer', Rule::in($ammessi)],
         ], [
             'verbale_id.required' => "Scegli il verbale dell'Assemblea che ha approvato il rendiconto {$anno}.",
-            'verbale_id.in' => "Scegli un verbale dell'Assemblea dell'anno in corso, successivo alla fine del {$anno}.",
+            'verbale_id.in' => "Scegli il verbale firmato dell'Assemblea che approva il rendiconto {$anno}.",
         ]);
 
         try {

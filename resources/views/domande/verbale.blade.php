@@ -7,12 +7,18 @@
     <x-page-header titolo="Verbale del" evidenza="Consiglio" :sottotitolo="$verbale->titolo"
                    :indietro="route('domande.show', $domanda)" indietro-label="Domanda">
         <div class="badge-riga">
-            <x-badge variante="neutral">{{ ucfirst($verbale->stato) }}</x-badge>
+            <x-badge :variante="$verbale->statoVariante()">{{ $verbale->statoTesto() }}</x-badge>
+            @if ($verbale->codice())<x-badge variante="neutral">{{ $verbale->codice() }}</x-badge>@endif
         </div>
+        @if (! $domanda->is_test && auth()->user()->puoAccedere('verbali'))
+            <x-slot:azioni>
+                <a href="{{ route('verbali.show', $verbale) }}" class="btn btn-secondary">Apri nel libro dei verbali</a>
+            </x-slot:azioni>
+        @endif
     </x-page-header>
 
     @if ($verbale->stato === 'bozza')
-        <x-avviso tipo="info" titolo="Bozza.">Il testo si aggiorna da solo fino all'approvazione (diniego inviato, decisione del Presidente). Va sottoscritto dal Presidente e dal Segretario e trascritto nel libro dei verbali del Consiglio (statuto, art. 16.6).</x-avviso>
+        <x-avviso tipo="info" titolo="Bozza.">Il testo si aggiorna da solo finché la domanda non è decisa (diniego inviato, decisione del Presidente). Poi il Segretario lo rende definitivo dal libro dei verbali del Consiglio, con il numero, e carica la copia firmata digitalmente dal Presidente e dal Segretario (statuto, art. 16.6).</x-avviso>
     @endif
 
     <x-card>

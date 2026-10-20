@@ -75,6 +75,8 @@ class Azzeramento
         'gl_comunicazioni',
         'gl_comunicazioni_allegati',
         'gl_comunicazioni_destinatari',
+        'gl_consultazioni',
+        'gl_consultazioni_voti',
         'gl_destinatari',
         'gl_domande',
         'gl_email_log',
@@ -93,6 +95,7 @@ class Azzeramento
         'gl_lettere',
         'gl_lettere_invii',
         'gl_note_rimborso',
+        'gl_organi_documenti',
         'gl_password_reset_tokens',
         'gl_prima_nota',
         'gl_prima_nota_documenti',
@@ -110,6 +113,7 @@ class Azzeramento
         'gl_rinnovi',
         'gl_runts_documenti',
         'gl_scadenzario_rinnovi',
+        'gl_sedute_presenze',
         'gl_soci',
         'gl_soci_documenti',
         'gl_soggetti',
@@ -123,6 +127,9 @@ class Azzeramento
         'gl_tessere_pacchetti',
         'gl_verbali',
         'gl_verbali_allegati',
+        'gl_verbali_punti',
+        'gl_verbali_rettifiche',
+        'gl_verbali_voti',
         'gl_volontari',
         'gl_volontari_autodichiarazioni',
         'gl_volontari_log',
@@ -144,6 +151,9 @@ class Azzeramento
         'gl_domande' => 'Domande di iscrizione',
         'gl_voti_cd' => 'Voti del CD',
         'gl_verbali' => 'Verbali',
+        'gl_assemblee' => 'Riunioni del CD',
+        'gl_consultazioni' => 'Consultazioni del CD',
+        'gl_organi_documenti' => 'Documenti delle sedute e dei verbali',
         'gl_governance_cd' => 'Consiglio Direttivo',
         'gl_rinnovi' => 'Quote e ricevute',
         'gl_promemoria_invii' => 'Promemoria inviati',
@@ -167,7 +177,7 @@ class Azzeramento
     ];
 
     /** Cartelle di storage/app/private con i file di prova. */
-    public const CARTELLE = ['domande', 'soci', 'ricevute', 'prima-nota', 'scontrini', 'audit', 'tmp'];
+    public const CARTELLE = ['domande', 'soci', 'ricevute', 'prima-nota', 'scontrini', 'audit', 'verbali', 'tmp'];
 
     /** Cartella delle copie di sicurezza (non si cancella). */
     public const BACKUP = 'backup';

@@ -39,6 +39,49 @@ class FirmaDigitale
             && preg_match('#/SubFilter\s*/(adbe\.pkcs7\.(detached|sha1)|ETSI\.CAdES\.detached|adbe\.x509\.rsa_sha1)#', $c) === 1;
     }
 
+    /**
+     * Firme di un PDF firmato (PAdES): un dizionario di firma, con il suo
+     * /ByteRange, per ogni firma (v0.44.0, verbali, V14). Per un .p7m le
+     * firme non si contano in modo affidabile: null.
+     */
+    public static function contaFirme(string $percorso, string $estensione): ?int
+    {
+        if (strtolower($estensione) === 'p7m') {
+            return null;
+        }
+        $contenuto = (string) @file_get_contents($percorso);
+
+        return preg_match_all('#/ByteRange\s*\[\s*\d+\s+\d+\s+\d+\s+\d+\s*\]#', $contenuto);
+    }
+
+    /**
+     * Nomi dei firmatari scritti nei dizionari di firma (/Name), se il
+     * programma di firma li ha messi. Solo testo: il certificato non si
+     * verifica. @return list<string>
+     */
+    public static function firmatari(string $percorso, string $estensione): array
+    {
+        if (strtolower($estensione) === 'p7m') {
+            return [];
+        }
+        $contenuto = (string) @file_get_contents($percorso);
+        preg_match_all('#/Type\s*/Sig\b[^>]{0,2000}?/Name\s*\(((?:\\\\.|[^\\\\)]){1,120})\)|/Name\s*\(((?:\\\\.|[^\\\\)]){1,120})\)[^>]{0,2000}?/Type\s*/Sig\b#s', $contenuto, $m, PREG_SET_ORDER);
+        $nomi = [];
+        foreach ($m as $r) {
+            $nome = stripcslashes($r[1] !== '' ? $r[1] : ($r[2] ?? ''));
+            // Testo UTF-16 (BOM FE FF) dei PDF
+            if (str_starts_with($nome, "\xFE\xFF")) {
+                $nome = (string) mb_convert_encoding(substr($nome, 2), 'UTF-8', 'UTF-16BE');
+            }
+            $nome = trim(preg_replace('/[^\p{L}\p{N} .\'-]/u', '', $nome));
+            if ($nome !== '' && ! in_array($nome, $nomi, true)) {
+                $nomi[] = mb_substr($nome, 0, 80);
+            }
+        }
+
+        return $nomi;
+    }
+
     private static function busta(string $c): bool
     {
         // .p7m in base64 (con o senza intestazione PEM): si decodifica.

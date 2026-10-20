@@ -42,6 +42,7 @@ class ConsiglioDirettivoController extends Controller
             'utenti' => $utenti,
             'usciti' => GovernanceCd::with('socio')->where('in_carica', false)->orderByDesc('data_fine_mandato')->limit(20)->get(),
             'soci' => $soci,
+            'verbaliNomina' => ConsiglioDirettivo::verbaliNomina(),
             'occupati' => array_map(fn ($m) => ['id' => $m->id, 'nome' => $m->nomeSocio()], $occupati),
             'puoModificare' => $chi->puoModificare('governance_cd'),
             'puoPresidente' => $chi->haRuolo('presidente', 'amministratore'),
@@ -57,9 +58,10 @@ class ConsiglioDirettivoController extends Controller
                 'carica' => ['required', Rule::in(array_keys(ConsiglioDirettivo::CARICHE))],
                 'dal' => ['required', 'date'],
                 'nominato_da' => ['nullable', 'string', 'max:255'],
+                'verbale_nomina_id' => ['nullable', 'integer'],
             ], ['socio_id.required' => 'Scegli il socio.', 'carica.required' => 'Scegli la carica.'], ['dal' => 'data']);
             $esito = $this->cd->aggiungi(Socio::findOrFail($dati['socio_id']), $dati['carica'], Carbon::parse($dati['dal']),
-                $dati['nominato_da'] ?? null, $request->boolean('link'), $request->user());
+                $dati['nominato_da'] ?? null, $request->boolean('link'), $request->user(), isset($dati['verbale_nomina_id']) ? (int) $dati['verbale_nomina_id'] : null);
             $utente = $esito['nuovo'] ? 'creato l\'utente' : 'collegato il suo utente';
 
             return $esito['membro']->nomeSocio().' è nel Consiglio Direttivo come '.ConsiglioDirettivo::etichetta($dati['carica'])

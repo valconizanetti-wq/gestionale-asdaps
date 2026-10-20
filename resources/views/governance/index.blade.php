@@ -137,7 +137,12 @@
                                  :value="old('carica', array_key_last($liberePerNuovo))"
                                  :aiuto="count($liberePerNuovo) < count(ConsiglioDirettivo::CARICHE) ? 'Solo le cariche libere: per le altre usa la matita sul membro che la lascia o la riceve.' : null" />
                         <x-campo name="dal" label="In carica dal" tipo="date" required :value="old('dal', now()->format('Y-m-d'))" />
-                        <x-campo name="nominato_da" label="Nominato da" class="ut-intero" :value="old('nominato_da')" placeholder="Assemblea del …" aiuto="Facoltativo: assemblea o delibera del CD." />
+                        @if ($verbaliNomina->isNotEmpty())
+                            <x-campo name="verbale_nomina_id" label="Verbale della nomina" tipo="select" class="ut-intero" vuota="Nessuno"
+                                     :opzioni="$verbaliNomina->mapWithKeys(fn ($v) => [$v->id => $v->codice() . ' del ' . $v->data_seduta->format('d/m/Y') . ' — ' . \Illuminate\Support\Str::limit($v->titolo, 60)])->all()"
+                                     aiuto="Facoltativo: il verbale definitivo dell'Assemblea o del CD da cui viene la nomina." />
+                        @endif
+                        <x-campo name="nominato_da" label="Nominato da" class="ut-intero" :value="old('nominato_da')" placeholder="Assemblea del …" aiuto="Facoltativo: assemblea o delibera del CD. Con il verbale scelto, si scrive da solo." />
                         <div class="ut-intero"><x-spunta name="link" label="Mandagli il link per entrare nel gestionale" :checked="! old() || old('link')" /></div>
                         <p class="form-help ut-intero" x-show="socio" x-cloak>
                             <span x-show="email[socio]">Email del socio: <strong x-text="email[socio]"></strong>. Diventerà utente con il ruolo <span x-text="etichette[carica]"></span>.</span>

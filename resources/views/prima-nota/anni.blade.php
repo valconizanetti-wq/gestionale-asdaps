@@ -135,11 +135,11 @@
                             @if ($verbali->isEmpty())
                                 <x-avviso tipo="info" titolo="Nessun verbale da scegliere.">
                                     Serve il verbale dell'Assemblea del {{ max($daChiudere->anno + 1, now()->year) }} che approva il rendiconto {{ $daChiudere->anno }}:
-                                    quando sarà registrato tra i verbali, comparirà qui.
+                                    compare qui quando è nel libro delle Assemblee, firmato, con la delibera «Approva il rendiconto dell'anno {{ $daChiudere->anno }}».
                                 </x-avviso>
                             @else
                                 <x-campo name="verbale_id" label="Verbale dell'Assemblea che approva il rendiconto" tipo="select" required vuota="Scegli…"
-                                         :opzioni="$verbali->mapWithKeys(fn ($v) => [$v->id => $v->data_seduta->format('d/m/Y') . ' — ' . $v->titolo . ($v->stato === 'bozza' ? ' (bozza)' : '')])->all()"
+                                         :opzioni="$verbali->mapWithKeys(fn ($v) => [$v->id => 'n. ' . $v->numeroTesto() . ' del ' . $v->data_seduta->format('d/m/Y') . ' — ' . $v->titolo])->all()"
                                          aiuto="Assemblee dell'anno in corso. La data della seduta diventa la data di approvazione." />
                             @endif
                             <p class="form-help">Alla chiusura i saldi finali diventano l'apertura del {{ $daChiudere->anno + 1 }}; dopo, ogni correzione chiede una motivazione.</p>

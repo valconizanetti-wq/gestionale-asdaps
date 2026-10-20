@@ -135,8 +135,24 @@ class ConsiglioDirettivo
     /**
      * @return array{membro: GovernanceCd, utente: User, nuovo: bool, link: bool}
      */
-    public function aggiungi(Socio $socio, string $carica, Carbon $dal, ?string $nominatoDa, bool $link, User $chi): array
+    /** Verbali tra cui scegliere quello della nomina (v0.44.0): definitivi o firmati, dell'ultimo anno. */
+    public static function verbaliNomina(): Collection
     {
+        return \App\Models\Verbale::nelLibro()->whereIn('stato', ['definitivo', 'firmato'])
+            ->where('data_seduta', '>=', now()->subYear()->toDateString())
+            ->orderByDesc('data_seduta')->orderByDesc('id')->limit(30)
+            ->get(['id', 'libro', 'anno_libro', 'numero_libro', 'titolo', 'data_seduta']);
+    }
+
+    public function aggiungi(Socio $socio, string $carica, Carbon $dal, ?string $nominatoDa, bool $link, User $chi, ?int $verbaleNominaId = null): array
+    {
+        $verbale = $verbaleNominaId ? self::verbaliNomina()->firstWhere('id', $verbaleNominaId) : null;
+        if ($verbaleNominaId && ! $verbale) {
+            throw ValidationException::withMessages(['verbale_nomina_id' => 'Scegli un verbale definitivo dell\'ultimo anno.']);
+        }
+        if ($verbale && ! filled($nominatoDa)) {
+            $nominatoDa = 'Verbale ' . $verbale->codice() . ' del ' . $verbale->data_seduta->format('d/m/Y');
+        }
         if (! isset(self::CARICHE[$carica])) {
             throw ValidationException::withMessages(['carica' => 'Scegli la carica.']);
         }
@@ -175,13 +191,15 @@ class ConsiglioDirettivo
             throw ValidationException::withMessages(['socio_id' => "{$socio->cognome} {$socio->nome} è Revisore: l'Organo di controllo è fuori dal Consiglio Direttivo (statuto, art. 20.1)."]);
         }
 
-        $esito = DB::transaction(function () use ($socio, $carica, $dal, $nominatoDa, $chi, $utente) {
+        $esito = DB::transaction(function () use ($socio, $carica, $dal, $nominatoDa, $chi, $utente, $verbale) {
             $membro = GovernanceCd::create([
                 'socio_id' => $socio->id,
                 'carica' => self::etichetta($carica),
                 'data_inizio_mandato' => $dal->toDateString(),
                 'in_carica' => true,
                 'delibera_assemblea' => filled($nominatoDa) ? mb_substr(trim($nominatoDa), 0, 255) : null,
+                'delibera_data' => $verbale?->data_seduta?->toDateString(),
+                'verbale_nomina_id' => $verbale?->id,
                 'inserito_da' => $chi->id,
             ]);
             $membro->forceFill(['carica_codice' => $carica])->save();

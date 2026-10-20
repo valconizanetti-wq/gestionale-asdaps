@@ -28,6 +28,8 @@ Versione: **v0.43.0** (20/10/2026).
 3. Il pagamento si registra solo in un anno aperto dall'avvio della contabilità. Se sul server c'è l'anno contabile **2026 di prova** (blocco J), le date del 2026 vanno bene. Altrimenti le prove Q8–Q12 si fanno in Laragon con l'anno 2026 di prova.
 4. Tieni a portata una foto o un PDF qualsiasi da usare come scontrino e come «nota firmata».
 
+**Dalla v0.44.0** la pagina «Anticipi e note di rimborso» ha anche la sua voce **«Anticipi»** nel menu, sotto «Prima Nota» (si accende solo sulle sue pagine): nelle prove si può aprire da lì oltre che dal pulsante «Anticipi e note».
+
 Nelle prove le date sono di ottobre 2026: usa date vicine a oggi, mai future.
 
 ---

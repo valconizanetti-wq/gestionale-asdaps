@@ -311,7 +311,7 @@ Normativa: D.Lgs. 36/2021 art. 29, corretto da D.Lgs. 163/2022 e D.Lgs.
 | Prima Nota | adattamento — **completato** | modulo Scontrini/OCR (§6) + monitoraggio plafond/tracciabilità 398/91 (§6.1); anticipi e note di rimborso dal Gestionale APS, corretti (§6.14, v0.43.0, tabella `gl_note_rimborso`) |
 | Progetti | riuso diretto — **confermato** | vedi §6.9; `codice_dm39`/`codice_documento` residui RUNTS non applicabili, lasciati inutilizzati |
 | Governance CD | adattamento — **completato** | vedi §6.3: eliminata ridondanza anagrafica (FK `socio_id` obbligatoria), verbale nomina, incompatibilità art. 11 |
-| Assemblee, Verbali | riuso diretto | |
+| Assemblee, Verbali | **rifatto dal Dante** — Verbali e CD **completati** (v0.44.0), Assemblee nella v0.45.0 | vedi §6.15: libri con numero nell'anno, definitivo immutabile, firma digitale, rettifiche, riunioni e consultazioni del CD |
 | Domande/Iscrizione | adattamento — **completato** | vedi §6.10: allineato enum `tipo_socio` a `gl_soci.tipo` (rimossi `ordinario_rivista`, `vitalizio`) |
 | GDPR | riuso diretto — **confermato** | vedi §6.4: schema già generico, censimento trattamenti rimandato all'attivazione effettiva dei moduli interessati |
 | Compliance RUNTS | **non applicabile** | sostituito da nuovo modulo "Compliance RASD" |
@@ -991,6 +991,37 @@ ed E1–E6 (§2.4, §2.8). Scheda: `specifiche/anticipi.md`; tavole AN-1…AN-4b
   rendiconto sono debiti verso i soci.
 - Diverso dai **rimborsi ai volontari** del Dante (`RIM-ANNO-NNN`, km,
   vitto): quelli vanno con il modulo Volontari (Fase 2).
+
+### 6.15 Verbali, riunioni del CD e consultazioni telematiche (v0.44.0, 21/10/2026)
+
+Ripresi dal Gestionale APS del Dante (`VerbaliController`,
+`AssembleeController`, editor Jodit e `HtmlSanitizer`) e corretti: difetti
+in `analisi-verbali-assemblee.md` §3, risposte di Paolo V1–V18. Scheda:
+`specifiche/verbali.md`; tavole VB-1…VB-5, CD-5, CT-1…CT-3.
+
+- Due **libri** (CD, Assemblee), **numero progressivo nell'anno** con lock
+  e vincolo unico, assegnato al **definitivo**; da lì il verbale non
+  cambia: si corregge con la **rettifica** (art. 23.2).
+- **Copia firmata digitalmente** (PAdES o CAdES) dal presidente della
+  seduta e dal segretario verbalizzante; con una firma sola, solo del
+  verbalizzante e con l'avviso (V14).
+- **Riunione del CD**: convocazione con i termini (3 giorni, o 24 ore se
+  urgente con il motivo), rinvio e annullamento motivati, presenze con il
+  quorum, verbale per punti con il **voto di ciascuno** e l'esito
+  calcolato.
+- **Consultazione telematica** generale (art. 16.4): la prepara il
+  Segretario, la **avvia il Presidente** (o il Vicepresidente in
+  sostituzione), link personale, almeno 3 giorni, chiusura automatica,
+  stop con un terzo che chiede la riunione, verbale automatico.
+- **Regola delle votazioni** unica (`Votazioni`): maggioranza tra
+  favorevoli e contrari, astenuti fuori, parità al Presidente; esclusione
+  con la maggioranza dei componenti.
+- **Verbali registrati da fuori** con la copia firmata, anche con un
+  numero già usato sul libro di carta, se libero.
+- **Chiusura dell'anno**: solo verbali firmati delle Assemblee con
+  «Approva il rendiconto dell'anno …».
+- `gl_volontari.verbale_autorizzazione_id` (§5): il tipo `cd_delibera` ora
+  si chiama `cd_riunione`.
 
 ## 7. Correzioni da riportare su `MANUALE-CORE.md`
 

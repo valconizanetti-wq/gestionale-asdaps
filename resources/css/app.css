@@ -2077,3 +2077,96 @@
     .an-passi { gap: 6px; }
     .an-passi .passo { flex: 1 1 0; min-width: 0; text-align: center; font-size: 11.5px; }
 }
+
+/* --------------------------------------------------------------------------
+   21. VERBALI, RIUNIONI DEL CD E CONSULTAZIONI (v0.44.0)
+   Tavole VB-1…VB-5, CD-5, CT-1…CT-3 (Tavole-verbali.pdf),
+   specifiche/verbali.md. L'editor (Jodit) ha il suo CSS in editor.js.
+   -------------------------------------------------------------------------- */
+@layer components {
+    /* VB-1: schede dei due libri, sedute e consultazioni aperte */
+    .vb-schede { display: flex; gap: 4px; border-bottom: 1px solid var(--color-bordo); margin: 4px 0 16px; overflow-x: auto; }
+    .vb-scheda {
+        padding: 10px 16px; font-size: 14px; font-weight: 600; color: var(--color-etichetta); text-decoration: none;
+        border-bottom: 3px solid transparent; margin-bottom: -1px; white-space: nowrap;
+    }
+    .vb-scheda:hover { color: var(--color-notte); }
+    .vb-scheda.attiva { color: var(--color-primario); border-bottom-color: var(--color-primario); }
+    .vb-avviso-azione { margin-top: 8px; }
+    .vb-aperte { list-style: none; margin: 0; padding: 0; }
+    .vb-aperte li + li { border-top: 1px solid var(--color-bordo); }
+    .vb-aperta { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; }
+    .vb-aperta:hover { background: var(--color-superficie-2); }
+    .vb-aperta-testo { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .vb-aperta-testo strong { color: var(--color-notte); font-size: 14px; }
+    .vb-numero { white-space: nowrap; }
+
+    /* Moduli: spunte, ordine del giorno a punti, destinatari */
+    .vb-form { display: flex; flex-direction: column; gap: 16px; }
+    .vb-spunta { display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px; cursor: pointer; }
+    .vb-spunta input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--color-primario); flex-shrink: 0; }
+    .vb-punti { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .vb-punto-riga { display: flex; align-items: center; gap: 8px; }
+    .vb-punto-num { width: 26px; flex-shrink: 0; font-weight: 700; color: var(--color-notte); text-align: right; }
+    .vb-punto-riga .form-input { flex: 1; min-width: 0; }
+    .vb-destinatari { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+    .vb-destinatari li { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+    .vb-odg { margin: 0; padding-left: 22px; list-style: decimal; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+    .vb-quorum { font-size: 13.5px; margin: 4px 0 8px; }
+    .vb-elenco { margin: 4px 0 0; padding-left: 18px; list-style: disc; }
+    .vb-inline { display: inline; }
+    .testo-ok { color: var(--color-ok); font-weight: 600; }
+    .td-centro { text-align: center; }
+    .td-centro input[type="radio"], .td-centro input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--color-primario); }
+    .dati-una-colonna { grid-template-columns: 1fr; }
+
+    /* VB-2: verbale per punti */
+    .vb-scrivi { display: flex; flex-direction: column; gap: 16px; }
+    .vb-punto { display: flex; flex-direction: column; gap: 12px; }
+    .vb-delibera-campi { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; border-left: 3px solid var(--color-primario); background: var(--color-superficie-2); border-radius: 0 8px 8px 0; }
+    .vb-voti-campo { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .vb-voti-campo legend { font-size: 13px; font-weight: 700; color: var(--color-notte); margin-bottom: 6px; }
+    .vb-voti-azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .vb-conteggio { font-size: 13px; color: var(--color-etichetta); }
+    .vb-tabella-voti { background: var(--color-superficie); }
+    .vb-piede { position: sticky; bottom: 0; background: var(--color-fondo); padding: 12px 0; z-index: 2; }
+    .campo-editor .jodit-container { border-color: var(--color-bordo-forte); border-radius: 8px; }
+    .campo-editor.has-error .jodit-container { border-color: var(--color-rosso); }
+    .campo-editor .jodit-wysiwyg { font-family: var(--font-sans); font-size: 14.5px; line-height: 1.55; }
+
+    /* VB-3, VB-4 sullo schermo: testo del verbale, delibere, rettifiche */
+    .vb-testo { max-width: none; font-size: 14.5px; }
+    .vb-testo h2 { font-size: 17px; margin-top: 20px; }
+    .vb-tabella { width: 100%; }
+    .vb-delibera { border-left: 3px solid var(--color-primario); padding: 4px 0 4px 14px; margin: 8px 0 14px; }
+    .vb-delibera-titolo { margin-bottom: 4px; }
+    .vb-esito { margin-top: 6px; color: var(--color-notte); }
+    .vb-nota { font-size: 12.5px; color: var(--color-etichetta); }
+    .vb-dati td.etichetta { color: var(--color-etichetta); width: 40%; }
+    .vb-oggetto { font-size: 16px; font-weight: 700; color: var(--color-notte); margin: 0 0 8px; }
+    .vb-rettifica { padding: 12px 0; border-bottom: 1px solid var(--color-bordo); display: flex; flex-direction: column; gap: 6px; }
+    .vb-rettifica:first-child { padding-top: 0; }
+    .vb-rettifica-testa { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+    .vb-html > :last-child { margin-bottom: 0; }
+
+    /* Documenti (riunione, consultazione, verbale; anche pubblico CT-2) */
+    .ct-documenti { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .ct-documenti li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13.5px; }
+    .ct-documenti a { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; overflow-wrap: anywhere; }
+
+    /* CT-2: voto dal link (pubblico) */
+    .voto-scelta.neutro:has(input:checked) { border: 2px solid var(--color-notte); background: var(--color-superficie-2); }
+    .voto-scheda .testo-editor { font-size: 14px; line-height: 1.6; }
+    .voto-scheda .testo-editor p, .voto-scheda .testo-editor ul, .voto-scheda .testo-editor ol { margin: 0 0 10px; }
+    .voto-scheda .testo-editor ul { list-style: disc; padding-left: 20px; }
+    .voto-scheda .testo-editor ol { list-style: decimal; padding-left: 20px; }
+    .voto-scheda .testo-editor table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .voto-scheda .testo-editor td, .voto-scheda .testo-editor th { border: 1px solid var(--color-bordo); padding: 6px 8px; }
+}
+
+@media (max-width: 768px) {
+    .vb-aperta { flex-direction: column; align-items: flex-start; }
+    .vb-piede { position: static; flex-direction: column-reverse; align-items: stretch; }
+    .vb-piede .btn { width: 100%; justify-content: center; }
+    .data-table.responsive td.td-centro { justify-content: space-between; }
+}

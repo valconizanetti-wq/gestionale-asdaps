@@ -8,11 +8,13 @@
     riscelti (PrimaNotaController::trattieniFile, collaudo J4).
 
     <x-campo-giustificativi id="campo-documenti" label="Giustificativi" :tenuti="$tenuti" :errori="$errors->get('documenti')" />
+    Solo PDF (documenti dei verbali, v0.44.0): accept=".pdf,application/pdf" e l'aiuto.
 
     Comportamento in Alpine.data('campoFile') (resources/js/app.js): il campo
     file vero (documenti[]) è nascosto e viene riempito con DataTransfer.
 --}}
-@props(['id', 'label', 'tenuti' => [], 'errori' => [], 'aiuto' => 'JPG, PNG o PDF, fino a 8 MB ciascuno e 10 per volta. Dal telefono si può scattare una foto.'])
+@props(['id', 'label', 'tenuti' => [], 'errori' => [], 'aiuto' => 'JPG, PNG o PDF, fino a 8 MB ciascuno e 10 per volta. Dal telefono si può scattare una foto.',
+         'accept' => '.jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf'])
 @php
     $peso = fn (int $b) => $b >= 1048576 ? number_format($b / 1048576, 1, ',', '.') . ' MB' : max(1, (int) round($b / 1024)) . ' KB';
 @endphp
@@ -40,7 +42,7 @@
         <label class="btn btn-secondary btn-sm pn-file-aggiungi">
             <x-icona nome="piu" width="14" height="14" /> Aggiungi file
             <input id="{{ $id }}" type="file" multiple class="sr-only" x-ref="scegli" @change="aggiungi($event)"
-                   accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf">
+                   accept="{{ $accept }}">
         </label>
     </div>
     <input type="file" name="documenti[]" multiple class="pn-file-vero" x-ref="vero" tabindex="-1" aria-hidden="true">

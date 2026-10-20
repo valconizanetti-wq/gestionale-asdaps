@@ -91,7 +91,8 @@ modifica.
 
 | Sezione | Presidente | Segretario | Tesoriere | Revisore | Consigliere |
 |---|---|---|---|---|---|
-| Associazione, Soci, Domande, Governance CD, Assemblee, Verbali, Comunicazioni, Archivio documenti, GDPR, Compliance RASD | ✓ | ✓ | | | |
+| Associazione, Soci, Domande, Governance CD, Assemblee, Comunicazioni, Archivio documenti, GDPR, Compliance RASD | ✓ | ✓ | | | |
+| Verbali (dalla v0.44.0 il resto del CD e il Revisore in lettura, V12; la consultazione la avvia il Presidente o il Vicepresidente in sostituzione) | ✓ | ✓ | ✓ (sola lettura) | ✓ (sola lettura) | ✓ (sola lettura) |
 | Scadenzario (dalla v0.38.0 anche il Tesoriere) | ✓ | ✓ | ✓ | ✓ (sola lettura) | |
 | Tesseramento (tessere CSEN, dalla v0.37.0) | ✓ | ✓ | ✓ | ✓ (sola lettura) | |
 | Volontari | ✓ | ✓ | ✓ (sola lettura) | | |
@@ -224,3 +225,17 @@ modifica.
     `NotaRimborso`);
   - «Pagato da me» negli scontrini: chi ha la sezione `scontrini` piena ed
     è collegato a un socio attivo maggiorenne (E5).
+
+- **Verbali, riunioni del CD e consultazioni** (v0.44.0, 21/10/2026,
+  `verbali.md`, analisi V12 e V16), sezione `verbali`:
+  - scrivono Presidente e Segretario (`puoModificare('verbali')`): riunioni,
+    presenze, verbali, definitivo, copie firmate, rettifiche, verbali
+    registrati da fuori, bozze delle consultazioni, solleciti;
+  - leggono Vicepresidente, Tesoriere, Consigliere e Revisore (nuovo) e
+    l'Amministratore (già);
+  - la consultazione la **avvia** e la **ritira** solo il Presidente, o il
+    Vicepresidente con la spunta «in sostituzione del Presidente» (art.
+    18.3): controllo nel servizio `Consultazioni`, non nella sezione;
+  - la pagina del voto della consultazione è pubblica: la chiave è il link
+    personale;
+  - Migration `000106` (permessi compresi); `SezioneSeeder` aggiornato.

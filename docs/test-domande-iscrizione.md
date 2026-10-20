@@ -4,7 +4,7 @@ Lista di collaudo manuale su arco.valconi.it. Collaudo della v0.30.3
 concluso il 30/09/2026: blocchi A–F superati, pulizia fatta. Collaudo della
 v0.32.0 (blocco G, A11–A13) del 05/10/2026: superato, con la sola richiesta
 sulla disposizione dei dati fissi (G3), fatta nella v0.32.1 (installata).
-Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: superato il 07/10/2026, dopo le correzioni della v0.37.1 e v0.37.2), dalla v0.37.0 blocco L (Tessere CSEN: superato il 07/10/2026, con la v0.37.2 installata), dalla v0.38.0 blocco M, in `collaudo-M-scadenzario.md` (Scadenze dell'associazione e promemoria «N giorni prima»; primo giro del 12/10/2026, correzioni nella v0.38.1: voci «v0.38.1»), dalla v0.39.0 blocco N, in `collaudo-N-scontrini.md` (Scontrini dal telefono con OCR), dalla v0.40.0 blocco O, in `collaudo-O-utenti-importazione.md` (utenti con più ruoli e importazione dei soci). Copia viva,
+Dalla v0.33.0 blocco H (link personale per l'informativa), dalla v0.34.0 blocco I (Audit Log), dalla v0.35.0 blocco J (Prima Nota), dalla v0.36.0 blocco K (Rinnovi quota e Promemoria: superato il 07/10/2026, dopo le correzioni della v0.37.1 e v0.37.2), dalla v0.37.0 blocco L (Tessere CSEN: superato il 07/10/2026, con la v0.37.2 installata), dalla v0.38.0 blocco M, in `collaudo-M-scadenzario.md` (Scadenze dell'associazione e promemoria «N giorni prima»; primo giro del 12/10/2026, correzioni nella v0.38.1: voci «v0.38.1»), dalla v0.39.0 blocco N, in `collaudo-N-scontrini.md` (Scontrini dal telefono con OCR), dalla v0.40.0 blocco O, in `collaudo-O-utenti-importazione.md` (utenti con più ruoli e importazione dei soci), poi i blocchi P, O-bis, Q e, dalla v0.44.0, R (`collaudo-R-verbali.md`, verbali e CD). Copia viva,
 con le spunte, nel documento Claude «Test domande di iscrizione e voto CD»;
 questa copia nel repository e `claude/test-domande-iscrizione.md` nel
 progetto vanno tenute uguali.
@@ -202,7 +202,8 @@ Dal 12/10/2026 ogni blocco nuovo ha un suo file in `docs/test/` (e una copia in 
 - **O** — Più ruoli per utente, pagina Utenti, password con il link, avvisi delle operazioni e importazione dei soci da Excel (v0.40.0): `collaudo-O-utenti-importazione.md`. Concluso il 16/10/2026; osservazioni corrette nella v0.42.0 (blocco O-bis). Azzeramento: O14.
 - **P** — Azzeramento dei dati di prova con il comando `php artisan gestionale:azzera` (v0.41.0): `collaudo-P-azzeramento.md`. Prende il posto di J12, K11, L12, M12, N12 e O14.
 - **O-bis** — Consiglio Direttivo, utenti del CD, Amministratore, correzioni del collaudo O ed errori dei campi (v0.42.0, v0.42.1): `collaudo-O-bis-consiglio-direttivo.md`. **Superato il 18/10/2026.**
-- **Q** — Anticipi e note di rimborso, «Pagato da me», rinuncia al rimborso, chiusura dell'anno con anticipi aperti (v0.43.0): `collaudo-Q-anticipi.md`. Azzeramento: Q17 (con il blocco P).
+- **Q** — Anticipi e note di rimborso, «Pagato da me», rinuncia al rimborso, chiusura dell'anno con anticipi aperti (v0.43.0): `collaudo-Q-anticipi.md`. Azzeramento: Q17 (con il blocco P). Dalla v0.44.0 la pagina ha la sua voce «Anticipi» nel menu (prova R1).
+- **R** — Verbali, riunioni del CD, consultazioni telematiche, firma digitale e rettifica, verbali registrati da fuori (v0.44.0): `collaudo-R-verbali.md`. Azzeramento: R24 (con il blocco P).
 
 ## CD di prova (SQL)
 Controllo dei soci:

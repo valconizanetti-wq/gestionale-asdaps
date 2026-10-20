@@ -139,6 +139,12 @@ class SezioneSeeder extends Seeder
             $this->assegna('amministratore', $s['codice'], soloLettura: $s['codice'] !== 'utenti');
         }
 
+        // v0.44.0 (analisi-verbali-assemblee.md, V12): i verbali li scrivono
+        // Presidente e Segretario; il resto del CD e il Revisore leggono.
+        foreach (['vicepresidente', 'tesoriere', 'consigliere', 'revisore'] as $ruolo) {
+            $this->assegna($ruolo, 'verbali', soloLettura: true);
+        }
+
         // Erogazioni/Collaboratori: nessun ruolo assegnato — sezione
         // dormiente, nessun dipendente/collaboratore oggi (vedi
         // MANUALE-ASD.md, checklist moduli).

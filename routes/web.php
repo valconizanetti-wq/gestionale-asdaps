@@ -371,5 +371,65 @@ Route::middleware(['auth', 'attivo'])->group(function () {
             });
         });
 
+    // Verbali, riunioni del CD e consultazioni telematiche (v0.44.0,
+    // specifiche/verbali.md, tavole VB-1…VB-5, CD-5, CT-1, CT-3). Leggono il
+    // CD, il Revisore e l'Amministratore; scrivono il Presidente e il
+    // Segretario (controllo nei controller); la consultazione la avvia il
+    // Presidente o il Vicepresidente in sostituzione (nel servizio).
+    Route::middleware('permesso:verbali')
+        ->prefix('verbali')->name('verbali.')
+        ->group(function () {
+            Route::controller(\App\Http\Controllers\RiunioniController::class)->prefix('riunioni')->name('riunioni.')->group(function () {
+                Route::get('/nuova', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{seduta}', 'show')->whereNumber('seduta')->name('show');
+                Route::get('/{seduta}/modifica', 'edit')->whereNumber('seduta')->name('edit');
+                Route::put('/{seduta}', 'update')->whereNumber('seduta')->name('update');
+                Route::delete('/{seduta}', 'destroy')->whereNumber('seduta')->name('destroy');
+                Route::post('/{seduta}/convoca', 'convoca')->whereNumber('seduta')->name('convoca');
+                Route::post('/{seduta}/prova', 'prova')->whereNumber('seduta')->name('prova');
+                Route::post('/{seduta}/rinvia', 'rinvia')->whereNumber('seduta')->name('rinvia');
+                Route::post('/{seduta}/riconvoca', 'riconvoca')->whereNumber('seduta')->name('riconvoca');
+                Route::post('/{seduta}/annulla', 'annulla')->whereNumber('seduta')->name('annulla');
+                Route::post('/{seduta}/presenze', 'presenze')->whereNumber('seduta')->name('presenze');
+                Route::get('/{seduta}/documenti/{documento}', 'documento')->whereNumber('seduta')->whereNumber('documento')->name('documenti.show');
+                Route::delete('/{seduta}/documenti/{documento}', 'eliminaDocumento')->whereNumber('seduta')->whereNumber('documento')->name('documenti.destroy');
+            });
+
+            Route::controller(\App\Http\Controllers\ConsultazioniController::class)->prefix('consultazioni')->name('consultazioni.')->group(function () {
+                Route::get('/nuova', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{consultazione}', 'show')->whereNumber('consultazione')->name('show');
+                Route::get('/{consultazione}/modifica', 'edit')->whereNumber('consultazione')->name('edit');
+                Route::put('/{consultazione}', 'update')->whereNumber('consultazione')->name('update');
+                Route::delete('/{consultazione}', 'destroy')->whereNumber('consultazione')->name('destroy');
+                Route::post('/{consultazione}/avvia', 'avvia')->whereNumber('consultazione')->name('avvia');
+                Route::post('/{consultazione}/sollecita', 'sollecita')->whereNumber('consultazione')->name('sollecita');
+                Route::post('/{consultazione}/ritira', 'ritira')->whereNumber('consultazione')->name('ritira');
+                Route::get('/{consultazione}/documenti/{documento}', 'documento')->whereNumber('consultazione')->whereNumber('documento')->name('documenti.show');
+                Route::delete('/{consultazione}/documenti/{documento}', 'eliminaDocumento')->whereNumber('consultazione')->whereNumber('documento')->name('documenti.destroy');
+            });
+
+            Route::controller(\App\Http\Controllers\VerbaliController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/registra', 'registra')->name('registra');
+                Route::post('/registra', 'salvaRegistrato')->name('registra.store');
+                Route::post('/ammissioni/definitivi', 'rendiDefinitiveAmmissioni')->name('ammissioni.definitivi');
+                Route::get('/{verbale}', 'show')->whereNumber('verbale')->name('show');
+                Route::get('/{verbale}/pdf', 'pdf')->whereNumber('verbale')->name('pdf');
+                Route::get('/{verbale}/scrivi', 'scrivi')->whereNumber('verbale')->name('scrivi');
+                Route::put('/{verbale}', 'salva')->whereNumber('verbale')->name('salva');
+                Route::post('/{verbale}/definitivo', 'definitivo')->whereNumber('verbale')->name('definitivo');
+                Route::post('/{verbale}/firmato', 'firmato')->whereNumber('verbale')->name('firmato');
+                Route::get('/{verbale}/firmato', 'vediFirmato')->whereNumber('verbale')->name('firmato.show');
+                Route::post('/{verbale}/rettifiche', 'rettifica')->whereNumber('verbale')->name('rettifiche.store');
+                Route::get('/{verbale}/rettifiche/{rettifica}/{parte?}', 'pdfRettifica')->whereNumber('verbale')->whereNumber('rettifica')->whereIn('parte', ['firmata'])->name('rettifiche.show');
+                Route::post('/{verbale}/rettifiche/{rettifica}/firmata', 'firmataRettifica')->whereNumber('verbale')->whereNumber('rettifica')->name('rettifiche.firmata');
+                Route::post('/{verbale}/documenti', 'aggiungiDocumenti')->whereNumber('verbale')->name('documenti.store');
+                Route::get('/{verbale}/documenti/{documento}', 'documento')->whereNumber('verbale')->whereNumber('documento')->name('documenti.show');
+                Route::delete('/{verbale}/documenti/{documento}', 'eliminaDocumento')->whereNumber('verbale')->whereNumber('documento')->name('documenti.destroy');
+            });
+        });
+
     // Qui, modulo per modulo, gli altri gruppi con ->middleware('permesso:<sezione>').
 });
