@@ -485,14 +485,18 @@ repository), con il CSS vero del gestionale e l'editor Jodit 4.17.1:
 
 Le tavole dell'Assemblea (AS-1…AS-4, RS-1) restano per la v0.45.0.
 
-**Domande nate dalle tavole:**
-- **V17.** Riunione del CD, «maggioranza dei presenti» (art. 16.3).
-  Proposta: gli astenuti contano tra i presenti, quindi pesano come un voto
-  non favorevole; chi non partecipa per conflitto di interessi no.
-  Esempio: 3 presenti, 2 favorevoli e 1 astenuto: approvata.
-- **V18.** Consultazione telematica, «maggioranza dei voti espressi» (art.
-  16.4 c). Proposta: l'astenuto conta per la validità (ha votato) ma non
-  tra i voti espressi (favorevoli contro contrari).
+**Domande nate dalle tavole, con le risposte di Paolo (20/10/2026):**
+- **V17** (riunione del CD) e **V18** (consultazione telematica):
+  **l'astenuto non entra nel conto della maggioranza**, che si fa solo tra
+  favorevoli e contrari. Regola che ne segue per il codice:
+  - *riunione*: la validità si conta sui presenti (astenuti compresi, art.
+    16.3); la delibera passa con più favorevoli che contrari; in parità
+    prevale il voto del Presidente, se ha votato; senza nessun voto
+    favorevole o contrario la delibera non passa;
+  - *consultazione*: la validità si conta sui votanti, astenuti compresi
+    (maggioranza dei componenti, art. 16.4 c); poi la stessa regola;
+  - chi non partecipa per conflitto di interessi (art. 16.7) non conta né
+    per i voti né, nella riunione, tra i votanti; resta presente.
 
 ## 7. Stima
 
