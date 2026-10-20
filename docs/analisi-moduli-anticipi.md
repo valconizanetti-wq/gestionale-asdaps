@@ -14,7 +14,9 @@ Materiale letto:
 - `config/navigazione.php`, `ProfiloEnte::haModulo()`, le rotte, la
   pianificazione (`routes/console.php`), `AnniContabili::controlliChiusura()`;
 - lo schema di `gl_prima_nota` (colonne degli anticipi già presenti dal
-  22/09/2026, mai usate da una pagina).
+  22/09/2026, mai usate da una pagina);
+- **le tavole della Prima Nota approvate il 06/10/2026** (PN-1, PN-3, PN-7),
+  ritrovate dopo la prima stesura: la parte 2 ora le segue (§2.3).
 
 ---
 
@@ -130,22 +132,27 @@ gli restituisce i soldi più tardi, in contanti o con un bonifico. Serve:
 
 ## 2.3 Proposta
 
+Segue le tavole approvate il 06/10/2026:
+- **PN-3**, nuovo movimento con la spunta «Anticipata da una persona»;
+- **PN-7**, rimborso in tre passi: nota, firma, pagamento, con il numero
+  `RIMB-2027-001` come al Dante.
+
 **Una tabella per la nota** (`gl_note_rimborso`), che raccoglie una o più
 spese della stessa persona. Le colonne del Dante sul movimento si
 sostituiscono con:
-- `anticipante_socio_id`, oppure `anticipante_nome` per chi non è socio;
+- `anticipante_socio_id` (solo soci, risposta A4);
 - `nota_rimborso_id`.
 
 Sono vuote dappertutto: la migration le toglie.
 
-Il percorso in quattro passi:
+Il percorso:
 
-1. **Spesa anticipata** (tavola AN-1). In Prima Nota, «Nuova spesa
-   anticipata»:
-   - data, importo, categoria, descrizione, fornitore, giustificativi;
-   - chi ha anticipato: un socio dall'elenco (prima i membri del CD),
-     oppure «Non è un socio» con nome e cognome;
-   - **nessun conto**: si sceglie al rimborso.
+1. **Spesa anticipata** (PN-3). Nel nuovo movimento di uscita, la spunta
+   «Anticipata da una persona»:
+   - data, importo, categoria, descrizione, fornitore, giustificativi come
+     ogni movimento;
+   - chi ha anticipato: un socio dall'elenco, prima i membri del CD;
+   - **nessun conto**: si sceglie al pagamento.
 
    Il movimento nasce `sospeso`, fuori dai saldi, con il segno «Anticipata
    da …» nell'elenco.
@@ -153,26 +160,30 @@ Il percorso in quattro passi:
    da me», se il modulo Anticipi è acceso e l'utente è un socio (utenti del
    CD, v0.42). Nasce una spesa anticipata da classificare, con
    l'anticipante già scritto.
-3. **Nota di rimborso** (tavola AN-2). Da «Anticipi da rimborsare» (AN-3):
-   - si scelgono una o più spese aperte della stessa persona e si prepara
-     la nota;
-   - la nota ha il numero `R<n>/<anno>` (lock e vincolo unico, come le
-     ricevute), la data, le spese con i giustificativi, il totale, la
-     modalità (contanti o bonifico) e l'IBAN se c'è il bonifico;
-   - il PDF ha la firma di chi ha anticipato e il visto del Tesoriere;
+3. **Passo 1 di PN-7, la nota.** Da «Anticipi da rimborsare»:
+   - si scelgono una o più spese aperte della stessa persona, con la data
+     della nota e note facoltative;
+   - «Genera la nota RIMB-2027-001 (PDF)»: numero con lock e vincolo unico,
+     mai riusato, neanche dopo un annullamento;
+   - il PDF elenca le spese con i giustificativi e il totale, con lo spazio
+     per la firma di chi ha anticipato e il visto del Tesoriere;
+   - l'IBAN si chiede solo se il rimborso sarà un bonifico;
    - stato: **emessa**.
-4. **Rimborso** (tavola AN-4). Dalla nota, «Registra il rimborso»:
-   - data e conto (cassa o banca);
+4. **Passo 2 di PN-7, la firma.** Si carica la nota firmata (scansione o
+   foto), che diventa il giustificativo del pagamento. Stato: **firmata**.
+5. **Passo 3 di PN-7, il pagamento.** «Registra il pagamento», dopo la
+   firma:
+   - data e conto («Pagato da» cassa o banca);
    - in una transazione ogni spesa riceve conto e `rimborsato_il`, ed entra
      nei saldi;
-   - stato: **rimborsata**;
+   - stato: **pagata**;
    - Audit Log a rischio alto.
 
 **Annullare**:
 - una nota emessa si annulla con la motivazione: le spese tornano aperte e
   il numero resta, segnato «annullata» (niente buchi né doppioni);
-- un rimborso registrato per errore si annulla con la motivazione, e la
-  nota torna «emessa»;
+- un pagamento registrato per errore si annulla con la motivazione, e la
+  nota torna «firmata»;
 - su un anno chiuso vale la regola della motivazione della Prima Nota.
 
 **Permessi**: le spese anticipate, le note e i rimborsi li registrano
@@ -180,6 +191,10 @@ Presidente e Tesoriere (scrittura su `prima_nota`). Il Revisore consulta
 tutto. «Pagato da me» è di chi ha la sezione `scontrini`.
 
 ## 2.4 Domande per Paolo
+
+**Risposte di Paolo (20/10/2026, 07:59)**: A1, A2, A3, A5 ok; **A4 solo
+soci**; A6 da rispondere; M1 domanda di Paolo, risposta in §2.7.
+
 
 **A1. Data del movimento.** Con il criterio di cassa, l'uscita avviene il
 giorno del rimborso, non quello della spesa. Proposta:
@@ -235,13 +250,34 @@ Per la Compagnia tutti accesi.
 - MO-1 Impostazioni › Moduli (computer e telefono), con la finestra di
   spegnimento e il lavoro in sospeso;
 - MO-2 fascia «Modulo spento: sola consultazione»;
-- AN-1 nuova spesa anticipata (e «Pagato da me» al passo 2 degli scontrini);
-- AN-2 nota di rimborso: preparazione e PDF;
+PN-3 e PN-7 restano come approvate. Da aggiungere:
+- AN-1 «Pagato da me» al passo 2 degli scontrini;
+- AN-2 PDF della nota di rimborso;
 - AN-3 «Anticipi da rimborsare», raggruppati per persona;
-- AN-4 scheda della nota: «Registra il rimborso», annullamento, rinuncia.
+- AN-4 scheda della nota: stato, annullamento, annullamento del pagamento
+  (e rinuncia, se A6 è sì).
 
 ## 2.6 Stima
 
 - Registro dei moduli: una versione (v0.43.0).
 - Anticipi e note di rimborso: una versione (v0.44.0).
 - Ognuno con un blocco di collaudo (Q e R), entro fine novembre.
+
+## 2.7 M1: perché facoltativi (risposta alla domanda di Paolo)
+
+Per la Compagnia non serve spegnere niente: nel 2027 tutto resta acceso.
+Gli interruttori servono solo al **modello unico** (`analisi-impianto-asd-aps.md`
+§7): un ente non deve vedere funzioni che non usa. Rivista caso per caso:
+- **Domande online** e **anticipi** li usano sia la Compagnia sia il
+  Dante: diventano **base**;
+- **Scontrini con OCR**: il Dante non li ha;
+- **Tessere EPS**: il Dante ha le tessere sociali, non quelle di un ente
+  sportivo;
+- i moduli futuri (Riconciliazione, Cassa mensile, Progetti, Volontari):
+  facoltativi, quando si costruiscono.
+
+Conseguenza: oggi gli interruttori riguarderebbero solo Scontrini e Tessere
+EPS, e nessuno dei due si spegne prima della migrazione del Dante.
+**Proposta: il registro dei moduli passa alla Fase 2**, insieme ai moduli
+del Dante che lo rendono utile. Novembre resta agli anticipi e poi a
+Verbali e Assemblee.
