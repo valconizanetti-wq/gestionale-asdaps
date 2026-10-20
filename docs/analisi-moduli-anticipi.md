@@ -322,11 +322,21 @@ PN-3 e PN-7 restano come approvate. Da aggiungere:
 - AN-4 scheda della nota: stato, annullamento, annullamento del pagamento
   (e rinuncia, se A6 è sì).
 
+**Disegnate il 20/10/2026** (`Tavole-anticipi.pdf`, fuori dal repository),
+con il CSS vero del gestionale:
+- AN-1 spesa anticipata (modifica di PN-3: socio dall'elenco, niente conto);
+- AN-1b «Pagato da me» al passo 2 degli scontrini (telefono);
+- AN-3 «Anticipi e note di rimborso», computer e telefono;
+- AN-4 scheda della nota al passo 3, con gli altri stati descritti;
+- AN-4b rinuncia al rimborso (donazione): dichiarazione, firma,
+  registrazione di uscita ed entrata in cassa;
+- AN-2 PDF della nota.
+
 ## 2.6 Stima
 
-- Registro dei moduli: una versione (v0.43.0).
-- Anticipi e note di rimborso: una versione (v0.44.0).
-- Ognuno con un blocco di collaudo (Q e R), entro fine novembre.
+- Anticipi e note di rimborso: una versione (v0.43.0), collaudo Q, entro
+  fine novembre.
+- Registro dei moduli: Fase 2.
 
 ## 2.7 M1: perché facoltativi (risposta alla domanda di Paolo)
 
