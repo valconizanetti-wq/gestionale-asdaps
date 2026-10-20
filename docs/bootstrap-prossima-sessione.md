@@ -16,6 +16,13 @@ fa il collaudo **Q** (`docs/test/collaudo-Q-anticipi.md`, Q1–Q17, forma
 estesa). Come sempre: esiti prova per prova, correzioni in una v0.43.x,
 push su GitHub e copie nel progetto. Se un difetto chiede una scelta:
 analisi breve e domanda prima del codice.
+- **Nel prossimo deploy (Paolo, 20/10/2026)**: voce «Anticipi» nel menu,
+  sotto Contabilità dopo Scontrini (`config/navigazione.php`, rotta
+  `prima-nota.anticipi.index`, sezione `prima_nota`). Il layout evidenzia la
+  voce con `Str::before(rotta, '.') . '.*'`: servono una chiave facoltativa
+  `attiva` (es. `prima-nota.anticipi.*`) e il modo di escludere gli anticipi
+  dalla voce Prima Nota, altrimenti si accendono tutte e due. Aggiornare
+  `ui.md` e il collaudo Q (Q2/Q4).
 - Poi **Verbali e Assemblee** dal Dante (regola di Paolo: si recupera il
   suo codice e lo si corregge), con analisi e tavole prima del codice;
   poi il primo passo del Bilancio. Dal 1° dicembre solo correzioni.
