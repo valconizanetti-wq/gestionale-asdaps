@@ -294,7 +294,11 @@ Sono tutte vuote: niente da migrare.
 - **V13**: ok;
 - versioni: v0.44.0 ok; v0.45.0 ok, ma si rivede alla fine della v0.44.0.
 
-V3, V5, V6, V7, V9, V10, V11 e V12: in attesa di conferma (§5-bis).
+Seconde risposte (20/10/2026, sera):
+- **V3**: **editor avanzato**, sempre (§5-bis);
+- **V5, V6, V7, V9, V10, V11, V12**: ok, come proposte;
+- **V15**: sì, firma digitale anche per i verbali registrati da fuori;
+- **V14** e **V16**: domande di chiarimento di Paolo, risposte in §5-bis.
 
 **V1. Numero dei verbali.** Proposta: progressivo **per libro e per anno**
 («Assemblee 2027 n. 1», «CD 2027 n. 4»), assegnato quando il verbale
@@ -400,6 +404,49 @@ non cambia nulla per chi vota.
 digitale e rettifica, riunioni del CD con il voto di ciascuno,
 **consultazione telematica generale**, verbali registrati da fuori, verbali
 delle domande nel libro, collegamento con la chiusura dell'anno.
+
+**Editor avanzato (V3).** Si riprende dal Dante l'editor Jodit e il suo
+`HtmlSanitizer` (lista dei tag ammessi, link solo http/https, niente
+`script`, `iframe` né attributi `on…`), con due cambi:
+- Jodit si installa con npm in una versione fissa e si compila con Vite,
+  come Alpine. Nel Dante si carica da un CDN con la versione «@4» non
+  fissata: può cambiare da solo da un giorno all'altro, e fuori dal server.
+- Proposta: togliere dalla barra il pulsante «sorgente» (HTML grezzo).
+  Il `HtmlSanitizer` resta comunque su ogni salvataggio.
+
+L'editor serve dove si scrive del testo: i punti del verbale, il testo
+delle delibere e della proposta di consultazione, le note di rettifica.
+
+**V14 — chi risponde del verbale (risposta alla domanda di Paolo).** Il
+verbalizzante (il segretario della seduta) lo redige e risponde della
+fedeltà di quanto scrive. Lo statuto però chiede che il verbale sia
+**sottoscritto da tutti e due**, il presidente e il segretario della
+seduta (artt. 13.4 e 16.6): con la sua firma il presidente ne attesta il
+contenuto. Proposta, riformulata:
+- di regola il file porta **le due firme digitali**. Per un PDF firmato
+  PAdES il gestionale conta le firme (ogni firma ha il suo blocco) e
+  mostra «2 firme digitali»;
+- se nel file c'è **una sola firma**, si accetta solo se è del
+  **verbalizzante**, con un avviso nella scheda («manca la firma del
+  presidente della seduta»). Il nome del firmatario il gestionale lo legge
+  solo come testo, senza verificare il certificato: lo conferma chi carica
+  il file;
+- per i `.p7m` (CAdES) le firme non si contano in modo affidabile: chi
+  carica dichiara chi ha firmato.
+
+**V16 — che cosa vuol dire «avviare» la consultazione.** Vuol dire **far
+partire il voto**: in quel momento ogni consigliere riceve per email la
+proposta, i documenti e il suo link personale, e da lì corre il termine di
+almeno 3 giorni. È l'atto che lo statuto riserva all'«iniziativa del
+Presidente» (art. 16.4). Preparare il testo della proposta e i documenti è
+un'altra cosa, e la può fare chiunque scriva i verbali. Proposta,
+riformulata:
+- il Segretario (o il Presidente) prepara la consultazione in bozza;
+- **solo il Presidente** preme «Avvia la consultazione», dal gestionale.
+  Il registro dice che l'ha avviata lui;
+- se il Presidente manca, per assenza o impedimento, la avvia il
+  Vicepresidente (art. 18.3), con la spunta «in sostituzione del
+  Presidente».
 
 ## 6. Tavole da disegnare (dopo le risposte)
 
