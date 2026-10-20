@@ -130,6 +130,66 @@ gli restituisce i soldi più tardi, in contanti o con un bonifico. Serve:
 - `gestionale-acv`: categorie «Anticipo spese» e «Recupero anticipi»,
   disattivate (il vecchio modo, da non riprendere).
 
+## 2.2-bis Il codice del Dante (letto il 20/10/2026)
+
+Materiale allegato da Paolo il 20/10/2026: `Controllers_SDA.zip`,
+`Models_SDA.zip`, `Services_SDA.zip`, `Middleware_SDA.zip`,
+`views_SDA.zip` (questo contiene solo le viste del bilancio: mancano
+`prima-nota/rimborsa` e `nota-rimborso-pdf`).
+
+Come funziona (`PrimaNotaController`: `store`, `rimborsa`, `generaNota`,
+`confermaPagamento`, `annullaNota`, `notaRimborsoPdf`; `PrimaNota`:
+`isPendente`, `hasNotaEmessa`, `isRimborsato`, `scopeEffettivi`, `saldi`):
+1. **Spesa anticipata**: spunta `sospeso` nel movimento; tipo forzato a
+   uscita, conto vuoto; chi ha anticipato in `anticipato_da` (testo) con
+   `tipo_anticipante` `cd` o `esterno`.
+2. **Fase 1, la nota**: dalla spesa si apre «Rimborsa»; si possono
+   aggiungere le altre spese aperte della stessa persona. «Genera» assegna
+   `RIMB-ANNO-NNN` (anno dalla data della nota) a tutte le spese, salva la
+   data della nota e apre il PDF da stampare e far firmare. L'IBAN è
+   obbligatorio per un esterno.
+3. **Fase 2, il pagamento**: data e conto; tutte le spese della nota
+   ricevono `rimborsato_il` e il conto, ed entrano nei saldi.
+4. **Annullamento** di una nota non pagata, con motivo: le spese tornano
+   aperte e una riga va in `gs_rimborsi_annullati` (numero, anticipante,
+   totale, numero di spese, motivo, chi e quando).
+
+**Si riprende**: la spunta nel movimento, l'accorpamento delle spese della
+stessa persona in una nota, il numero `RIMB-ANNO-NNN`, le due fasi (nota,
+pagamento), l'annullamento motivato con il suo registro, il PDF.
+
+**Si migliora** (difetti trovati nel codice):
+1. **Il numero non è protetto.** Si calcola come il più alto già usato,
+   senza lock (due note insieme possono avere lo stesso numero). Inoltre
+   l'annullamento toglie il numero dalle spese: se la nota annullata era
+   l'ultima, la nota dopo **riprende lo stesso numero**, e il registro degli
+   annullamenti e la nota nuova hanno lo stesso numero. Rimedio: tabella
+   delle note con vincolo unico e lock; una nota annullata resta una riga
+   «annullata».
+2. **Chi ha anticipato è un testo libero**, e le spese si accorpano solo
+   se il testo è identico («Luigi Tascio» e «L. Tascio» sono due persone).
+   Rimedio: il socio (A4).
+3. **Nessuna traccia nell'Audit Log** della data della nota e
+   dell'annullamento, scritti con `DB::table` (fuori dall'observer).
+   Rimedio: model osservati, eventi propri, rischio alto per pagamento e
+   annullamento.
+4. **Il pagamento** non è in una transazione, non controlla l'anno chiuso
+   né che la data venga dopo quella della nota, e lascia il movimento alla
+   data della spesa: il saldo di un giorno già passato cambia quando si
+   paga. Rimedio: transazione, controlli, data del pagamento (A1).
+5. **La firma resta fuori**: il messaggio dice di stamparla e farla
+   firmare, ma la copia firmata non si carica. Rimedio: passo 2 di PN-7.
+6. **Il PDF si rigenera** a ogni apertura dai dati del momento: se cambia
+   una descrizione, la nota firmata e quella del gestionale non sono più
+   uguali. Rimedio: il PDF si salva alla generazione.
+7. **Un pagamento sbagliato non si annulla.** Rimedio: annullamento motivato
+   del pagamento.
+8. Le note della nota si accodano alle note del movimento; l'IBAN si salva
+   su ogni spesa. Rimedio: note e IBAN sulla nota.
+
+Da riportare al Gestionale APS quando il modulo sarà fatto
+(`da-riportare-gestionale-aps.md`): i punti 1, 3, 4 e 6.
+
 ## 2.3 Proposta
 
 Segue le tavole approvate il 06/10/2026:
