@@ -498,6 +498,26 @@ Le tavole dell'Assemblea (AS-1…AS-4, RS-1) restano per la v0.45.0.
   - chi non partecipa per conflitto di interessi (art. 16.7) non conta né
     per i voti né, nella riunione, tra i votanti; resta presente.
 
+**Regola di tutte le votazioni (Paolo, 20/10/2026).** La maggioranza si
+conta sempre tra i **votanti**, cioè favorevoli contro contrari; gli
+astenuti restano fuori. Fanno eccezione le delibere per cui lo statuto fissa
+un'altra base, e ogni delibera ha per questo un **tipo**:
+
+| Tipo | Passa se | Articolo |
+|---|---|---|
+| Ordinaria (e le altre del CD e dell'Assemblea ordinaria) | più favorevoli che contrari; in parità prevale il Presidente, se ha votato | 14.2, 16.3, 16.4 |
+| Esclusione di un socio (CD, solo in riunione) | favorevoli ≥ maggioranza assoluta dei componenti | 9.1 c, 16.5 |
+| Modifica dello statuto (Assemblea straordinaria) | favorevoli ≥ due terzi dei presenti | 14.4 |
+| Trasformazione, fusione, scissione, scioglimento | favorevoli ≥ tre quarti dei soci con diritto di voto | 14.5 |
+| Elezione delle cariche | i più votati, a scrutinio segreto | 13.3 |
+
+I quorum di validità della seduta sono un'altra cosa e restano quelli del
+§1. Il verbale scrive sempre la regola usata («Approvata: 3 favorevoli su 4
+componenti, art. 9.1 c»). Gli ultimi tre tipi servono all'Assemblea
+(v0.45.0).
+
+**Tavole approvate da Paolo il 20/10/2026**, con le correzioni V17 e V18.
+
 ## 7. Stima
 
 Lavoro più grande degli anticipi. Proposta in due versioni, ognuna con il
