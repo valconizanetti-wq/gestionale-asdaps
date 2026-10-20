@@ -1,7 +1,7 @@
 # Bootstrap — Gestionale ASD, prossima sessione
 
 ## Repository su GitHub (fatto il 13/10/2026)
-- Codice su **GitHub**: `valconizanetti-wq/gestionale-asdaps` (privato), ramo
+- Codice su **GitHub**: `valconizanetti-wq/gestionale-asdaps` (da rendere privato: il 20/10/2026 risultava pubblico), ramo
   `master`, tutta la storia (push del 13/10/2026 dal bundle `65ece88`).
 - Il bundle non serve più. A inizio sessione: `add_repo` (accesso «push»)
   e clone da GitHub; a fine sessione push dei commit.
@@ -9,6 +9,18 @@
   storia; codici fiscali solo di fantasia nei test.
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-utenti-importazione.pdf`).
+
+## Lavoro in corso (20/10/2026): anticipi e note di rimborso
+- Analisi `docs/analisi-moduli-anticipi.md` (copia nel progetto), con il
+  codice del Dante letto (§2.2-bis) e le risposte di Paolo (§2.4). Il
+  registro dei moduli passa alla Fase 2.
+- **Regola di Paolo**: si recupera sempre il codice del Dante e lo si
+  corregge o migliora (in vista della migrazione). Codice del Dante:
+  allegati `Controllers_SDA.zip`, `Models_SDA.zip`, `Services_SDA.zip`,
+  `Middleware_SDA.zip`, `views_SDA.zip` (solo viste del bilancio: chieste
+  le altre il 20/10/2026), da riallegare in una sessione nuova.
+- Dopo gli anticipi: **Verbali e Assemblee** dal Dante, poi il primo passo
+  del Bilancio. Dal 1° dicembre solo correzioni.
 
 ## Stato al 19/10/2026 (sera): gestionale su gestionale.arciericastello.it
 **Trasloco concluso il 19/10/2026.**

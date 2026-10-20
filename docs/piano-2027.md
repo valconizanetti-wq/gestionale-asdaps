@@ -43,6 +43,15 @@ artt. 17.1.8 e 28 dello statuto. La tessera dà la copertura assicurativa,
 non questi adempimenti. Paolo ritiene che bastino le tessere: è un punto
 da verificare, non una decisione presa.
 
+## Regola per tutto il piano (Paolo, 20/10/2026)
+
+Quando una funzione esiste già nel gestionale del Dante, **si recupera il
+suo codice** e lo si corregge o migliora se serve, invece di riprogettarla:
+la migrazione del Dante nella nuova piattaforma sarà così più semplice.
+Ogni analisi ha un paragrafo «Il codice del Dante» con cosa si riprende e
+cosa si migliora; le correzioni utili anche al Dante vanno in
+`da-riportare-gestionale-aps.md`.
+
 ## 2. Fasi
 
 ### Fase 0 — entro il 31/12/2026 (partenza della Compagnia)
@@ -85,7 +94,10 @@ Gennaio 2027: saldi di apertura dal 31/12/2026 di `gestionale-acv`.
 
 ### Fase 1 — gennaio–marzo 2027 (prima Assemblea nel gestionale)
 
-0. **Registro dei moduli** e **anticipi e note di rimborso** (spostati
+0. **Anticipi e note di rimborso**, anticipati a ottobre–novembre 2026
+   (`analisi-moduli-anticipi.md`); il **registro dei moduli** passa alla
+   Fase 2 (Paolo, 20/10/2026), con i moduli del Dante che lo rendono utile
+   (spostati
    dalla Fase 0).
 1. **Verbali e Assemblee dal Dante**, con convocazione email ai soci e
    risposte (RSVP); verbali del CD e dell'Assemblea; collegamento con le
@@ -100,7 +112,8 @@ Gennaio 2027: saldi di apertura dal 31/12/2026 di `gestionale-acv`.
 
 1. **Bilancio completo**: rendiconto Modello D, approvazione e chiusura
    dell'anno insieme, PDF con codice di verifica, copia firmata.
-2. **Moduli del Dante** che la Compagnia non usa ma il modello deve avere,
+2. **Registro dei moduli** (`analisi-moduli-anticipi.md` parte 1, §2.7),
+   poi i **moduli del Dante** che la Compagnia non usa ma il modello deve avere,
    spenti per la Compagnia: RUNTS, 5 per mille ed erogazioni liberali,
    Comunicazioni e lettere, Corrispondenza, Fascicolo, Archivio,
    Collaborazioni, F24, Storno, Volontari e rimborsi.

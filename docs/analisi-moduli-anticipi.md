@@ -252,8 +252,13 @@ tutto. «Pagato da me» è di chi ha la sezione `scontrini`.
 
 ## 2.4 Domande per Paolo
 
-**Risposte di Paolo (20/10/2026, 07:59)**: A1, A2, A3, A5 ok; **A4 solo
-soci**; A6 da rispondere; M1 domanda di Paolo, risposta in §2.7.
+**Risposte di Paolo (20/10/2026)**: A1, A2, A3, A5 ok; **A4 solo
+soci**; **A6 sì, la rinuncia si registra come donazione**; M1: il registro
+dei moduli passa alla **Fase 2** (§2.7). La parte 1 resta come analisi per
+allora.
+
+Regola di Paolo (20/10/2026): quando una funzione c'è già nel Dante se ne
+recupera il codice e lo si corregge o migliora (§2.2-bis).
 
 
 **A1. Data del movimento.** Con il criterio di cassa, l'uscita avviene il
