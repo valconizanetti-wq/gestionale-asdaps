@@ -488,3 +488,22 @@ realisti del re».
 - dichiarazione di incompatibilità per ogni membro del CD (il campo c'è
   già in `gl_governance_cd`, senza pagina);
 - sollecito della quota con la data e la decadenza 30 giorni dopo.
+
+### Terzo giro (21/10/2026)
+
+- **Delega del genitore**: sì, con le stesse regole degli adulti.
+- **Sollecito nel regolamento**: sì. Lo statuto tiene la causa e la
+  garanzia minima; il regolamento la procedura, che si cambia con
+  l'Assemblea ordinaria. Testo proposto per lo statuto: «decadenza per
+  morosità: il socio che non versa la quota entro il 31 gennaio non può
+  esercitare il diritto di voto fino al versamento; decade con le modalità
+  stabilite dal regolamento, che prevedono un sollecito scritto e un
+  termine non inferiore a 30 giorni. Il Consiglio Direttivo prende atto
+  della decadenza». Nel regolamento: il sollecito per email o PEC dopo il
+  31 gennaio, la decadenza 30 giorni dopo, e comunque non prima del 30
+  aprile.
+- **Recesso**: «immediato» vuol dire efficace dalla ricezione (bozza art.
+  9.1 a), non a fine anno come nel modello CSEN. «Senza quota» vuol dire
+  che chi recede non deve la quota dell'anno se non l'ha ancora versata
+  (lo statuto nuovo, art. 8.2, la chiedeva). La quota già versata **non si
+  restituisce**: la bozza lo dice già (artt. 5.4 e 9.3).
