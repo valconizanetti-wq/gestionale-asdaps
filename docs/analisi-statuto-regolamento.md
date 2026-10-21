@@ -790,3 +790,11 @@ Domanda di Paolo: cambia qualcosa per le gare amichevoli fuori calendario? Rispo
 - Se prevale la parte conviviale (pranzo, festa) l'evento rischia di essere visto come commerciale o come raccolta fondi: tenere separati iscrizione alla gara e quota per il pranzo (quest'ultima commerciale, salvo raccolta fondi occasionale).
 - Assicurazione: senza tessera il partecipante non è coperto (art. 2 c. 4 dello statuto); è anche il motivo pratico per chiedere la tessera giornaliera.
 - ⚖️ Da confermare con il commercialista.
+
+### 12.4 Copertura assicurativa dei partecipanti esterni (21/10/2026)
+
+Osservazione di Paolo: la copertura dei partecipanti non viene dalla tessera del loro ente? Sì, va corretto il §12.3.
+- L'infortunio dell'atleta è coperto dalla polizza del suo ente di tesseramento, ma di norma solo per le attività organizzate o riconosciute da quell'ente: un'amichevole CSEN fuori calendario può restarne fuori. Va verificato nelle condizioni della polizza (FITARCO, FIARC, ecc.).
+- La responsabilità civile verso terzi dell'organizzatore è coperta dalla RCT della Compagnia, chiunque partecipi.
+- La tessera giornaliera CSEN quindi non è sempre necessaria per l'assicurazione: serve quando la polizza dell'ente dell'atleta non copre l'evento, o quando l'atleta non è tesserato. Resta utile sul piano fiscale (§12.2).
+- Statuto art. 2 c. 4: chiede il tesseramento «all'ente di affiliazione», cioè CSEN, per ogni attività negli impianti; per le gare con esterni è più rigido del necessario. Possibile soluzione (da valutare): «all'ente di affiliazione o ad altro ente dell'ordinamento sportivo che assicuri la copertura per l'attività svolta», con il dettaglio nel regolamento.
