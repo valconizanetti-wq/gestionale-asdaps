@@ -780,3 +780,13 @@ Domanda di Paolo: come si considerano le quote di iscrizione alle gare che organ
 - Coerenza con lo statuto: l'art. 2 c. 4 subordina la partecipazione alle attività negli impianti al tesseramento all'ente di affiliazione; per una gara aperta a esterni servono tessera giornaliera o affiliazione allo stesso ente, e questo rende anche le loro iscrizioni non commerciali.
 - Gestionale: le iscrizioni alle gare andranno registrate distinguendo istituzionali e commerciali, con l'ente di tesseramento del partecipante come prova.
 - ⚖️ Da confermare con il commercialista: tesserati di altri enti, gare con doppia egida.
+
+### 12.3 Gare amichevoli fuori dai calendari ufficiali (21/10/2026)
+
+Domanda di Paolo: cambia qualcosa per le gare amichevoli fuori calendario? Risposta: sul piano fiscale il criterio resta lo stesso del §12.2.
+- La norma (art. 148 c. 3 TUIR) guarda a due cose: che l'attività attui lo scopo istituzionale e chi paga. Non chiede che la gara sia nel calendario ufficiale. Un'amichevole di tiro con l'arco è attività sportiva dilettantistica come una gara ufficiale.
+- Iscrizioni di soci, tesserati propri e tesserati CSEN di altre società: non commerciali. Partecipanti non tesserati o tesserati solo con altri enti: commerciali (398).
+- Il rischio è sulla prova: un evento fuori calendario lascia meno tracce. Conviene registrarlo come manifestazione presso il CSEN (comitato provinciale), con delibera o atto del CD, programma, elenco dei partecipanti con numero di tessera, incassi tracciati e risultati.
+- Se prevale la parte conviviale (pranzo, festa) l'evento rischia di essere visto come commerciale o come raccolta fondi: tenere separati iscrizione alla gara e quota per il pranzo (quest'ultima commerciale, salvo raccolta fondi occasionale).
+- Assicurazione: senza tessera il partecipante non è coperto (art. 2 c. 4 dello statuto); è anche il motivo pratico per chiedere la tessera giornaliera.
+- ⚖️ Da confermare con il commercialista.
