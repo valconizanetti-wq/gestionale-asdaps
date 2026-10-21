@@ -302,3 +302,82 @@ CSEN sui punti ⚖️. Poi, dopo l'Assemblea:
 - **S11.** Rimborsi ai volontari solo analitici: confermato? Va scritto che
   la regola non riguarda le spese anticipate per acquisti (note di
   rimborso)?
+
+## 7. Risposte di Paolo (21/10/2026) e conseguenze
+
+Paolo ha chiesto i miglioramenti dello statuto nuovo da portare nella bozza
+del 5/10 (16 punti, risposta in chat del 21/10) e ha risposto così.
+
+1. **Voto dei minorenni: lo esercita un genitore**, per non togliere
+   rappresentanza ai soci giovani (democraticità). Da scrivere:
+   - un voto per minore;
+   - lo esercita uno dei genitori che hanno firmato la domanda. Proposta:
+     quello indicato nella domanda, o l'altro se il primo è assente;
+   - il genitore conta nel quorum come il socio che rappresenta;
+   - da decidere se il genitore può delegare.
+
+   ⚖️ Resta da far confermare la compatibilità con l'art. 148 del TUIR
+   («voto degli associati maggiori d'età»).
+   Gestionale (v0.45.0): diritto di voto del minore calcolato come per
+   l'adulto e assegnato al genitore indicato; nella domanda online un campo
+   «genitore che vota».
+2. **Data certa al posto della «marcatura temporale certa»: metodo del
+   Dante**, procedurale. Il Dante (`VolontariController`, registro dei
+   volontari) fa così:
+   - si firma digitalmente il PDF;
+   - lo si invia via **PEC** a una casella PEC dell'associazione
+     («archivi»);
+   - si carica la **ricevuta di avvenuta consegna** (RAC);
+   - il documento si blocca.
+
+   Il Dante cita il DM 14/02/2021: da ricontrollare. Testo proposto:
+   «… con data certa ottenuta mediante invio a mezzo posta elettronica
+   certificata alla casella dell'Associazione e conservazione della
+   ricevuta di consegna».
+   Gestionale: passo facoltativo **«Data certa (PEC)»** dopo la copia
+   firmata, per i verbali e per il registro dei volontari. Si riprende
+   dal Dante correggendolo:
+   - la RAC (file `.eml`) si controlla: mittente, destinatario e nome
+     dell'allegato devono corrispondere, e si salva con l'impronta;
+   - niente invio se manca la casella.
+
+   Domanda aperta: la Compagnia ha una casella PEC? (S12)
+3. **Deleghe sì per l'Assemblea, no per il CD**; il numero massimo è da
+   discutere.
+   - Gestionale: il numero massimo è un'impostazione, così vale qualunque
+     scelta.
+   - Da valutare nello statuto: niente deleghe ai consiglieri.
+   - ⚖️ Gli amministratori non votano l'approvazione del rendiconto né le
+     delibere sulla loro responsabilità (art. 21, comma 2, c.c., applicato
+     per analogia alle associazioni non riconosciute). Se lo si scrive, il
+     gestionale lo applica nella v0.45.0 (S13).
+4. **Recesso: niente quota dell'anno** (si toglie l'aggiunta dello statuto
+   nuovo).
+5. **Quorum in prima e seconda convocazione.**
+   - Lo statuto nuovo applica «in prima e in seconda» le **maggioranze
+     qualificate** (2/3, 3/4), non il quorum di presenza.
+   - Il quorum libero in seconda convocazione per l'ordinaria è il modello
+     del codice civile (art. 21, comma 1): non è una scappatoia, purché
+     convocazione, pubblicità e verbali siano regolari.
+   - I 3/4 dei soci per lo scioglimento sono un obbligo di legge (art. 21,
+     comma 3, c.c.); deleghe e partecipazione a distanza li rendono
+     raggiungibili.
+   - Per le modifiche dello statuto la bozza del 5/10 aveva già la via di
+     mezzo: in seconda convocazione almeno un terzo dei soci presenti, e
+     delibera con i 2/3 dei presenti.
+6. **«Astenuto = contrario».** La formula è infelice: l'astenuto non vota
+   contro. Nelle maggioranze qualificate servono almeno N voti favorevoli
+   su una base fissa (presenti, componenti, soci con diritto di voto); chi
+   si astiene semplicemente non aggiunge un favorevole. È una garanzia per
+   chi subisce la delibera (socio escluso) o per la minoranza (statuto).
+   Testo proposto: «con il voto favorevole di almeno …», senza
+   equiparazioni. Il verbale registra l'astenuto come astenuto: il
+   gestionale fa già così («Servono almeno 3 favorevoli su 4
+   componenti»).
+
+Nuove domande:
+- **S12.** La Compagnia ha (o avrà) una casella PEC per la data certa?
+- **S13.** Scriviamo che i consiglieri non votano l'approvazione del
+  rendiconto e non ricevono deleghe?
+- **S14.** Deleghe: quante al massimo per delegato (proposta: due)? Il
+  genitore che vota per un minore può delegare?
