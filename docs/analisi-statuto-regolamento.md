@@ -679,13 +679,18 @@ con gli stessi stili, intestazione e piè di pagina; testo anche in
 
 **Scelte fatte scrivendo il testo, da confermare** (Paolo non le aveva
 ancora decise):
+Risposte di Paolo (21/10): 1, 2, 4 confermate; 3 vedi sotto; 5 da
+chiarire.
+
 1. **Diritto di voto** (S4): basta la quota dell'anno; la tessera CSEN
    resta obbligatoria per le attività (art. 2.4), non per il voto.
 2. **Contanti** (S6): ammessi con ricevuta, nei limiti di legge; il
    regolamento consiglia il bonifico (statuto art. 23, regolamento
    «Incassi e pagamenti»).
 3. **Arbitrato** (S10): tolto, come nello statuto v1.0. Il gestionale dovrà
-   togliere la casella dal modulo della domanda.
+   togliere la casella dal modulo della domanda. → **Paolo (21/10): si
+   tiene**; rimessa la clausola della bozza (art. 33, comma 3). Il consenso
+   nella domanda resta.
 4. **Sospensione disciplinare**: da 15 giorni a sei mesi (regolamento).
 5. **Parità nel CD**: «prevale il voto del Presidente; se non ha espresso un
    voto favorevole o contrario, la proposta è respinta». Chiarisce il caso
@@ -722,5 +727,4 @@ del 16/11. Dopo l'approvazione, una versione del gestionale:
 - CD fino a 7;
 - seconda convocazione dopo 24 ore;
 - deleghe;
-- sollecito della quota;
-- niente consenso all'arbitrato.
+- sollecito della quota.

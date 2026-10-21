@@ -398,6 +398,8 @@
 
 2.  Le controversie disciplinari interne sono decise dagli organi dell'Associazione secondo gli artt. 9 e 10; i provvedimenti adottati a tutela dell'incolumità delle persone sono immediatamente esecutivi.
 
+3.  Ogni altra controversia tra i soci, o tra i soci e l'Associazione o i suoi organi, relativa al rapporto associativo e compromettibile per legge, è devoluta a un collegio di tre arbitri. Ciascuna parte nomina un arbitro; il terzo, con funzioni di presidente, è nominato di comune accordo dai primi due o, in mancanza di accordo, dal Presidente del Tribunale di Terni su istanza della parte più diligente. Il collegio decide secondo diritto, con arbitrato rituale.
+
 ### Art. 34 – Norme finali e transitorie
 
 1.  Per quanto non previsto dal presente statuto e dal regolamento interno si applicano le norme del Codice civile, del D.Lgs. 36/2021, del D.Lgs. 39/2021, le altre norme sugli enti sportivi dilettantistici e sugli enti non commerciali, e le norme degli enti di affiliazione, nonché, in quanto compatibile, l'art. 148 del Testo unico delle imposte sui redditi (D.P.R. 22 dicembre 1986, n. 917).
