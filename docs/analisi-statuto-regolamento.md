@@ -761,3 +761,12 @@ Domanda di Paolo: con questo statuto la futura ASD sarà un ente commerciale? Ri
 - Commerciali: sponsorizzazioni, punto di ristoro (la somministrazione ai soci è decommercializzata solo per le APS, non per le ASD), eventuali servizi a terzi. Si possono gestire con il regime forfettario L. 398/1991 (limite 400.000 €/anno di proventi commerciali), con contabilità separata.
 - Le agevolazioni valgono solo se le regole dello statuto sono applicate nei fatti (libro soci, verbali, rendiconto approvato, tracciabilità, iscrizione RASD): Cass. ord. 4459/2026. Il gestionale copre già buona parte di queste prove.
 - ⚖️ Da far confermare al commercialista: art. 149 c. 4, opzione 398 al primo provento commerciale, trattamento del punto di ristoro.
+
+### 12.1 Punto di ristoro riservato ai soci con offerta libera (21/10/2026)
+
+Domanda di Paolo: aiuta scrivere che il punto di ristoro è riservato ai soci, che lasciano un'offerta? Risposta: dal punto di vista fiscale no.
+- La somministrazione di alimenti e bevande è sempre commerciale (art. 148 c. 4 TUIR), anche verso i soci. L'eccezione del c. 5 per il bar ai soci vale per le APS, non per le ASD.
+- Un'offerta data in cambio della consumazione resta un corrispettivo: la parola non cambia la natura dell'entrata e, se l'offerta non è documentata, aumenta il rischio in caso di controllo.
+- Riservarlo ai soci serve sul piano amministrativo (somministrazione in circolo privato, D.P.R. 235/2001), non su quello fiscale. Lo statuto 1.1 lo dice già (art. 3 c. 5): nessuna modifica.
+- Alternative pulite: consumazioni gratuite durante l'attività (acqua, caffè), con costo istituzionale coperto dalle quote e nessun incasso; oppure incassi registrati in regime 398 (imposte su importi piccoli molto basse); raccolte fondi occasionali in occasione di gare (non imponibili, max 2 l'anno, art. 25 L. 133/1999); donazioni vere solo se non legate a una consumazione.
+- ⚖️ Da confermare con il commercialista.
