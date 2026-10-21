@@ -19,8 +19,9 @@ una v0.44.x, push su GitHub e copie nel progetto. Se un difetto chiede una
 scelta: analisi breve e domanda prima del codice.
 - **Statuto 1.1 e regolamento interno 1.1** pronti (21/10/2026), decisi con
   Paolo: Word e testo in `docs/statuto/`, analisi e decisioni in
-  `docs/analisi-statuto-regolamento.md` (§7–§11). Vanno al commercialista
-  (punti ⚖️) e all'Assemblea del 16/11. Dopo l'approvazione, una versione
+  `docs/analisi-statuto-regolamento.md` (§7–§13; §12 qualifica fiscale,
+  gare e ristoro). Statuto inviato al commercialista da Paolo il 21/10
+  (punti ⚖️); poi l'Assemblea del 16/11. Dopo l'approvazione, una versione
   del gestionale per allinearsi (§11, «Prossimi passi»):
   - testo 1.1 pubblicato, con il regolamento accettato nella domanda;
   - citazioni degli articoli rinumerate;
