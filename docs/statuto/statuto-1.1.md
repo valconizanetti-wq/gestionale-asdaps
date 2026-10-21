@@ -22,7 +22,7 @@
 
 3.  L'Associazione e i suoi soci si impegnano a rispettare gli statuti, i regolamenti e i provvedimenti disciplinari degli organi competenti degli enti cui l'Associazione è affiliata, nella parte relativa all'organizzazione e alla gestione delle associazioni affiliate, nonché la normativa antidoping (L. 14 dicembre 2000, n. 376) e le disposizioni in materia di prevenzione e contrasto della violenza di genere (art. 16 del D.Lgs. 28 febbraio 2021, n. 39).
 
-4.  La partecipazione a qualsiasi attività associativa, agonistica, didattica e promozionale all'interno degli impianti e delle aree in gestione all'Associazione è subordinata al preventivo tesseramento annuale all'ente di affiliazione, condizione essenziale per l'efficacia delle coperture assicurative.
+4.  Le condizioni di accesso agli impianti e di partecipazione alle attività, compreso il tesseramento richiesto, sono stabilite dal regolamento interno.
 
 5.  L'Associazione chiede l'iscrizione nel Registro nazionale delle attività sportive dilettantistiche (RASD) ai sensi del D.Lgs. 28 febbraio 2021, n. 36. Con l'iscrizione assume la denominazione "Compagnia Arcieri Castel Viscardo – Associazione Sportiva Dilettantistica", in forma abbreviata "Compagnia Arcieri Castel Viscardo A.S.D.".
 

@@ -111,7 +111,8 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td>Il campo di tiro "Franco Cortignani", sito in località Macchietto, Viceno (Castel Viscardo), è accessibile esclusivamente ai soci e ai tesserati in regola con il tesseramento sociale e federale per l'anno in corso (statuto, art. 2, comma 4).</td>
+<td>Il campo di tiro "Franco Cortignani", sito in località Macchietto, Viceno (Castel Viscardo), è accessibile esclusivamente ai soci e ai tesserati in regola con il tesseramento all'ente di affiliazione (statuto, art. 2, comma 4).<br />
+La partecipazione a qualsiasi attività associativa, agonistica, didattica e promozionale all'interno degli impianti e delle aree in gestione all'Associazione, comprese le gare e le manifestazioni aperte a partecipanti esterni, è subordinata al preventivo tesseramento all'ente di affiliazione, anche nella forma giornaliera ove prevista.</td>
 <td><em>Garantire la copertura assicurativa obbligatoria prevista dalle norme federali e di promozione sportiva per chiunque frequenti le strutture, tutelando al contempo l'Associazione da responsabilità connesse alla presenza di soggetti non autorizzati.</em></td>
 </tr>
 </tbody>
