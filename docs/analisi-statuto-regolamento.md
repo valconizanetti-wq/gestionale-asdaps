@@ -679,8 +679,7 @@ con gli stessi stili, intestazione e piè di pagina; testo anche in
 
 **Scelte fatte scrivendo il testo, da confermare** (Paolo non le aveva
 ancora decise):
-Risposte di Paolo (21/10): 1, 2, 4 confermate; 3 vedi sotto; 5 da
-chiarire.
+Risposte di Paolo (21/10): 1, 2, 4 e 5 confermate; 3 vedi sotto.
 
 1. **Diritto di voto** (S4): basta la quota dell'anno; la tessera CSEN
    resta obbligatoria per le attività (art. 2.4), non per il voto.
@@ -745,5 +744,8 @@ del 16/11. Dopo l'approvazione, una versione del gestionale:
 - **Norma transitoria sulle quote** (ex art. 34.4) tolta: la quota è sempre
   stata annuale. La scadenza del 31 gennaio sta nel regolamento e vale dal
   primo anno in cui lo statuto è in vigore.
-- **Parità nel CD** (scelta n. 5 del §11): spiegata a Paolo, in attesa di
-  conferma.
+- **Parità nel CD** (scelta n. 5 del §11): **confermata da Paolo**. Se il
+  Presidente non ha votato favorevole o contrario, la proposta è respinta.
+
+Tutte le scelte del §11 sono decise. Il testo 1.1 di statuto e regolamento
+è pronto per il commercialista (punti ⚖️) e per l'Assemblea del 16/11.

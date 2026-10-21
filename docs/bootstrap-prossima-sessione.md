@@ -17,11 +17,17 @@ Paolo installa la **v0.44.0** (LEGGIMI: `npm install` per l'editor Jodit,
 R1–R24, forma estesa). Come sempre: esiti prova per prova, correzioni in
 una v0.44.x, push su GitHub e copie nel progetto. Se un difetto chiede una
 scelta: analisi breve e domanda prima del codice.
-- **Statuto e regolamento nuovi** (Paolo, 20/10/2026 sera): analisi in
-  `docs/analisi-statuto-regolamento.md`. Lo statuto v1.0 è molto diverso
-  dalla bozza del 5/10 su cui è fatto il gestionale: aspetta le risposte
-  S1–S11. Nessun cambio al gestionale finché il testo non è deciso
-  (Assemblea del 16/11).
+- **Statuto 1.1 e regolamento interno 1.1** pronti (21/10/2026), decisi con
+  Paolo: Word e testo in `docs/statuto/`, analisi e decisioni in
+  `docs/analisi-statuto-regolamento.md` (§7–§11). Vanno al commercialista
+  (punti ⚖️) e all'Assemblea del 16/11. Dopo l'approvazione, una versione
+  del gestionale per allinearsi (§11, «Prossimi passi»):
+  - testo 1.1 pubblicato, con il regolamento accettato nella domanda;
+  - citazioni degli articoli rinumerate;
+  - CD fino a 7;
+  - 24 ore tra le convocazioni;
+  - deleghe;
+  - sollecito della quota con la decadenza a 30 giorni.
 - Per R12, R13 e R21 serve un PDF firmato digitalmente (una e due firme
   PAdES) fatto da Paolo con il suo programma di firma.
 - **v0.45.0 — Assemblee** (analisi §4.2, tavole AS-1…AS-4 e RS-1 ancora
