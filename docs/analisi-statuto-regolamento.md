@@ -381,3 +381,35 @@ Nuove domande:
   rendiconto e non ricevono deleghe?
 - **S14.** Deleghe: quante al massimo per delegato (proposta: due)? Il
   genitore che vota per un minore può delegare?
+
+### Secondo giro (21/10/2026)
+
+- **1, 2, 4**: confermati. **S12**: la Compagnia avrà la PEC; il passo
+  «Data certa (PEC)» si attiva quando la casella è configurata.
+- **Deleghe (3, S14)**: «fino a un massimo di 3 per delegato». I voti dei
+  minori esercitati dal genitore non contano come deleghe.
+- **Deleghe ai consiglieri e rendiconto (3, S13)**. Il divieto di voto
+  degli amministratori sul bilancio (art. 21, comma 2, c.c.) è scritto per
+  le associazioni riconosciute; per quelle non riconosciute si applica
+  solo per analogia. Due possibilità:
+  - **A (prudente)**: deleghe ammesse anche ai consiglieri, tranne che sul
+    rendiconto e sulle delibere che riguardano la responsabilità del CD.
+    Lì il consigliere non vota né per sé né per delega, ma resta presente
+    per il quorum. Rischio pratico: con pochi soci non consiglieri il
+    rendiconto non passa.
+  - **B (silenzio)**: niente nello statuto; i consiglieri votano anche il
+    rendiconto, con le deleghe.
+
+  Da far decidere al commercialista. Sulle **modifiche dello statuto** non
+  c'è conflitto: i consiglieri votano, anche per delega.
+- **Maggioranze (6)**: sì, per le delibere ordinarie di Assemblea e CD si
+  torna alla **maggioranza dei votanti** (favorevoli contro contrari).
+  Restano su una base fissa, scritte come «con il voto favorevole di
+  almeno …»:
+  - le modifiche dello statuto, 2/3 dei presenti (deleghe comprese);
+  - lo scioglimento, 3/4 dei soci con diritto di voto (per legge);
+  - l'esclusione, maggioranza dei componenti del CD.
+- **Delega del genitore (S14)**: Paolo è per il no. Parere: sì, con le
+  stesse regole degli adulti. Il voto al genitore nasce per non togliere
+  rappresentanza al minore, e senza la delega il minore resta l'unico socio
+  che non può farsi rappresentare. Decide Paolo.
