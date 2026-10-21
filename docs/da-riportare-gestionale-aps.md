@@ -230,6 +230,16 @@ protezione dei dati personali, poi le funzioni.
     componenti. Va adattata allo statuto della Dante.
   - *Dove*: `verbali.md` §1, `Votazioni`, `Riunioni::salvaVerbale()`.
 
+- [ ] **A21. Utenti e soci: due anagrafiche scollegate** (v0.44.1).
+  - *Nel Gestionale APS*: l'utente ha nome ed email suoi, che non seguono
+    la scheda del socio; chi non è più socio resta tra gli utenti.
+  - *Qui*: per chi è socio l'anagrafica è la scheda: cognome, nome ed
+    email dell'utente si riprendono da lì a ogni salvataggio, con l'avviso
+    al vecchio e al nuovo indirizzo; chi cessa, ha la scheda eliminata o
+    esce dal CD senza altri ruoli non è più utente (eliminazione logica,
+    l'email si libera), e torna rientrando nel CD.
+  - *Dove*: `analisi-soci-utenti.md`, `AccessoSocio`, `ConsiglioDirettivo`.
+
 ## B. Dati personali (GDPR)
 
 - [ ] **B1. Dati personali dentro la parte immutabile dell'audit.**
@@ -556,3 +566,4 @@ non riportare".
 - 17/10/2026 (v0.42.0): aggiunte D19–D21 dal collaudo O (Consiglio Direttivo, errori dei campi, password e accesso).
 - 20/10/2026 (v0.43.0): aggiunte A14–A17 e D22 dagli anticipi e note di rimborso.
 - 21/10/2026 (v0.44.0): aggiunte A18–A20 e D23–D25 dai verbali e dal CD (difetti 1, 2, 5, 6, 9 e 12 dell'analisi dei verbali).
+- 21/10/2026 (v0.44.1): aggiunta A21 da soci e utenti (una sola anagrafica).

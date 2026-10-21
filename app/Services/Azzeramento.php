@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Associazione;
 use App\Models\Impostazione;
 use App\Models\Scadenza;
+use App\Models\Socio;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -26,7 +28,6 @@ class Azzeramento
     public const TIENI = [
         'migrations',
         'gl_ruoli', 'gl_sezioni', 'gl_ruoli_sezioni',
-        'gl_users_ruoli',                                   // D1: restano tutti gli utenti
         'gl_associazione', 'gl_associazione_periodi',
         'gl_prima_nota_categorie',
         'gl_tessere_tipi',
@@ -35,10 +36,10 @@ class Azzeramento
     ];
 
     /**
-     * Colonne di tabelle tenute che puntano a tabelle svuotate: esegui() le
-     * rimette a null (v0.42.0: gli utenti restano, i soci di prova no).
+     * Colonne di tabelle parziali che puntano a tabelle svuotate: esegui() le
+     * ripunta alla riga rimessa (v0.44.1: l'utente tenuto al suo socio).
      */
-    public const SCOLLEGATE = [
+    public const RICOLLEGATE = [
         'gl_users.socio_id' => 'gl_soci',
     ];
 
@@ -46,7 +47,10 @@ class Azzeramento
     public const PARZIALI = [
         'gl_impostazioni',   // chiavi rimesse (§3.4)
         'gl_scadenzario',    // solo le tre pronte, con la data rimessa (D4)
-        'gl_users',          // D1: restano tutti, scollegati dai soci di prova (v0.42.0)
+        // v0.44.1 (analisi-soci-utenti.md, D-SU2): si svuotano e resta solo
+        // l'utente indicato con --tieni, con il suo socio, Presidente nel CD
+        'gl_users',
+        'gl_users_ruoli',
     ];
 
     /**
@@ -241,12 +245,43 @@ class Azzeramento
     }
 
     /**
+     * Utente da tenere (v0.44.1, D-SU2): un utente presente e attivo,
+     * collegato a un socio attivo. Restituisce l'utente o il motivo per cui
+     * non va bene.
+     */
+    public function daTenere(?string $email): User|string
+    {
+        $email = mb_strtolower(trim((string) $email));
+        if ($email === '') {
+            return "indica con --tieni=<email> l'utente da tenere: resta l'unico socio e l'unico utente, Presidente nel Consiglio Direttivo.";
+        }
+        $u = User::presenti()->whereRaw('LOWER(email) = ?', [$email])->first();
+        if (! $u) {
+            return "nessun utente entra con l'email {$email}.";
+        }
+        $socio = $u->socio_id ? Socio::find($u->socio_id) : null;
+        if (! $u->attivo || ! $socio || $socio->stato !== 'attivo') {
+            return "l'utente {$u->name} deve essere attivo e collegato a un socio attivo (è il socio che resta).";
+        }
+
+        return $u;
+    }
+
+    /** @return list<string> utenti che si potrebbero tenere, per l'aiuto del comando */
+    public function candidati(): array
+    {
+        return User::presenti()->where('attivo', true)->whereNotNull('socio_id')
+            ->whereIn('socio_id', Socio::where('stato', 'attivo')->select('id'))
+            ->orderBy('cognome')->get()->map(fn (User $u) => "{$u->name} ({$u->email})")->all();
+    }
+
+    /**
      * Riepilogo senza cambiare niente.
      *
      * @return array{svuota: array<string, int>, scadenze_a_mano: int, scadenze_pronte: list<array{titolo: string, prima: string, dopo: string}>,
-     *               utenti: list<string>, promemoria: int, file: array{numero: int, byte: int}, cartelle_sconosciute: list<string>}
+     *               utenti: list<string>, utenti_eliminati: int, tieni: ?string, promemoria: int, file: array{numero: int, byte: int}, cartelle_sconosciute: list<string>}
      */
-    public function riepilogo(): array
+    public function riepilogo(?User $tieni = null): array
     {
         // Prima le tabelle con un nome leggibile, nell'ordine di ETICHETTE
         $ordine = array_flip(array_keys(self::ETICHETTE));
@@ -263,8 +298,10 @@ class Azzeramento
         }
 
         $utenti = [];
-        foreach (\App\Models\User::orderBy('id')->get() as $u) {
-            $utenti[] = $u->name . ' – ' . ($u->etichettaRuoli() ?: 'nessun ruolo') . ($u->attivo ? '' : ' (disattivato)');
+        foreach (User::presenti()->orderBy('id')->get() as $u) {
+            if (! $tieni?->is($u)) {
+                $utenti[] = $u->name . ' – ' . ($u->etichettaRuoli() ?: 'nessun ruolo') . ($u->attivo ? '' : ' (disattivato)');
+            }
         }
 
         return [
@@ -272,6 +309,8 @@ class Azzeramento
             'scadenze_a_mano' => (int) DB::table('gl_scadenzario')->whereNull('chiave')->count(),
             'scadenze_pronte' => $pronte,
             'utenti' => $utenti,
+            'utenti_eliminati' => (int) User::whereNotNull('eliminato_il')->count(),
+            'tieni' => $tieni ? $tieni->name . ' (' . $tieni->email . ')' : null,
             'promemoria' => (int) DB::table('gl_promemoria')->count(),
             'file' => $this->file(),
             'cartelle_sconosciute' => $this->cartelleSconosciute(),
@@ -315,14 +354,22 @@ class Azzeramento
      *
      * @return array{righe: int, tabelle: int, file: int, byte: int, audit_id: int}
      */
-    public function esegui(string $copia): array
+    public function esegui(string $copia, ?string $tieni): array
     {
         if ($m = $this->motivoRifiuto()) {
             throw new \RuntimeException('Non si può azzerare: ' . $m);
         }
-        $riepilogo = $this->riepilogo();
-        $righe = array_sum($riepilogo['svuota']) + $riepilogo['scadenze_a_mano'];
-        $tabelle = count(array_filter($riepilogo['svuota']));
+        $utente = $this->daTenere($tieni);
+        if (is_string($utente)) {
+            throw new \RuntimeException('Non si può azzerare: ' . $utente);
+        }
+        $riepilogo = $this->riepilogo($utente);
+        // Le righe da rimettere, lette prima di svuotare
+        $rigaUtente = (array) DB::table('gl_users')->where('id', $utente->id)->first();
+        $rigaSocio = (array) DB::table('gl_soci')->where('id', $utente->socio_id)->first();
+        // Contano anche gli utenti che si tolgono (revisione v0.44.1)
+        $righe = array_sum($riepilogo['svuota']) + $riepilogo['scadenze_a_mano'] + count($riepilogo['utenti']) + $riepilogo['utenti_eliminati'];
+        $tabelle = count(array_filter($riepilogo['svuota'])) + (count($riepilogo['utenti']) + $riepilogo['utenti_eliminati'] > 0 ? 1 : 0);
 
         // TRUNCATE rimette i contatori a 1; con i controlli delle chiavi
         // esterne sospesi l'ordine non conta.
@@ -332,15 +379,12 @@ class Azzeramento
                 DB::table($t)->truncate();
             }
             DB::table('gl_scadenzario')->whereNull('chiave')->delete();
-            // Gli utenti restano (D1) ma i soci di prova no: si ricollegano
-            // ai soci veri dalla pagina Consiglio Direttivo (v0.42.0)
-            foreach (array_keys(self::SCOLLEGATE) as $colonna) {
-                [$tabella, $campo] = explode('.', $colonna);
-                DB::table($tabella)->update([$campo => null]);
-            }
+            DB::table('gl_users_ruoli')->truncate();
+            DB::table('gl_users')->truncate();
         } finally {
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
         }
+        $tenuto = $this->rimetti($rigaUtente, $rigaSocio);
 
         // Scadenze pronte alla prossima data vera (D4); la scheda dell'ente
         // riprende la scadenza dell'affiliazione
@@ -375,11 +419,48 @@ class Azzeramento
             'ip_address' => '127.0.0.1',
             'livello_rischio' => 'HIGH',
             'dettaglio' => "Azzeramento dei dati di prova prima dell'apertura: {$righe} righe in {$tabelle} tabelle, "
-                . "{$riepilogo['file']['numero']} file. Copia di sicurezza: {$copia}.",
+                . "{$riepilogo['file']['numero']} file. Restano il socio n. {$tenuto['socio']} e l'utente n. {$tenuto['utente']}, Presidente nel CD. Copia di sicurezza: {$copia}.",
             'old_values' => array_filter($riepilogo['svuota']) + ['scadenze_a_mano' => $riepilogo['scadenze_a_mano']],
         ]);
 
-        return ['righe' => $righe, 'tabelle' => $tabelle, 'file' => $riepilogo['file']['numero'], 'byte' => $riepilogo['file']['byte'], 'audit_id' => $id];
+        return ['righe' => $righe, 'tabelle' => $tabelle, 'file' => $riepilogo['file']['numero'], 'byte' => $riepilogo['file']['byte'], 'audit_id' => $id,
+            'tenuto' => $riepilogo['tieni']];
+    }
+
+    /**
+     * Rimette il socio e l'utente tenuti (numerati da 1) e il CD con il solo
+     * Presidente. I riferimenti a tabelle svuotate vanno a null.
+     *
+     * @return array{socio: int, utente: int}
+     */
+    private function rimetti(array $utente, array $socio): array
+    {
+        unset($socio['id'], $utente['id']);
+        // Riferimenti a righe e file che non ci sono più (revisione v0.44.1)
+        $socio['inserito_da'] = null;
+        $socio['blocco_tessera_id'] = null;
+        $socio['privacy_doc_path'] = null;
+        $socioId = (int) DB::table('gl_soci')->insertGetId($socio);
+
+        $utente['socio_id'] = $socioId;
+        $utente['eliminato_il'] = null;
+        $utente['remember_token'] = null;
+        $utenteId = (int) DB::table('gl_users')->insertGetId($utente);
+        DB::table('gl_users_ruoli')->insert(['user_id' => $utenteId, 'ruolo_codice' => 'presidente']);
+
+        DB::table('gl_governance_cd')->insert([
+            'socio_id' => $socioId,
+            'carica' => 'Presidente',
+            'carica_codice' => 'presidente',
+            'data_inizio_mandato' => today()->toDateString(),
+            'in_carica' => true,
+            'delibera_assemblea' => 'Azzeramento dei dati di prova (gestionale:azzera)',
+            'inserito_da' => $utenteId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return ['socio' => $socioId, 'utente' => $utenteId];
     }
 
     /** Prossima data (da oggi) della ricorrenza di una scadenza pronta. */

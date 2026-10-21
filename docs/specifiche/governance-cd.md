@@ -155,7 +155,10 @@ tabella; il CD di prova sul server era stato inserito con SQL.
     Tesoriere che cede il Tesoriere resta Segretario), altrimenti resta
     Consigliere o esce.
   - **Togli**: data e motivo. L'utente perde i ruoli del CD e, senza altri
-    ruoli, si disattiva.
+    ruoli, non è più utente (eliminazione logica, v0.44.1,
+    `analisi-soci-utenti.md`): sparisce da Utenti, non entra più, l'email
+    si libera; rientrando nel CD torna lo stesso utente. Cognome, nome ed
+    email dell'utente di un socio vengono sempre dalla sua scheda.
 
   Regole:
   - il Presidente non si toglie e non cambia carica da solo;

@@ -25,14 +25,16 @@ Versione: **v0.44.0** (21/10/2026).
    - **una migration** (`php artisan migrate`);
    - `php artisan optimize:clear` e le tre cache;
    - il **cron** c'è già: dalla v0.44.0 lancia anche `consultazioni:scadenze` ogni 15 minuti.
-2. Il CD di prova, con gli utenti collegati ai soci (come dopo il collaudo O-bis):
+2. Il CD di prova, con gli utenti collegati ai soci (composto dopo S1–S2 del collaudo S (v0.44.1)):
    - Andrea Papini, Presidente;
    - Paolo Zanetti, Segretario e Tesoriere;
    - Luigi Tascio e Massimo Papini, Consiglieri.
 
-   Tutti con l'email nella scheda del socio (`valconi@usa.net` va bene per tutti: l'oggetto delle email comincia con il nome del destinatario).
+   Tutti con l'email nella scheda del socio, **diversa per ciascuno** (dalla v0.44.1 ognuno entra con la sua): usa indirizzi veri per ricevere convocazioni e link di voto.
 3. Serve un **PDF firmato digitalmente** per le prove R12, R13 e R21. Si fa con il programma di firma che usi (CIE, kit di firma): firma in formato **PAdES** (PDF) un PDF qualsiasi, prima con una firma sola, poi una seconda volta (due firme). Tieni anche un PDF **non** firmato.
 4. Tieni a portata due PDF qualsiasi da usare come documenti (preventivo, rendiconto).
+
+**Nomi nelle prove (dalla v0.44.1).** Il CD di prova si sceglie tra i soci del file Excel (collaudo S, S2): i nomi scritti nelle prove indicano le **cariche**. Andrea Papini = il Presidente (dopo S1 sei tu); Paolo Zanetti = il Segretario e Tesoriere (un socio del file); Luigi Tascio e Massimo Papini = i due Consiglieri. Leggi al loro posto i soci che hai messo in quelle cariche.
 
 Le date: dove serve «il giorno della riunione» o «la scadenza», le prove dicono la riga SQL da lanciare in phpMyAdmin. N = numero della riunione o della consultazione, si legge nell'indirizzo della pagina (`/verbali/riunioni/N`, `/verbali/consultazioni/N`).
 

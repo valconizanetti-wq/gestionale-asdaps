@@ -11,11 +11,16 @@ use Illuminate\Support\Facades\Artisan;
  * analisi-azzeramento.md, tavole AZ-1…AZ-3).
  *
  * Senza --esegui è una prova a vuoto: dice cosa farebbe e non cambia niente.
+ *
+ * --tieni=<email> (v0.44.1, analisi-soci-utenti.md, D-SU2): l'utente che
+ * resta, unico socio e unico utente, Presidente nel Consiglio Direttivo.
+ * Tutti gli altri utenti si cancellano con i soci di prova.
  */
 class Azzera extends Command
 {
     protected $signature = 'gestionale:azzera
         {--esegui : Azzera davvero (dopo la copia di sicurezza e la conferma)}
+        {--tieni= : Email dell\'utente che resta: unico socio e unico utente, Presidente nel CD}
         {--force : Salta la domanda di conferma (la copia di sicurezza si fa comunque)}';
 
     protected $description = 'Azzera i dati di prova prima dell\'apertura; senza --esegui è una prova a vuoto';
@@ -35,12 +40,25 @@ class Azzera extends Command
             return self::FAILURE;
         }
 
-        $r = $azz->riepilogo();
+        $tieni = $azz->daTenere($this->option('tieni'));
+        if (is_string($tieni) && ($esegui || filled($this->option('tieni')))) {
+            $this->error('Non si può azzerare: ' . $tieni);
+            $this->candidati($azz);
+
+            return self::FAILURE;
+        }
+        $tieni = is_string($tieni) ? null : $tieni;
+
+        $r = $azz->riepilogo($tieni);
         $this->riepilogo($r);
 
         if (! $esegui) {
             $this->newLine();
-            $this->line('Per azzerare davvero:  <options=bold>php artisan gestionale:azzera --esegui</>');
+            if (! $tieni) {
+                $this->warn("Manca --tieni=<email>: l'utente che resta, unico socio e unico utente, Presidente nel CD.");
+                $this->candidati($azz);
+            }
+            $this->line('Per azzerare davvero:  <options=bold>php artisan gestionale:azzera --tieni=' . ($tieni?->email ?? '<email>') . ' --esegui</>');
 
             return self::SUCCESS;
         }
@@ -63,7 +81,7 @@ class Azzera extends Command
         }
 
         try {
-            $e = $azz->esegui($copia);
+            $e = $azz->esegui($copia, $tieni->email);
         } catch (\Throwable $ex) {
             $this->error('Azzeramento interrotto: ' . $ex->getMessage());
             $this->line("La copia di sicurezza è in storage/app/private/{$copia}: si ripristina con phpMyAdmin › Importa (dopo averla decompressa).");
@@ -78,12 +96,14 @@ class Azzera extends Command
         $this->line('  ✔ Tabelle svuotate: ' . number_format($e['righe'], 0, ',', '.') . " righe in {$e['tabelle']} tabelle");
         $this->line("  ✔ File cancellati: {$e['file']} (" . self::peso($e['byte']) . ')');
         $this->line('  ✔ Impostazioni rimesse, scadenze pronte alla prossima data');
+        $this->line("  ✔ Resta solo {$e['tenuto']}: socio n. 1, utente n. 1, Presidente nel Consiglio Direttivo");
         $this->line("  ✔ Audit Log ripartito: riga n. {$e['audit_id']} «Azzeramento dei dati di prova»");
         if (! $giaGiu) {
             $this->line('  ✔ Gestionale di nuovo in linea');
         }
         $this->newLine();
-        $this->info('Fatto. Ora: importazione dei soci (Soci › Importa da Excel), CD vero, tessere dal file del CSEN, saldi di apertura (Prima Nota › Anni contabili).');
+        $this->info('Fatto. Ora: importazione dei soci (Soci › Importa da Excel), CD vero (Consiglio Direttivo), tessere dal file del CSEN, saldi di apertura (Prima Nota › Anni contabili).');
+        $this->line('Si entra con l\'utente tenuto e la sua password di prima (le sessioni aperte sono chiuse).');
         $this->line('La copia di sicurezza contiene i dati di prova: cancellala quando hai controllato che va tutto bene.');
 
         return self::SUCCESS;
@@ -103,11 +123,17 @@ class Azzera extends Command
         if ($r['scadenze_a_mano']) {
             $this->line('  ' . str_pad('Scadenze create a mano ', 38, '.') . ' ' . str_pad((string) $r['scadenze_a_mano'], 6, ' ', STR_PAD_LEFT));
         }
+        if ($r['utenti'] || $r['utenti_eliminati']) {
+            $this->line('  ' . str_pad('Utenti ', 38, '.') . ' ' . str_pad((string) (count($r['utenti']) + $r['utenti_eliminati']), 6, ' ', STR_PAD_LEFT)
+                . ($r['utenti'] ? ': ' . implode('; ', $r['utenti']) : '') . ($r['utenti_eliminati'] ? " (e {$r['utenti_eliminati']} già eliminati)" : ''));
+        }
         $this->line("  Altre {$vuote} tabelle già vuote (moduli non ancora in uso)");
 
         $this->newLine();
         $this->line('Si tengono:');
-        $this->line('  Utenti (' . count($r['utenti']) . '): ' . implode('; ', $r['utenti']));
+        if ($r['tieni']) {
+            $this->line("  Il socio e l'utente {$r['tieni']}: unico socio, unico utente, Presidente nel CD");
+        }
         $this->line('  Profilo dell\'ente e periodi, categorie della Prima Nota, tipi di tessera, impostazioni');
         $this->line("  Promemoria ({$r['promemoria']}): i testi restano come sono");
         if ($r['scadenze_pronte']) {
@@ -121,6 +147,12 @@ class Azzera extends Command
             $this->warn('Cartelle che il comando non conosce (restano): ' . implode(', ', $r['cartelle_sconosciute']));
         }
         $this->line('Impostazioni: iscrizioni chiuse, modalità test spenta, verifica dell\'Audit Log da rifare.');
+    }
+
+    private function candidati(Azzeramento $azz): void
+    {
+        $c = $azz->candidati();
+        $this->line($c ? 'Utenti che si possono tenere: ' . implode('; ', $c) : 'Nessun utente collegato a un socio attivo: collegane uno dalla pagina Consiglio Direttivo.');
     }
 
     private static function peso(int $byte): string

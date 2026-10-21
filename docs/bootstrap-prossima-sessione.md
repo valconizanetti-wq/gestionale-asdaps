@@ -10,9 +10,22 @@
 - Tavole fuori dal repository: le conserva Paolo (ultime:
   `Tavole-verbali.pdf`).
 
-## Prossima sessione: collaudi Q e R, poi le Assemblee (v0.45.0)
-Paolo installa la **v0.44.0** (LEGGIMI: `npm install` per l'editor Jodit,
-`npm run build`, una migration, cache) e prosegue il collaudo **Q**
+## Stato al 21/10/2026, pomeriggio: v0.44.1 (soci e utenti)
+- Durante i collaudi Q e R Paolo ha chiesto una sola anagrafica fra soci
+  e utenti: fatta nella **v0.44.1** (`docs/analisi-soci-utenti.md`,
+  decisioni D-SU1…D-SU3; LEGGIMI-v0.44.1.txt).
+- **Prima di Q e R si fa il collaudo S** (`docs/test/collaudo-S-soci-utenti.md`):
+  S1 è la pulizia (`gestionale:azzera --tieni=<email di Paolo> --esegui`:
+  resta solo Paolo, socio e utente, Presidente), S2 ricarica i soci di
+  prova (`soci-di-prova.xlsx`, 11 soci, email finte `nome.cognome@example.org`
+  diverse per ciascuno) e compone il CD dalla pagina Consiglio Direttivo:
+  Paolo scrive nelle schede dei membri scelti indirizzi veri, diversi per
+  ognuno (niente alias, 21/10/2026).
+- Nelle prove di Q e R i nomi indicano le cariche (nota in testa ai due
+  file). Q era alla Q1, appena cominciata.
+
+## Prossima sessione: collaudi S, Q e R, poi le Assemblee (v0.45.0)
+Paolo installa la **v0.44.0** e la **v0.44.1**, fa il collaudo **S**, poi il collaudo **Q**
 (anticipi) e fa il collaudo **R** (`docs/test/collaudo-R-verbali.md`,
 R1–R24, forma estesa). Come sempre: esiti prova per prova, correzioni in
 una v0.44.x, push su GitHub e copie nel progetto. Se un difetto chiede una

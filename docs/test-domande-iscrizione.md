@@ -204,8 +204,10 @@ Dal 12/10/2026 ogni blocco nuovo ha un suo file in `docs/test/` (e una copia in 
 - **O-bis** — Consiglio Direttivo, utenti del CD, Amministratore, correzioni del collaudo O ed errori dei campi (v0.42.0, v0.42.1): `collaudo-O-bis-consiglio-direttivo.md`. **Superato il 18/10/2026.**
 - **Q** — Anticipi e note di rimborso, «Pagato da me», rinuncia al rimborso, chiusura dell'anno con anticipi aperti (v0.43.0): `collaudo-Q-anticipi.md`. Azzeramento: Q17 (con il blocco P). Dalla v0.44.0 la pagina ha la sua voce «Anticipi» nel menu (prova R1).
 - **R** — Verbali, riunioni del CD, consultazioni telematiche, firma digitale e rettifica, verbali registrati da fuori (v0.44.0): `collaudo-R-verbali.md`. Azzeramento: R24 (con il blocco P).
+- **S** — Soci e utenti, una sola anagrafica; pulizia con `gestionale:azzera --tieni` (v0.44.1): `collaudo-S-soci-utenti.md`. **Si fa prima di riprendere Q e R**: S1 azzera tutto e lascia solo Paolo, Presidente; S2 ricarica i soci di prova e compone il CD.
 
 ## CD di prova (SQL)
+Dalla v0.44.1 il CD di prova non si scrive più via SQL: si compone dalla pagina Consiglio Direttivo dopo S1–S2 (ogni membro con un'email diversa nella sua scheda). Le righe qui sotto restano solo come storia.
 Controllo dei soci:
 ```sql
 SELECT id, nome, cognome, email, stato FROM gl_soci

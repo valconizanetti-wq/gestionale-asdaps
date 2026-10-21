@@ -47,6 +47,7 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'attivo' => 'boolean',
+            'eliminato_il' => 'datetime',
             'ultimo_accesso' => 'datetime',
         ];
     }
@@ -74,6 +75,20 @@ class User extends Authenticatable
     public function socio(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Socio::class, 'socio_id');
+    }
+
+    /**
+     * Utenti non eliminati (v0.44.1, analisi-soci-utenti.md): l'utente di chi
+     * non è più socio resta solo per i registri («caricato da…»).
+     */
+    public function scopePresenti(\Illuminate\Database\Eloquent\Builder $query): void
+    {
+        $query->whereNull('gl_users.eliminato_il');
+    }
+
+    public function eliminato(): bool
+    {
+        return $this->eliminato_il !== null;
     }
 
     /** «Zanetti Paolo», per gli elenchi in ordine di cognome. */

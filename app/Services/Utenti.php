@@ -27,7 +27,10 @@ use Illuminate\Validation\ValidationException;
  *   cambia i propri ruoli; il Segretario non modifica l'utente del
  *   Presidente, l'Amministratore sì (email, link della password: è il
  *   rimedio a una password o un'email perse);
- * - nessuna eliminazione: un utente si disattiva;
+ * - da qui nessuna eliminazione: un utente si disattiva. L'utente di un
+ *   socio si elimina (logicamente) solo quando il socio esce o lascia il CD
+ *   senza altri ruoli (AccessoSocio, v0.44.1), e i suoi cognome, nome ed
+ *   email vengono sempre dalla scheda del socio;
  * - cambi di ruoli nell'Audit Log (HIGH, prima e dopo), che manda l'avviso
  *   agli altri (AvvisiOperazioni); nome, email e stato li registra
  *   l'observer del model.
@@ -123,8 +126,14 @@ class Utenti
         return DB::transaction(function () use ($utente, $nuovo, $delCd, $dati, $ruoli, $prima) {
             $utente ??= new User(['password' => \Illuminate\Support\Str::random(40)]);
             $campi = ['email' => mb_strtolower(trim($dati['email'])), 'attivo' => $dati['attivo']];
-            if ($delCd && $utente->socio) {
-                $campi += ['cognome' => $utente->socio->cognome, 'nome' => $utente->socio->nome];
+            // Utente di un socio: cognome, nome ed email dalla scheda (v0.44.1)
+            if ($utente->socio) {
+                $email = mb_strtolower(trim((string) $utente->socio->email)) ?: $utente->email;
+                if (User::whereRaw('LOWER(email) = ?', [$email])->where('id', '!=', $utente->id)->exists()) {
+                    throw ValidationException::withMessages(['attivo' => "L'email della scheda del socio ({$email}) è già di un altro utente: correggila nella scheda."]);
+                }
+                $campi = ['email' => $email, 'attivo' => $dati['attivo'],
+                    'cognome' => $utente->socio->cognome, 'nome' => $utente->socio->nome];
             } elseif (! $delCd) {
                 $campi += ['cognome' => trim($dati['cognome'] ?? ''), 'nome' => trim($dati['nome'] ?? '')];
             }

@@ -31,10 +31,12 @@ use Illuminate\Validation\ValidationException;
  * - la carica di Presidente la gestiscono il Presidente e l'Amministratore
  *   (per quando il Presidente non c'è più); le altre anche il Segretario.
  *
- * Utenti: il socio che entra ha già un utente (per socio_id o per la stessa
- * email) oppure ne nasce uno con il link per la password. I ruoli del CD
- * seguono la carica; quelli fuori dal CD (Amministratore) restano. Chi esce
- * perde i ruoli del CD e, senza altri ruoli, si disattiva. Un ruolo unico
+ * Utenti: il socio che entra ha già un utente (per socio_id, anche eliminato,
+ * o per la stessa email) oppure ne nasce uno con il link per la password.
+ * Cognome, nome ed email vengono dalla scheda del socio (AccessoSocio,
+ * v0.44.1). I ruoli del CD seguono la carica; quelli fuori dal CD
+ * (Amministratore) restano. Chi esce perde i ruoli del CD e, senza altri
+ * ruoli, non è più utente (eliminazione logica, v0.44.1). Un ruolo unico
  * dato a un membro si toglie a ogni altro utente che lo avesse ancora (es.
  * gli utenti di prova dopo l'azzeramento).
  */
@@ -121,10 +123,10 @@ class ConsiglioDirettivo
         return $chi->puoModificare('governance_cd') ? null : 'Il tuo ruolo può solo consultare il Consiglio Direttivo.';
     }
 
-    /** Utente del socio: collegato, o con la stessa email. */
+    /** Utente del socio: collegato (anche eliminato, per farlo tornare), o con la stessa email. */
     public static function utenteDelSocio(Socio $socio): ?User
     {
-        return User::where('socio_id', $socio->id)->first()
+        return User::where('socio_id', $socio->id)->orderByRaw('eliminato_il IS NOT NULL')->first()
             ?? ($socio->email ? User::whereRaw('LOWER(email) = ?', [mb_strtolower(trim($socio->email))])->first() : null);
     }
 
@@ -185,7 +187,10 @@ class ConsiglioDirettivo
 
         $utente = self::utenteDelSocio($socio);
         if ($utente && $utente->socio_id && $utente->socio_id !== $socio->id) {
-            throw ValidationException::withMessages(['socio_id' => "L'utente con l'email del socio ({$utente->email}) è collegato a un altro socio: correggi l'email nella scheda o nella pagina Utenti."]);
+            throw ValidationException::withMessages(['socio_id' => "L'email del socio ({$utente->email}) è quella con cui entra nel gestionale un altro socio: ognuno entra con la sua, correggila nella scheda."]);
+        }
+        if ($m = self::erroreEmailAltrui($socio, $utente)) {
+            throw ValidationException::withMessages(['socio_id' => $m]);
         }
         if ($utente && $utente->haRuolo('revisore')) {
             throw ValidationException::withMessages(['socio_id' => "{$socio->cognome} {$socio->nome} è Revisore: l'Organo di controllo è fuori dal Consiglio Direttivo (statuto, art. 20.1)."]);
@@ -205,8 +210,12 @@ class ConsiglioDirettivo
             $membro->forceFill(['carica_codice' => $carica])->save();
 
             $nuovo = $utente === null;
-            $utente ??= new User(['password' => \Illuminate\Support\Str::random(40), 'email' => mb_strtolower(trim($socio->email))]);
-            $utente->fill(['nome' => $socio->nome, 'cognome' => $socio->cognome, 'socio_id' => $socio->id, 'attivo' => true]);
+            $utente ??= new User(['password' => \Illuminate\Support\Str::random(40)]);
+            $tornato = $utente->eliminato();
+            // Dati dalla scheda del socio; un utente eliminato torna (v0.44.1)
+            $utente->fill(['nome' => $socio->nome, 'cognome' => $socio->cognome, 'email' => mb_strtolower(trim($socio->email)),
+                'socio_id' => $socio->id, 'attivo' => true]);
+            $utente->forceFill(['eliminato_il' => null]);
             $utente->save();
             $prima = $nuovo ? [] : $utente->codiciRuoli();
             $this->ruoliCd($utente, self::ruoliCarica($carica));
@@ -219,7 +228,7 @@ class ConsiglioDirettivo
                 'entita_id' => $membro->id,
                 'livello_rischio' => 'HIGH',
                 'dettaglio' => "Socio n. {$socio->id} nel Consiglio Direttivo come " . self::etichetta($carica)
-                    . " dal {$dal->format('d/m/Y')}; utente n. {$utente->id}" . ($nuovo ? ' creato' : ' esistente')
+                    . " dal {$dal->format('d/m/Y')}; utente n. {$utente->id}" . ($nuovo ? ' creato' : ($tornato ? ' tornato' : ' esistente'))
                     . ($tolti ? '; ruolo tolto agli utenti n. ' . implode(', ', $tolti) : '') . '.',
                 'old_values' => ['ruoli_utente' => $prima],
                 'new_values' => ['carica' => $carica, 'dal' => $dal->toDateString(), 'nominato_da' => $nominatoDa, 'ruoli_utente' => $utente->codiciRuoli()],
@@ -357,7 +366,7 @@ class ConsiglioDirettivo
                 'livello_rischio' => 'HIGH',
                 'dettaglio' => "Membro n. {$membro->id} (socio n. {$membro->socio_id}, " . self::etichetta($membro->carica_codice)
                     . ") fuori dal Consiglio Direttivo dal {$al->format('d/m/Y')}: " . mb_strtolower(self::MOTIVI_FINE[$motivo])
-                    . ($utente ? "; utente n. {$utente->id} " . ($utente->attivo ? 'con i soli ruoli fuori dal CD' : 'disattivato') : '') . '.',
+                    . ($utente ? "; utente n. {$utente->id} " . ($utente->eliminato() ? 'eliminato' : 'con i soli ruoli fuori dal CD') : '') . '.',
                 'new_values' => ['al' => $al->toDateString(), 'motivo' => $motivo, 'nota' => $nota],
             ]);
         });
@@ -384,21 +393,28 @@ class ConsiglioDirettivo
         if ($m = self::motivoBlocco($chi, $membro->carica_codice)) {
             throw ValidationException::withMessages(['utente' => $m]);
         }
-        if (User::where('socio_id', $socio->id)->exists()) {
+        if (User::presenti()->where('socio_id', $socio->id)->exists()) {
             throw ValidationException::withMessages(['utente' => "{$membro->nomeSocio()} ha già il suo utente."]);
         }
         if (! filled($socio->email)) {
             throw ValidationException::withMessages(['utente' => "{$membro->nomeSocio()} non ha l'email nella scheda: aggiungila prima."]);
         }
         $utente = self::utenteDelSocio($socio);
-        if ($utente && ($utente->socio_id || $utente->haRuolo('revisore'))) {
+        if ($utente && (($utente->socio_id && $utente->socio_id !== $socio->id) || $utente->haRuolo('revisore'))) {
             throw ValidationException::withMessages(['utente' => "L'email del socio ({$utente->email}) è di un utente collegato a un altro socio o del Revisore: correggila nella scheda."]);
+        }
+        if ($m = self::erroreEmailAltrui($socio, $utente)) {
+            throw ValidationException::withMessages(['utente' => $m]);
         }
 
         $esito = DB::transaction(function () use ($membro, $socio, $utente) {
             $nuovo = $utente === null;
-            $utente ??= new User(['password' => \Illuminate\Support\Str::random(40), 'email' => mb_strtolower(trim($socio->email))]);
-            $utente->fill(['nome' => $socio->nome, 'cognome' => $socio->cognome, 'socio_id' => $socio->id, 'attivo' => true]);
+            $utente ??= new User(['password' => \Illuminate\Support\Str::random(40)]);
+            $tornato = $utente->eliminato();
+            // Dati dalla scheda del socio; un utente eliminato torna (v0.44.1)
+            $utente->fill(['nome' => $socio->nome, 'cognome' => $socio->cognome, 'email' => mb_strtolower(trim($socio->email)),
+                'socio_id' => $socio->id, 'attivo' => true]);
+            $utente->forceFill(['eliminato_il' => null]);
             $utente->save();
             $prima = $nuovo ? [] : $utente->codiciRuoli();
             $this->ruoliCd($utente, self::ruoliCarica($membro->carica_codice));
@@ -409,7 +425,7 @@ class ConsiglioDirettivo
                 'entita_tipo' => 'GovernanceCd',
                 'entita_id' => $membro->id,
                 'livello_rischio' => 'HIGH',
-                'dettaglio' => "Utente n. {$utente->id}" . ($nuovo ? ' creato' : ' collegato') . " per il membro n. {$membro->id} (socio n. {$socio->id}, "
+                'dettaglio' => "Utente n. {$utente->id}" . ($nuovo ? ' creato' : ($tornato ? ' tornato' : ' collegato')) . " per il membro n. {$membro->id} (socio n. {$socio->id}, "
                     . self::etichetta($membro->carica_codice) . ')' . ($tolti ? '; ruolo tolto agli utenti n. ' . implode(', ', $tolti) : '') . '.',
                 'old_values' => ['ruoli_utente' => $prima],
                 'new_values' => ['ruoli_utente' => $utente->codiciRuoli()],
@@ -448,7 +464,7 @@ class ConsiglioDirettivo
 
     /**
      * Sostituisce i ruoli del CD dell'utente, tenendo gli altri. Senza ruoli
-     * l'utente si disattiva.
+     * l'utente non è più utente (senzaRuoli).
      *
      * @param list<string> $ruoli
      */
@@ -461,9 +477,31 @@ class ConsiglioDirettivo
         }
         $tutti = [...$ruoli, ...$altri];
         $utente->assegnaRuoli($tutti);
-        if (! $tutti && $utente->attivo) {
+        if (! $tutti) {
+            $this->senzaRuoli($utente);
+        }
+    }
+
+    /**
+     * Utente rimasto senza ruoli: se è di un socio non è più utente
+     * (eliminazione logica, v0.44.1); un esterno si disattiva.
+     */
+    private function senzaRuoli(User $utente): void
+    {
+        if ($utente->socio_id) {
+            AccessoSocio::elimina($utente, 'uscito_cd');
+        } elseif ($utente->attivo) {
             $utente->forceFill(['attivo' => false])->save();
         }
+    }
+
+    /** L'email del socio è già di un altro utente (non quello che entra)? */
+    private static function erroreEmailAltrui(Socio $socio, ?User $utente): ?string
+    {
+        $altro = User::whereRaw('LOWER(email) = ?', [mb_strtolower(trim((string) $socio->email))])
+            ->when($utente, fn ($q) => $q->where('id', '!=', $utente->id))->first();
+
+        return $altro ? "L'email di {$socio->cognome} {$socio->nome} ({$socio->email}) è già quella con cui entra nel gestionale {$altro->name}: ognuno entra con la sua, correggila nella scheda." : null;
     }
 
     /**
@@ -483,8 +521,8 @@ class ConsiglioDirettivo
         foreach (User::conRuolo(...$unici)->where('id', '!=', $utente->id)->get() as $altro) {
             $resto = array_values(array_diff($altro->codiciRuoli(), $unici));
             $altro->assegnaRuoli($resto);
-            if (! $resto && $altro->attivo) {
-                $altro->forceFill(['attivo' => false])->save();
+            if (! $resto) {
+                $this->senzaRuoli($altro);
             }
             $toccati[] = $altro->id;
         }

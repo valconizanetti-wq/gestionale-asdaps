@@ -21,12 +21,14 @@ Versione: **v0.43.0** (20/10/2026).
    - `php artisan optimize:clear` e le tre cache.
 
    Niente seeder: la migration dà da sola il codice `DONAZIONI` a «Contributi e donazioni da terzi».
-2. Il CD di prova deve avere gli utenti collegati ai soci, come dopo il collaudo O-bis:
+2. Il CD di prova deve avere gli utenti collegati ai soci, composto dopo S1–S2 del collaudo S (v0.44.1):
    - Andrea Papini, Presidente;
    - Paolo Zanetti, Segretario e Tesoriere;
    - Luigi Tascio e Massimo Papini, Consiglieri.
 3. Il pagamento si registra solo in un anno aperto dall'avvio della contabilità. Se sul server c'è l'anno contabile **2026 di prova** (blocco J), le date del 2026 vanno bene. Altrimenti le prove Q8–Q12 si fanno in Laragon con l'anno 2026 di prova.
 4. Tieni a portata una foto o un PDF qualsiasi da usare come scontrino e come «nota firmata».
+
+**Nomi nelle prove (dalla v0.44.1).** Il CD di prova si sceglie tra i soci del file Excel (collaudo S, S2): i nomi scritti nelle prove indicano le **cariche**. Andrea Papini = il Presidente (dopo S1 sei tu); Paolo Zanetti = il Segretario e Tesoriere (un socio del file); Luigi Tascio e Massimo Papini = i due Consiglieri. Leggi al loro posto i soci che hai messo in quelle cariche.
 
 **Dalla v0.44.0** la pagina «Anticipi e note di rimborso» ha anche la sua voce **«Anticipi»** nel menu, sotto «Prima Nota» (si accende solo sulle sue pagine): nelle prove si può aprire da lì oltre che dal pulsante «Anticipi e note».
 

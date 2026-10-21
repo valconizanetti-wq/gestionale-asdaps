@@ -1,0 +1,72 @@
+Gestionale ASD - v0.44.1 (21/10/2026)
+Soci e utenti: una sola anagrafica. L'utente e' l'accesso del socio: cognome, nome ed email
+vengono dalla scheda del socio; chi non e' piu' socio, o esce dal CD senza altri ruoli, non e'
+piu' utente. Azzeramento con --tieni: resta un solo socio e un solo utente, Presidente.
+
+Da applicare sopra la v0.44.0.
+UNA migration (2026_10_21_000107: gl_users.eliminato_il); nessun seeder; nessun pacchetto
+Composer o npm nuovo; niente build (nessun CSS o JS cambiato).
+Analisi e decisioni D-SU1...D-SU3: docs/analisi-soci-utenti.md.
+Collaudo: docs/test/collaudo-S-soci-utenti.md (S1-S6), DA FARE PRIMA di riprendere Q e R.
+
+COSA CAMBIA
+  Soci e utenti
+  - Cognome, nome ed email dell'utente di un socio si riprendono dalla scheda a ogni
+    salvataggio. Nella pagina Utenti l'email di un socio e' in sola lettura, con il rimando
+    alla scheda.
+  - Cambio dell'email nella scheda di chi entra nel gestionale: avviso "Gestionale: e'
+    cambiata l'email per entrare" al vecchio indirizzo (con il nuovo scritto in parte) e al
+    nuovo. Si entra con l'email nuova e la password di prima.
+  - L'email di chi entra non puo' essere quella di un altro utente: errore nella scheda del
+    socio. Un socio senza accesso puo' avere l'email di un altro (famiglie).
+  - Chi esce dal CD senza altri ruoli, chi cessa (anche se Amministratore) e chi ha la scheda
+    eliminata non e' piu' utente: sparisce da Utenti, non entra piu', l'email si libera
+    (eliminazione logica: la riga resta per i registri, evento UTENTE_ELIMINATO, rischio
+    alto). Rientrando nel CD torna lo stesso utente, con la password di prima.
+  Azzeramento (gestionale:azzera)
+  - Nuova opzione --tieni=<email>, obbligatoria con --esegui: l'utente che resta (collegato a
+    un socio attivo). Restano solo lui e il suo socio, numerati da 1, Presidente nel CD;
+    tutti gli altri utenti si cancellano. Senza --tieni la prova a vuoto elenca chi si puo'
+    tenere.
+
+SERVER (deploy.md par. 5)
+  1. unzip deploy.zip in ~/gestionale-asd (sovrascrivendo); build.zip non serve
+  2. php artisan migrate --force
+  3. php artisan optimize:clear   poi le tre cache (config, route, view)
+  4. Collaudo S: S1 e' la pulizia
+       php artisan gestionale:azzera --tieni=<la tua email>              (prova a vuoto)
+       php artisan gestionale:azzera --tieni=<la tua email> --esegui     (scrivi AZZERA)
+     poi S2: Soci > Importa da Excel (soci-di-prova.xlsx) e Consiglio Direttivo.
+
+LOCALE (Laragon)
+  1. git pull
+  2. php artisan migrate
+  3. php artisan test           -> 201 superati
+  4. git archive -o deploy.zip HEAD
+
+FILE PRINCIPALI
+  Nuovi: app/Services/AccessoSocio.php; app/Mail/EmailAccessoCambiata.php;
+    resources/views/emails/utenti/email-cambiata.blade.php;
+    database/migrations/2026_10_21_000107_utenti_dai_soci.php; tests/Feature/AccessoSocioTest.php;
+    docs/analisi-soci-utenti.md, docs/test/collaudo-S-soci-utenti.md.
+  Modificati: app/Models/User, Socio; app/Services/ConsiglioDirettivo, Utenti, Azzeramento;
+    app/Console/Commands/Azzera; app/Http/Controllers/SociController, UtentiController,
+    ConsiglioDirettivoController; app/Http/Requests/SocioRequest; resources/views/utenti/form,
+    utenti/index, governance/index, soci/_form; tests/Feature/AzzeramentoTest,
+    ConsiglioDirettivoTest; docs: deploy.md, specifiche/governance-cd.md,
+    da-riportare-gestionale-aps.md (A21), test-domande-iscrizione.md (due copie),
+    test/collaudo-Q-anticipi.md e test/collaudo-R-verbali.md (preparazione e nomi),
+    bootstrap-prossima-sessione.md.
+
+REVISIONE (tre giri)
+  1. Correttezza: l'azzeramento non contava gli utenti tolti nel riepilogo dell'Audit Log
+     (corretto); il socio tenuto puntava a un PDF della privacy cancellato con i file
+     (privacy_doc_path rimesso a null).
+  2. Casi limite: email di un utente eliminato liberata (utente-N@eliminato.invalid), cosi'
+     un altro socio puo' usarla; utente che torna nel CD cercato anche tra gli eliminati;
+     utente di un socio senza email nella scheda: resta l'email di prima.
+  3. Coerenza: testi della pagina Utenti e della finestra "Togli dal CD" ("si disattiva" ->
+     "non entra piu' nel gestionale"), specifica del CD, deploy.md, preparazione di Q e R
+     (CD da S2, email diverse, nomi delle prove come cariche).
+  Nota: in questo ambiente SocioFormTest richiede public/build (npm run build); in Laragon
+  passa.
