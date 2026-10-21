@@ -648,3 +648,79 @@ soluzioni sono ammesse):
 | Diniego della domanda | 60 giorni e 60 per l'appello | 10 e 30 giorni |
 | Rimborsi ai volontari | anche forfettari | solo analitici (regolamento) |
 | Organo di controllo | solo revisori iscritti, 3 anni | scelta libera, durata del CD |
+
+## 11. Statuto 1.1 e regolamento interno 1.1 (21/10/2026)
+
+File in `docs/statuto/`: `BAS-statuto-v.1.1.docx` e
+`BAS-regolamento_interno-v.1.1.docx`, fatti sui Word della v1.0 di Paolo
+con gli stessi stili, intestazione e piè di pagina; testo anche in
+`statuto-1.1.md` e `regolamento-1.1.md`.
+
+**Statuto 1.1** (34 articoli). Base: la bozza del 5/10, con:
+- le novità dello statuto v1.0 scelte nel §8 bis (tesseramento
+  obbligatorio, didattica ai tecnici qualificati, ristoro riservato,
+  sanzioni graduate, allontanamento immediato, CD da 3 a 7, comunicazione al
+  RASD entro 30 giorni);
+- le risposte di Paolo dei §7–§10:
+  - voto dei minori al genitore indicato, con delega;
+  - deleghe fino a tre, anche ai consiglieri;
+  - voti espressi, astenuti fuori dalla maggioranza;
+  - maggioranze qualificate «con il voto favorevole di almeno»;
+  - 24 ore tra le convocazioni;
+  - morosità con sollecito e 30 giorni;
+  - recesso senza quota dovuta;
+  - data certa con la PEC;
+  - articolo sul regolamento interno;
+- dal modello CSEN: revoca per gravi motivi, rinnovo convocato un mese
+  prima, CD in carica fino al rendiconto del quarto anno, discipline
+  aggiunte dal CD, tesserati che contribuiscono ai costi, incompatibilità
+  per tutti i consiglieri, pubblicità anche sul sito, Assemblea a distanza
+  «tenuta dove sono presidente e segretario».
+
+**Scelte fatte scrivendo il testo, da confermare** (Paolo non le aveva
+ancora decise):
+1. **Diritto di voto** (S4): basta la quota dell'anno; la tessera CSEN
+   resta obbligatoria per le attività (art. 2.4), non per il voto.
+2. **Contanti** (S6): ammessi con ricevuta, nei limiti di legge; il
+   regolamento consiglia il bonifico (statuto art. 23, regolamento
+   «Incassi e pagamenti»).
+3. **Arbitrato** (S10): tolto, come nello statuto v1.0. Il gestionale dovrà
+   togliere la casella dal modulo della domanda.
+4. **Sospensione disciplinare**: da 15 giorni a sei mesi (regolamento).
+5. **Parità nel CD**: «prevale il voto del Presidente; se non ha espresso un
+   voto favorevole o contrario, la proposta è respinta». Chiarisce il caso
+   del Presidente astenuto, come fa già il gestionale.
+6. **Regolamento approvato dall'Assemblea**, non dal CD come diceva
+   l'intestazione della v1.0 (statuto art. 28).
+7. **Presidente** eletto dall'Assemblea «insieme al CD, di cui fa parte».
+
+**Regolamento 1.1.** Stessa struttura a tabelle (regola e «Perché»).
+- Correzioni:
+  - «Perché» con l'accento giusto e presente in tutte le tabelle;
+  - tolto un titolo vuoto della sezione 6;
+  - la terzietà è del Responsabile, non «dell'organo di controllo»;
+  - la clausola sui danni è limitata «nei limiti consentiti dalla legge»;
+  - tolto il Codice del Terzo settore dai riferimenti.
+- Sezioni nuove o ampliate:
+  - allontanamento immediato e disposizioni urgenti;
+  - «Soci: ammissione, quote e provvedimenti»: domanda online, voto del
+    CD, quota del nuovo socio, quota annuale e sollecito, sanzioni;
+  - Assemblea e CD: regole di voto allineate, convocazione, deleghe,
+    scrutatori, convocazione del CD, consultazione telematica,
+    Vicepresidente;
+  - incassi e pagamenti, spese anticipate dai soci (note di rimborso),
+    rimborsi ai volontari distinti dalle spese anticipate;
+  - verbali e libri dei verbali, data certa con la PEC.
+- Indice rifatto con i numeri di pagina; intestazione «v. 1.1 del
+  21/10/2026».
+
+**Prossimi passi**: verifica del commercialista sui punti ⚖️; Assemblea
+del 16/11. Dopo l'approvazione, una versione del gestionale:
+- testo nuovo pubblicato come versione 1.1, con il regolamento e la sua
+  accettazione nella domanda;
+- citazioni degli articoli rinumerate;
+- CD fino a 7;
+- seconda convocazione dopo 24 ore;
+- deleghe;
+- sollecito della quota;
+- niente consenso all'arbitrato.
