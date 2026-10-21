@@ -628,7 +628,7 @@ nello statuto (§9).
   prima della scadenza (art. 9.4);
 - il CD **resta in carica fino all'approvazione del rendiconto** del
   quarto anno (art. 8.4): evita il vuoto tra la scadenza e l'Assemblea;
-- la discipline sportive aggiunte dal CD purché comprese nel RASD (art.
+- le discipline sportive aggiunte dal CD, purché comprese nel RASD (art.
   2.2 e 8.6 g);
 - i **tesserati** non soci contribuiscono ai costi delle strutture (art.
   16.3);
