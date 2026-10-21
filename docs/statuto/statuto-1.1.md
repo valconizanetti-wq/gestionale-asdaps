@@ -348,7 +348,7 @@
 
 2.  Ai volontari possono essere rimborsate soltanto le spese documentate sostenute per l'attività, nei limiti previsti dalla legge, dalle delibere del Consiglio Direttivo e dal regolamento interno.
 
-3.  L'attività di volontario è incompatibile con qualsiasi rapporto di lavoro retribuito con l'Associazione. L'Associazione assicura i volontari per la responsabilità civile verso terzi, come previsto dalla legge.
+3.  L'attività di volontario è incompatibile con qualsiasi rapporto di lavoro retribuito con l'Associazione. L'Associazione assicura i volontari per la responsabilità civile verso terzi, come previsto dalla legge, anche mediante polizze collettive o le coperture assicurative del tesseramento.
 
 ### Art. 27 – Lavoratori sportivi
 
@@ -382,7 +382,7 @@
 
 1.  L'Associazione adotta, nei termini di legge e secondo le linee guida degli enti di affiliazione, i modelli organizzativi e di controllo e il codice di condotta previsti dall'art. 16 del D.Lgs. 39/2021, per la tutela dei tesserati, in particolare dei minori, da abusi, violenze e discriminazioni.
 
-2.  Il Consiglio Direttivo nomina un responsabile per la protezione dei tesserati da abusi, violenze e discriminazioni, e ne rende noti il nominativo e i recapiti.
+2.  Il Consiglio Direttivo nomina un responsabile per la protezione dei tesserati da abusi, violenze e discriminazioni, scelto al di fuori del Consiglio Direttivo per garantirne l'autonomia e l'assenza di conflitti di interesse, anche tra persone non socie, e ne rende noti il nominativo e i recapiti.
 
 3.  Soci, tecnici e volontari sono tenuti a rispettare il codice di condotta. La sua violazione costituisce grave inadempimento ai fini degli artt. 9 e 10.
 
@@ -407,7 +407,5 @@
 2.  Il presente statuto sostituisce quello approvato con l'atto costitutivo del 24 luglio 2024. Sono soci fondatori coloro che hanno sottoscritto l'atto costitutivo; i soci iscritti alla data di adozione conservano la qualifica.
 
 3.  Il Consiglio Direttivo eletto con l'atto costitutivo del 24 luglio 2024 resta in carica, con le cariche attribuite alla data di adozione del presente statuto, per quattro anni dalla nomina, come previsto dallo statuto approvato con l'atto costitutivo; l'indicazione "per il primo anno" contenuta nell'atto costitutivo è superata. Alla scadenza, l'Assemblea elegge il nuovo Consiglio Direttivo secondo il presente statuto.
-
-4.  Le iscrizioni in corso alla data di adozione restano valide fino al 31 dicembre 2026. Dal 1° gennaio 2027 la quota associativa è annuale, con il termine dell'art. 8.
 
 Castel Viscardo, 16 novembre 2026

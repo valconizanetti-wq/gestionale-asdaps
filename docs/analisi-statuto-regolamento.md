@@ -728,3 +728,22 @@ del 16/11. Dopo l'approvazione, una versione del gestionale:
 - seconda convocazione dopo 24 ore;
 - deleghe;
 - sollecito della quota.
+
+### Modifiche del 21/10/2026 (osservazioni di Paolo)
+- **Volontari assicurati** (art. 26.3): aggiunto «anche mediante polizze
+  collettive o le coperture assicurative del tesseramento». L'obbligo
+  dell'art. 29 del D.Lgs. 36/2021 riguarda la responsabilità civile **del
+  volontario** verso terzi. La polizza RCT della Compagnia copre di solito
+  la responsabilità **dell'Associazione** nei luoghi dell'attività. Va
+  verificato se nella polizza i volontari sono tra gli assicurati (RC
+  personale degli addetti) e se la copertura vale anche fuori dal campo
+  (gare, trasferte), oppure se basta la tessera CSEN dei volontari
+  tesserati.
+- **Responsabile per la tutela dei tesserati** (art. 31.2): scelto al di
+  fuori del Consiglio Direttivo, anche tra non soci, per l'autonomia e
+  l'assenza di conflitti di interesse.
+- **Norma transitoria sulle quote** (ex art. 34.4) tolta: la quota è sempre
+  stata annuale. La scadenza del 31 gennaio sta nel regolamento e vale dal
+  primo anno in cui lo statuto è in vigore.
+- **Parità nel CD** (scelta n. 5 del §11): spiegata a Paolo, in attesa di
+  conferma.
