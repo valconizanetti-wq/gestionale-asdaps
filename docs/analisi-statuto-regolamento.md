@@ -749,3 +749,15 @@ del 16/11. Dopo l'approvazione, una versione del gestionale:
 
 Tutte le scelte del §11 sono decise. Il testo 1.1 di statuto e regolamento
 è pronto per il commercialista (punti ⚖️) e per l'Assemblea del 16/11.
+
+## 12. Qualifica fiscale dell'ASD con lo statuto 1.1 (21/10/2026)
+
+Domanda di Paolo: con questo statuto la futura ASD sarà un ente commerciale? Risposta: no, sarà un **ente non commerciale** (art. 73, c. 1, lett. c TUIR), che però può avere **entrate commerciali** tassate.
+
+- La qualifica dipende dall'attività principale effettivamente svolta, non solo dallo statuto. Qui l'attività principale è sportiva dilettantistica (art. 3) e le attività diverse sono secondarie e strumentali (art. 3 c. 5, art. 9 D.Lgs. 36/2021).
+- Lo statuto contiene le clausole dell'art. 148 c. 8 TUIR: niente utili distribuiti (art. 4), devoluzione a fini sportivi (art. 32), rendiconto approvato dall'Assemblea (art. 24), democraticità e voto singolo, quota intrasmissibile e non rivalutabile (art. 5 c. 4). Il voto del minore tramite il genitore non contrasta con la lett. c (voto agli associati maggiorenni).
+- La perdita della qualifica per prevalenza commerciale (art. 149 TUIR, commi 1–2) non si applica alle associazioni sportive dilettantistiche (art. 149 c. 4): punto da confermare con il commercialista.
+- Non commerciali (art. 148 c. 1 e 3 TUIR): quote associative e corrispettivi specifici di soci e tesserati per l'attività sportiva istituzionale. IVA: resta il regime di esclusione; il passaggio all'esenzione è rinviato al 1/1/2036 (D.Lgs. 186/2025).
+- Commerciali: sponsorizzazioni, punto di ristoro (la somministrazione ai soci è decommercializzata solo per le APS, non per le ASD), eventuali servizi a terzi. Si possono gestire con il regime forfettario L. 398/1991 (limite 400.000 €/anno di proventi commerciali), con contabilità separata.
+- Le agevolazioni valgono solo se le regole dello statuto sono applicate nei fatti (libro soci, verbali, rendiconto approvato, tracciabilità, iscrizione RASD): Cass. ord. 4459/2026. Il gestionale copre già buona parte di queste prove.
+- ⚖️ Da far confermare al commercialista: art. 149 c. 4, opzione 398 al primo provento commerciale, trattamento del punto di ristoro.
