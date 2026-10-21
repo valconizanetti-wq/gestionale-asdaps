@@ -25,7 +25,7 @@ class ConsiglioDirettivoController extends Controller
     public function index(Request $request)
     {
         $membri = ConsiglioDirettivo::membri();
-        $utenti = User::whereIn('socio_id', $membri->pluck('socio_id'))->get()->keyBy('socio_id');
+        $utenti = User::presenti()->whereIn('socio_id', $membri->pluck('socio_id'))->get()->keyBy('socio_id');
         $chi = $request->user();
 
         // Soci attivi non nel CD, in ordine di cognome (tavola CD-2)

@@ -37,7 +37,8 @@ class UtentiController extends Controller
     public function index(Request $request)
     {
         return view('utenti.index', [
-            'utenti' => User::with(['ruoli', 'socio'])->orderByDesc('attivo')->orderBy('cognome')->orderBy('nome')->get(),
+            // Gli utenti eliminati (non più soci, v0.44.1) restano solo nei registri
+            'utenti' => User::presenti()->with(['ruoli', 'socio'])->orderByDesc('attivo')->orderBy('cognome')->orderBy('nome')->get(),
             'puoModificare' => $request->user()->puoModificare('utenti'),
             'nelCd' => User::whereIn('socio_id', \App\Models\GovernanceCd::where('in_carica', true)->pluck('socio_id'))->pluck('id')->all(),
         ]);
@@ -70,6 +71,7 @@ class UtentiController extends Controller
     public function edit(Request $request, User $utente)
     {
         $this->richiediModifica($request);
+        abort_if($utente->eliminato(), 404);
         if ($motivo = Utenti::motivoBlocco($request->user(), $utente)) {
             return redirect()->route('utenti.index')->with('error', $motivo);
         }
@@ -80,6 +82,7 @@ class UtentiController extends Controller
     public function update(Request $request, User $utente)
     {
         $this->richiediModifica($request);
+        abort_if($utente->eliminato(), 404);
         $dati = $this->valida($request, $utente);
 
         $this->utenti->salva($utente, $dati, $request->user());
@@ -91,6 +94,7 @@ class UtentiController extends Controller
     public function linkPassword(Request $request, User $utente)
     {
         $this->richiediModifica($request);
+        abort_if($utente->eliminato(), 404);
         if ($motivo = Utenti::motivoBlocco($request->user(), $utente)) {
             return back()->with('error', $motivo);
         }
@@ -114,7 +118,9 @@ class UtentiController extends Controller
     private function valida(Request $request, ?User $utente): array
     {
         $delCd = $utente && Utenti::delCd($utente);
-        $regole = [
+        // L'email di un socio si cambia nella sua scheda (v0.44.1): qui non si legge
+        $socio = $utente?->socio;
+        $regole = $socio ? [] : [
             'email' => ['required', 'email', 'max:255', Rule::unique('gl_users', 'email')->ignore($utente?->id)],
         ];
         if (! $delCd) {
@@ -140,7 +146,7 @@ class UtentiController extends Controller
         return [
             'cognome' => $dati['cognome'] ?? null,
             'nome' => $dati['nome'] ?? null,
-            'email' => $dati['email'],
+            'email' => $socio ? (string) $socio->email : $dati['email'],
             'revisore' => ($dati['ruolo'] ?? null) === 'revisore',
             'amministratore' => $delCd ? $request->boolean('amministratore') : ($dati['ruolo'] ?? null) === 'amministratore',
             'attivo' => $request->boolean('attivo'),

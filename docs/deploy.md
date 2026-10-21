@@ -408,15 +408,20 @@ e l'altro. Dettaglio in `docs/analisi-azzeramento.md`, collaudo nel blocco
 **P** (`docs/test/collaudo-P-azzeramento.md`).
 ```
 cd ~/gestionale-asd
-php artisan gestionale:azzera            # prova a vuoto: elenca cosa toglierebbe, non cambia niente
-php artisan gestionale:azzera --esegui   # chiede di scrivere AZZERA, poi azzera
+php artisan gestionale:azzera --tieni=<email>            # prova a vuoto: elenca cosa toglierebbe, non cambia niente
+php artisan gestionale:azzera --tieni=<email> --esegui   # chiede di scrivere AZZERA, poi azzera
 ```
+- `--tieni=<email>` (dalla v0.44.1, `analisi-soci-utenti.md` D-SU2):
+  l'utente che resta, che deve essere collegato a un socio attivo. Restano
+  solo lui e il suo socio (numerati da 1), Presidente nel Consiglio
+  Direttivo, con la sua password; tutti gli altri utenti si cancellano.
+  Senza `--tieni` la prova a vuoto elenca chi si può tenere.
 - Prima di tutto fa da solo una **copia del database** in
   `storage/app/private/backup/azzeramento-AAAAMMGG-HHMMSS.sql.gz`, e per
   il tempo dell'azzeramento mette il gestionale in manutenzione.
 - Svuota i dati di prova (soci, domande, quote, Prima Nota, scontrini,
   tessere, Scadenzario a mano, Audit Log, email, sessioni…) e i loro file;
-  tiene utenti, permessi, profilo dell'ente, categorie, tipi di tessera,
+  tiene l'utente indicato con `--tieni` e il suo socio, permessi, profilo dell'ente, categorie, tipi di tessera,
   promemoria, impostazioni e le tre scadenze pronte (con la data rimessa).
 - Si rifiuta se trova dati veri: un anno contabile chiuso, movimenti o
   ricevute dall'anno d'avvio della contabilità (2027), o una tabella che
@@ -431,7 +436,8 @@ php artisan gestionale:azzera --esegui   # chiede di scrivere AZZERA, poi azzera
 
 **Dopo l'azzeramento (dalla v0.42.0)**, i dati veri si caricano in
 quest'ordine:
-1. Soci › «Importa da Excel» con i soci veri.
+1. Soci › «Importa da Excel» con i soci veri (la riga del socio tenuto
+   va tolta dal file: c'è già).
 2. **Consiglio Direttivo** › «Aggiungi un membro» per i cinque eletti, ogni
    socio con la sua carica.
    - Gli utenti esistenti con la stessa email del socio si collegano e
@@ -439,7 +445,10 @@ quest'ordine:
    - Agli altri nasce l'utente, con il link per la password.
    - Un ruolo unico (Presidente, Vicepresidente, Segretario, Tesoriere)
      dato a un socio si toglie agli utenti di prova che lo avevano ancora;
-     quelli rimasti senza ruoli si disattivano.
+     quelli rimasti senza ruoli si disattivano (se sono di un socio: non
+     sono più utenti, v0.44.1). Dalla v0.44.1 l'azzeramento lascia un solo
+     utente (`--tieni=<email>`), già Presidente: gli altri membri si
+     aggiungono dalla pagina Consiglio Direttivo.
 3. Utenti › matita sul tuo utente: «Amministratore di sistema».
 4. Tessere dal CSV del portale CSEN.
 

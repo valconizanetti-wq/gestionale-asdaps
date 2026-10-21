@@ -101,6 +101,15 @@ class Socio extends Model
         static::creating(function (Socio $socio) {
             $socio->anno_iscrizione ??= (int) ($socio->data_prima_iscrizione?->year ?? now()->year);
         });
+
+        // Una sola anagrafica (v0.44.1, analisi-soci-utenti.md): l'utente del
+        // socio riprende cognome, nome ed email; se il socio esce, l'utente va.
+        static::updated(function (Socio $socio) {
+            if ($socio->wasChanged(['nome', 'cognome', 'email', 'stato'])) {
+                \App\Services\AccessoSocio::allinea($socio);
+            }
+        });
+        static::deleted(fn (Socio $socio) => \App\Services\AccessoSocio::allinea($socio));
     }
 
     /**

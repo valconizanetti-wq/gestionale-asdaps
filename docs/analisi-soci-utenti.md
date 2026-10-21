@@ -1,4 +1,4 @@
-# Analisi — Soci e utenti: una sola anagrafica
+# Analisi — Soci e utenti: una sola anagrafica (v0.44.1)
 
 Richiesta di Paolo del 21/10/2026, durante i collaudi Q e R (v0.44.0):
 
@@ -86,6 +86,46 @@ socio. L'utente è solo «l'accesso» di quel socio al gestionale.
   servono quattro indirizzi diversi (per esempio alias
   `valconi+andrea@…`, se la tua casella li accetta, o quattro caselle).
 
-## 4. Decisioni
+## 4. Decisioni (Paolo, 21/10/2026)
 
-(da compilare con le risposte)
+- **D-SU1** — Eliminazione **logica** come regola; per la pulizia di
+  adesso, cancellazione **fisica** (con l'azzeramento).
+- **D-SU2** — «Ripuliamo tutto, lasciamo solo l'utente Paolo Zanetti come
+  socio e come utente con ruolo di Presidente.»
+- **D-SU3** — Il CD di prova si sceglie tra i soci del foglio Excel che
+  Paolo carica dopo la pulizia.
+
+## 5. Come è fatto (v0.44.1)
+
+- `gl_users.eliminato_il` (migration 2026_10_21_000107). Lo scope
+  `User::presenti()` esclude gli eliminati: pagina Utenti, utenti dei
+  membri del CD, riepilogo dell'azzeramento. Scheda e modifica di un
+  utente eliminato: 404.
+- `App\Services\AccessoSocio`:
+  - `allinea()`, chiamato dal model `Socio` quando cambiano cognome, nome,
+    email o stato, e dall'eliminazione della scheda: l'utente prende
+    cognome, nome ed email; se il socio non è attivo o la scheda è
+    eliminata, l'utente si elimina. Il cambio dell'email manda
+    «Gestionale: è cambiata l'email per entrare» al vecchio indirizzo
+    (con il nuovo scritto in parte) e al nuovo (`EmailAccessoCambiata`);
+    il cambio resta nell'Audit Log (`USER_UPDATED`).
+  - `elimina()`: niente ruoli, `attivo` spento, `eliminato_il`, email
+    sostituita con `utente-<n>@eliminato.invalid` (così si libera; il
+    valore di prima resta nell'Audit Log), evento `UTENTE_ELIMINATO`
+    (rischio alto).
+  - `erroreEmail()`: nel modulo del socio, se il socio ha l'accesso,
+    l'email non si toglie e non può essere quella di un altro utente.
+- Consiglio Direttivo: chi esce senza altri ruoli non è più utente
+  (`senzaRuoli`); chi rientra ritrova lo stesso utente (cercato per
+  `socio_id`, anche eliminato), con i dati della scheda e la password di
+  prima. L'email del socio non può essere quella con cui entra un altro.
+- Cessazione: l'utente si elimina anche se è Amministratore («Cessazione
+  registrata. Il suo accesso al gestionale è stato tolto.»).
+- Pagina Utenti: per l'utente di un socio l'email è in sola lettura, con
+  il rimando alla scheda; quello che arriva dal modulo non conta.
+- Azzeramento: `--tieni=<email>` obbligatorio per `--esegui`; svuota
+  anche `gl_users` e `gl_users_ruoli`, poi rimette il socio e l'utente
+  tenuti (n. 1) e il CD con il solo Presidente. `SCOLLEGATE` diventa
+  `RICOLLEGATE`.
+- Collaudo: `docs/test/collaudo-S-soci-utenti.md` (S1–S6). Test:
+  `AccessoSocioTest`, `AzzeramentoTest` rivisto.

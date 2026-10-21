@@ -111,7 +111,9 @@
         <x-campo name="provincia" label="Prov." :value="$socio->provincia" required maxlength="2" autocapitalize="characters" />
     </div>
     <div class="socio-riga socio-riga-contatti">
-        <x-campo name="email" label="Email" tipo="email" :value="$socio->email" autocomplete="email" obbligatorio-se="! minore" />
+        @php($accesso = $socio->exists ? \App\Services\AccessoSocio::utente($socio) : null)
+        <x-campo name="email" label="Email" tipo="email" :value="$socio->email" autocomplete="email" obbligatorio-se="! minore"
+                 :aiuto="$accesso ? 'Con questa email entra nel gestionale: cambiandola, cambia anche l\'accesso (arriva un avviso al vecchio e al nuovo indirizzo).' : null" />
         <x-campo name="telefono" label="Telefono" tipo="tel" :value="$socio->telefono" autocomplete="tel" obbligatorio-se="! minore" />
     </div>
     <p class="form-help" x-show="minore" x-cloak>Socio minorenne: email e telefono propri sono facoltativi, le comunicazioni vanno al genitore o tutore.</p>

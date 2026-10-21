@@ -95,8 +95,8 @@ class AzzeramentoTest extends TestCase
             WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL');
         $tenute = [...Azzeramento::TIENI, ...Azzeramento::PARZIALI];
         foreach ($fk as $r) {
-            // Colonne che il comando rimette a null (utenti scollegati dai soci di prova)
-            if ((Azzeramento::SCOLLEGATE["{$r->figlia}.{$r->colonna}"] ?? null) === $r->madre) {
+            // Colonne che il comando ripunta alla riga rimessa (l'utente tenuto al suo socio)
+            if ((Azzeramento::RICOLLEGATE["{$r->figlia}.{$r->colonna}"] ?? null) === $r->madre) {
                 continue;
             }
             if (in_array($r->figlia, $tenute, true)) {
@@ -116,7 +116,9 @@ class AzzeramentoTest extends TestCase
             ->expectsOutputToContain('Andrea Presidente – Presidente; Paolo Doppio – Segretario e Tesoriere')
             ->expectsOutputToContain('Affiliazione CSEN 31/12/2027 → 31/12/2026')
             ->expectsOutputToContain('Cartelle che il comando non conosce (restano): altro')
-            ->expectsOutputToContain('php artisan gestionale:azzera --esegui')
+            ->expectsOutputToContain('Manca --tieni=<email>')
+            ->expectsOutputToContain('Utenti che si possono tenere: Paolo Doppio (')
+            ->expectsOutputToContain('php artisan gestionale:azzera --tieni=<email> --esegui')
             ->assertSuccessful();
 
         $this->assertSame($prima, [Socio::count(), Rinnovo::count(), DB::table('gl_prima_nota')->count(), DB::table('gl_audit_log')->count(), DB::table('gl_scadenzario')->count()]);
@@ -126,8 +128,8 @@ class AzzeramentoTest extends TestCase
 
     public function test_conferma_sbagliata_non_fa_niente(): void
     {
-        $this->datiDiProva();
-        $this->artisan('gestionale:azzera --esegui')
+        [, $paolo] = $this->datiDiProva();
+        $this->artisan('gestionale:azzera --esegui --tieni=' . $paolo->email)
             ->expectsQuestion('Scrivi AZZERA per continuare', 'si')
             ->expectsOutputToContain('Niente fatto: conferma non data.')
             ->assertFailed();
@@ -141,20 +143,35 @@ class AzzeramentoTest extends TestCase
         $categorie = DB::table('gl_prima_nota_categorie')->count();
         $promemoria = DB::table('gl_promemoria')->count();
 
-        $this->artisan('gestionale:azzera --esegui')
+        $paoloPassword = $paolo->password;
+        $this->artisan('gestionale:azzera --tieni=' . strtoupper($paolo->email))
+            ->expectsOutputToContain('Andrea Presidente – Presidente')
+            ->expectsOutputToContain("Il socio e l'utente Paolo Doppio (" . $paolo->email . '): unico socio, unico utente, Presidente nel CD')
+            ->assertSuccessful();
+        $this->artisan('gestionale:azzera --esegui --tieni=' . $paolo->email)
             ->expectsQuestion('Scrivi AZZERA per continuare', 'AZZERA')
             ->expectsOutputToContain('Copia di sicurezza: storage/app/private/backup/azzeramento-20261120-213000.sql.gz')
+            ->expectsOutputToContain('Resta solo Paolo Doppio (')
             ->expectsOutputToContain('Audit Log ripartito: riga n. 1')
             ->assertSuccessful();
 
+        // Resta solo il socio di Paolo, con il suo utente Presidente (v0.44.1, D-SU2)
+        $this->assertSame(1, User::count());
+        $u = User::first();
+        $this->assertSame([1, 1, 'Paolo Doppio', ['presidente'], true, null], [$u->id, $u->socio_id, $u->name, $u->codiciRuoli(), $u->attivo, $u->eliminato_il]);
+        $this->assertSame($paoloPassword, $u->password, 'si entra con la password di prima');
+        $this->assertSame(['VRDLCU90E10L117B'], Socio::pluck('codice_fiscale')->all());
+        $this->assertSame(1, Socio::first()->id);
+        $cd = DB::table('gl_governance_cd')->get();
+        $this->assertCount(1, $cd);
+        $this->assertSame([1, 'presidente', 'Presidente', 1], [(int) $cd[0]->socio_id, $cd[0]->carica_codice, $cd[0]->carica, (int) $cd[0]->in_carica]);
+        $this->assertSame(['presidente'], \App\Services\ConsiglioDirettivo::membri()->pluck('carica_codice')->all());
+
         // Svuotate, contatori compresi
-        foreach (['gl_soci', 'gl_rinnovi', 'gl_prima_nota', 'gl_anni_contabili', 'gl_email_log', 'gl_scadenzario_rinnovi'] as $t) {
+        foreach (['gl_rinnovi', 'gl_prima_nota', 'gl_anni_contabili', 'gl_email_log', 'gl_scadenzario_rinnovi'] as $t) {
             $this->assertSame(0, DB::table($t)->count(), $t);
         }
         // Tenute
-        $this->assertSame(['presidente'], $pres->fresh()->codiciRuoli());
-        $this->assertSame(['segretario', 'tesoriere'], $paolo->fresh()->codiciRuoli());
-        $this->assertNull($paolo->fresh()->socio_id, 'utente scollegato dal socio di prova');
         $this->assertSame($categorie, DB::table('gl_prima_nota_categorie')->count());
         $this->assertSame($promemoria, DB::table('gl_promemoria')->count());
         $this->assertTrue(DB::table('gl_tessere_tipi')->exists());
@@ -187,7 +204,26 @@ class AzzeramentoTest extends TestCase
         $s = new Socio();
         $s->forceFill(['nome' => 'Anna', 'cognome' => 'Bianchi', 'codice_fiscale' => 'BNCNNA88D45L117B',
             'data_prima_iscrizione' => '2026-11-20', 'tipo' => 'ordinario', 'stato' => 'attivo'])->save();
-        $this->assertSame(1, $s->id);
+        $this->assertSame(2, $s->id);
+    }
+
+    public function test_senza_un_utente_da_tenere_non_si_azzera(): void
+    {
+        [$pres, $paolo] = $this->datiDiProva();
+        $this->artisan('gestionale:azzera --esegui --force')
+            ->expectsOutputToContain("Non si può azzerare: indica con --tieni=<email> l'utente da tenere")
+            ->expectsOutputToContain('Utenti che si possono tenere: Paolo Doppio (' . $paolo->email . ')')
+            ->assertFailed();
+        // Il Presidente di prova non è collegato a un socio: non va bene
+        $this->artisan('gestionale:azzera --esegui --force --tieni=' . $pres->email)
+            ->expectsOutputToContain('deve essere attivo e collegato a un socio attivo')
+            ->assertFailed();
+        $this->artisan('gestionale:azzera --tieni=nessuno@example.com')
+            ->expectsOutputToContain("nessun utente entra con l'email nessuno@example.com")
+            ->assertFailed();
+        $this->assertSame(1, Socio::count());
+        $this->assertSame(2, User::count());
+        $this->assertSame([], Storage::disk('local')->files('backup'));
     }
 
     public function test_rifiuto_con_dati_veri(): void

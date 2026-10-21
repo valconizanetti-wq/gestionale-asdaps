@@ -99,7 +99,14 @@ class SocioRequest extends FormRequest
 
             // Email e un solo telefono, obbligatori per i maggiorenni; per un
             // minorenne sono facoltativi e obbligatori quelli del genitore.
-            'email'     => [$minore ? 'nullable' : 'required', 'email', 'max:255'],
+            'email'     => [$minore ? 'nullable' : 'required', 'email', 'max:255',
+                // Chi ha l'accesso al gestionale entra con questa email (v0.44.1)
+                function ($attribute, $value, $fail) {
+                    if ($errore = \App\Services\AccessoSocio::erroreEmail($this->route('socio'), $value)) {
+                        $fail($errore);
+                    }
+                },
+            ],
             'telefono'  => [$minore ? 'nullable' : 'required', 'string', 'max:30'],
 
             // Genitore o tutore: tutti i campi obbligatori per un minorenne.

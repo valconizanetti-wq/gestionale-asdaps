@@ -293,9 +293,12 @@ class SociController extends Controller
                 . 'toglilo prima dal CD (pagina Consiglio Direttivo), poi registra la cessazione.');
         }
 
+        // Chi non è più socio non è più utente (v0.44.1): lo toglie il model
+        $accesso = \App\Services\AccessoSocio::utente($socio) !== null;
         $socio->update($dati + ['stato' => 'cancellato']);
 
-        return redirect()->route('soci.show', $socio)->with('success', 'Cessazione registrata.');
+        return redirect()->route('soci.show', $socio)->with('success', 'Cessazione registrata.'
+            . ($accesso ? ' Il suo accesso al gestionale è stato tolto.' : ''));
     }
 
     /** Annulla una cessazione registrata per errore, se non pseudonimizzato. */
@@ -335,6 +338,8 @@ class SociController extends Controller
         // motivazione, che potrebbe contenerne, stanno nei valori.
         DB::transaction(function () use ($socio, $dati) {
             Socio::withoutEvents(fn () => $socio->delete());
+            // Senza eventi del model: l'utente del socio si toglie qui (v0.44.1)
+            \App\Services\AccessoSocio::allinea($socio);
 
             return AuditLogService::scrivi([
                 'evento' => 'SOCIO_DELETED',

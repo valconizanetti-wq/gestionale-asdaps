@@ -5,7 +5,8 @@
 {{--
     Utente del gestionale (v0.42.0, tavole UT-8a e UT-8b,
     analisi-collaudo-O.md §15). Gli utenti del CD nascono dalla pagina
-    Consiglio Direttivo: qui ne cambiano solo email, Amministratore e stato.
+    Consiglio Direttivo: qui ne cambiano solo Amministratore e stato; cognome,
+    nome ed email vengono dalla scheda del socio (v0.44.1).
     «Nuovo utente» serve agli esterni: Revisore o solo Amministratore.
 --}}
 @section('content')
@@ -41,8 +42,17 @@
                     <x-campo name="nome" label="Nome" required :value="$utente->nome" maxlength="100" autocomplete="off" />
                 @endif
 
-                <x-campo name="email" label="Email per entrare" tipo="email" required :value="$utente->email" maxlength="255" autocomplete="off" class="ut-intero"
-                         aiuto="Serve per entrare e per le email «al ruolo» (tessere, scadenze, avvisi delle operazioni)." />
+                @if ($utente->socio)
+                    {{-- Una sola anagrafica (v0.44.1): l'email è quella della scheda del socio --}}
+                    <div class="form-field ut-intero">
+                        <span class="form-label">Email per entrare</span>
+                        <div><strong>{{ $utente->socio->email }}</strong></div>
+                        <div class="form-help">È l'email della scheda del socio: si cambia lì@if (auth()->user()->puoModificare('soci')) (<a href="{{ route('soci.edit', $utente->socio) }}">modifica la scheda</a>)@endif. Serve per entrare e per le email «al ruolo».</div>
+                    </div>
+                @else
+                    <x-campo name="email" label="Email per entrare" tipo="email" required :value="$utente->email" maxlength="255" autocomplete="off" class="ut-intero"
+                             aiuto="Serve per entrare e per le email «al ruolo» (tessere, scadenze, avvisi delle operazioni)." />
+                @endif
 
                 @if ($delCd)
                     <div class="form-field ut-intero">
@@ -109,7 +119,7 @@
 
         <aside class="pn-colonna">
             <x-card titolo="Regole" class="pn-aiuto">
-                <p>Gli utenti del CD nascono dalla pagina <strong>Consiglio Direttivo</strong>, scegliendo il socio: qui si cambiano solo email, Amministratore e stato.</p>
+                <p>Gli utenti del CD nascono dalla pagina <strong>Consiglio Direttivo</strong>, scegliendo il socio: qui si cambiano solo Amministratore e stato. Cognome, nome ed email si cambiano nella scheda del socio.</p>
                 <p>«Nuovo utente» serve agli <strong>esterni</strong>: il Revisore o un Amministratore che non è socio.</p>
                 <p>Uno solo per ruolo fra gli utenti attivi: Revisore, Amministratore. L'Amministratore non si unisce a Presidente e Revisore.</p>
                 <p>Deve restare <strong>almeno un Presidente attivo</strong>. Chi gestisce gli utenti senza essere Presidente non cambia i propri ruoli; l'utente del Presidente lo modificano solo il Presidente e l'Amministratore.</p>

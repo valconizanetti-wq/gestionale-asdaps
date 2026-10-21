@@ -233,12 +233,13 @@ class ConsiglioDirettivoTest extends TestCase
         $this->actingAs($z)->put(route('governance.togli', $membroZ), ['al' => '2027-03-10', 'motivo' => 'dimissioni'])->assertSessionHasErrors('al');
         // Data prima dell'ingresso
         $this->actingAs($this->presidente)->put(route('governance.togli', $membroTascio), ['al' => '2026-01-01', 'motivo' => 'dimissioni'])->assertSessionHasErrors('al');
-        // Tascio esce: utente disattivato, storico
+        // Tascio esce: utente eliminato (logicamente, v0.44.1), storico
         $this->actingAs($z)->put(route('governance.togli', $membroTascio), ['al' => '2027-03-10', 'motivo' => 'dimissioni', 'nota' => 'Lettera dell\'8 marzo'])
             ->assertSessionHasNoErrors();
         $t = User::where('socio_id', $tascio->id)->first();
         $this->assertSame([], $t->codiciRuoli());
         $this->assertFalse($t->attivo);
+        $this->assertTrue($t->eliminato());
         $this->assertDatabaseHas('gl_governance_cd', ['id' => $membroTascio->id, 'in_carica' => 0, 'motivo_fine' => 'dimissioni', 'data_fine_mandato' => '2027-03-10']);
         $this->actingAs($this->presidente)->get(route('governance.index'))->assertSee('Usciti dal CD')->assertSee('Tascio Luigi · Consigliere');
         // Con l'Amministratore resta attivo

@@ -118,7 +118,7 @@
     <x-card titolo="Come funziona" class="pn-aiuto">
         <p>Il socio che entra nel CD diventa utente del gestionale con il ruolo della sua carica: se ha già un utente (stessa email) si usa quello, altrimenti gli arriva il link per scegliere la password.</p>
         <p>Cariche uniche: Presidente, Vicepresidente, Segretario, Tesoriere. Segretario e Tesoriere possono essere la stessa persona <span class="norma">Statuto, art. 15.2</span>.</p>
-        <p>Chi esce dal CD perde i ruoli del CD; se non è anche Amministratore, il suo utente si disattiva. Il Presidente non si toglie: si passa a un altro con la matita sulla riga di chi lo riceve. La carica di Presidente la gestiscono il Presidente e l'Amministratore.</p>
+        <p>Chi esce dal CD perde i ruoli del CD; se non è anche Amministratore, non è più utente del gestionale (torna se rientra nel CD). Il Presidente non si toglie: si passa a un altro con la matita sulla riga di chi lo riceve. La carica di Presidente la gestiscono il Presidente e l'Amministratore.</p>
     </x-card>
 
     @push('modals')
@@ -199,7 +199,7 @@
                         <x-campo name="nota" label="Note" tipo="textarea" rows="2" class="ut-intero" :value="old('nota')" placeholder="Es. lettera di dimissioni del …" obbligatorio-se="motivo === 'altro'"
                                  aiuto="Obbligatorie con il motivo «Altro»." />
                     </form>
-                    <p>@if ($u && $u->haRuolo('amministratore'))Il suo utente perde i ruoli del CD e resta Amministratore.@else Il suo utente perde il ruolo di {{ ConsiglioDirettivo::etichetta($m->carica_codice) }} e <strong>si disattiva</strong>.@endif Resta nello storico del CD.</p>
+                    <p>@if ($u && $u->haRuolo('amministratore'))Il suo utente perde i ruoli del CD e resta Amministratore.@else Il suo utente perde il ruolo di {{ ConsiglioDirettivo::etichetta($m->carica_codice) }} e <strong>non entra più nel gestionale</strong>: sparisce dagli utenti e torna se rientra nel CD.@endif Resta nello storico del CD.</p>
                     <x-slot:piede>
                         <button type="button" class="btn btn-ghost" x-on:click="aperta = false">Annulla</button>
                         <button type="submit" form="form-togli-{{ $m->id }}" class="btn btn-danger">Togli dal CD</button>
