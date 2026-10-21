@@ -573,3 +573,16 @@ n. 5):
 **Gestionale**: il modulo della domanda dovrà far accettare anche il
 regolamento, con la sua versione (come lo statuto: `regolamento_versione`),
 e la pagina pubblica `/regolamento`.
+
+### Registrazione del regolamento (domanda di Paolo, 21/10/2026)
+
+Con l'art. 25 proposto il regolamento resta un **atto interno** approvato
+dall'Assemblea ordinaria (resta nel suo verbale). Non si registra
+all'Agenzia delle entrate e non si carica sul RASD, dove vanno atto
+costitutivo, statuto e sue modifiche. Diventerebbe da registrare se fosse
+«parte integrante e sostanziale dello statuto», come nello statuto nuovo
+(§2.1 n. 5): ogni sua modifica sarebbe una modifica statutaria
+(straordinaria, registrazione, aggiornamento RASD). Limite: nel
+regolamento solo procedure; le clausole che la legge vuole nello statuto
+(§9) non si delegano, altrimenti in un controllo lo statuto risulterebbe
+incompleto. ⚖️ Da confermare con il commercialista.
