@@ -770,3 +770,13 @@ Domanda di Paolo: aiuta scrivere che il punto di ristoro è riservato ai soci, c
 - Riservarlo ai soci serve sul piano amministrativo (somministrazione in circolo privato, D.P.R. 235/2001), non su quello fiscale. Lo statuto 1.1 lo dice già (art. 3 c. 5): nessuna modifica.
 - Alternative pulite: consumazioni gratuite durante l'attività (acqua, caffè), con costo istituzionale coperto dalle quote e nessun incasso; oppure incassi registrati in regime 398 (imposte su importi piccoli molto basse); raccolte fondi occasionali in occasione di gare (non imponibili, max 2 l'anno, art. 25 L. 133/1999); donazioni vere solo se non legate a una consumazione.
 - ⚖️ Da confermare con il commercialista.
+
+### 12.2 Quote di iscrizione alle gare organizzate (21/10/2026)
+
+Domanda di Paolo: come si considerano le quote di iscrizione alle gare che organizziamo? Risposta: dipende da chi paga.
+- **Non commerciali** (art. 148 c. 3 TUIR; per l'IVA art. 4 c. 4 D.P.R. 633/1972, esclusione fino al 2036): la gara è attività istituzionale in diretta attuazione dello scopo, e sono decommercializzati i corrispettivi pagati da soci e tesserati propri, da altre associazioni affiliate alla stessa organizzazione nazionale e dai loro tesserati. Con l'affiliazione CSEN (art. 2 c. 2): arcieri tesserati CSEN di qualunque società.
+- **Commerciali**: iscrizioni di partecipanti non tesserati o tesserati solo a un'altra organizzazione (es. solo FITARCO o FIARC, se la gara non è anche in quell'ambito e la Compagnia non vi è affiliata). Vanno nel regime 398. Interpretazione restrittiva prevalente: da confermare con il commercialista.
+- Sempre commerciali anche in gara: sponsor, ristoro, vendita di gadget. Proventi della gara possono rientrare in una delle due raccolte fondi occasionali annue non imponibili (art. 25 L. 133/1999), se organizzata come tale.
+- Coerenza con lo statuto: l'art. 2 c. 4 subordina la partecipazione alle attività negli impianti al tesseramento all'ente di affiliazione; per una gara aperta a esterni servono tessera giornaliera o affiliazione allo stesso ente, e questo rende anche le loro iscrizioni non commerciali.
+- Gestionale: le iscrizioni alle gare andranno registrate distinguendo istituzionali e commerciali, con l'ente di tesseramento del partecipante come prova.
+- ⚖️ Da confermare con il commercialista: tesserati di altri enti, gare con doppia egida.
