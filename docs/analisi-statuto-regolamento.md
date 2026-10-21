@@ -586,3 +586,65 @@ costitutivo, statuto e sue modifiche. Diventerebbe da registrare se fosse
 regolamento solo procedure; le clausole che la legge vuole nello statuto
 (§9) non si delegano, altrimenti in un controllo lo statuto risulterebbe
 incompleto. ⚖️ Da confermare con il commercialista.
+
+## 10. Statuto e regolamento confrontati con il modello CSEN (21/10/2026)
+
+Regola di Paolo: **ciò che il modello CSEN mette nello statuto resta nello
+statuto**. Il §9 cambia così.
+
+**Tornano nello statuto** (nel §9 andavano al regolamento; il CSEN li ha
+nello statuto):
+
+| Materia | Nel modello CSEN | Nello statuto della Compagnia |
+|---|---|---|
+| Morosità | art. 5.4: sollecito scritto per email o PEC, 30 giorni, perdita automatica, ratifica del CD, annotazione nel libro | tutta la procedura; nel regolamento solo quando parte il sollecito (dopo il 31 gennaio) e «non prima del 30 aprile» |
+| Diniego della domanda | art. 3.4: motivato, termini per la comunicazione e per l'appello | i termini della bozza (10 e 30 giorni) |
+| Esclusione | art. 5.2: sentite le ragioni dell'interessato | contestazione e 10 giorni per le difese |
+| Avviso di convocazione dell'Assemblea | art. 7.4: preavviso, contenuto (data, ora, luogo, ordine del giorno, seconda convocazione), 24 ore | tutto, con i 10/15 giorni della bozza |
+| Pubblicità | art. 7.13: affissione, sito web, email o PEC | le modalità (non solo il principio) |
+| Deleghe | art. 7.3: scritte, anche in calce all'avviso, con la copia del documento, fino a tre | tutto |
+| Convocazione del CD | art. 8.11: per email, con preavviso, salvo urgenza; i consiglieri devono dare un indirizzo email | 3 giorni, 24 ore se urgente; obbligo dell'email |
+| Libri | art. 13: elenco e consultazione entro 10 giorni | elenco; consultazione entro 10 giorni (la bozza ha 15) |
+
+**Restano nel regolamento** (il modello CSEN non ne parla):
+- modulo, ricevuta e link della domanda telematica;
+- termine per la quota del nuovo socio;
+- scadenza della quota annuale (il CSEN: «termini annualmente stabiliti»);
+- durata della sospensione e misure urgenti sul campo;
+- conferma di presenza all'Assemblea;
+- scrutatori e voto telematico segreto;
+- dettagli della consultazione telematica (link, termine, data e ora, PEC);
+- libri informatici (firma digitale, rettifiche, PEC);
+- rimborsi ai volontari nel dettaglio.
+
+L'accoglimento d'ufficio con i suoi 5 giorni, la parità decisa dal
+Presidente e i principi della consultazione telematica restano comunque
+nello statuto (§9).
+
+**Da aggiungere dallo statuto CSEN** (la bozza non li ha):
+- l'Assemblea può **revocare il CD o il Presidente per gravi motivi**,
+  con motivazione (artt. 8.1, 9.3);
+- il Presidente **convoca l'Assemblea per il rinnovo** almeno un mese
+  prima della scadenza (art. 9.4);
+- il CD **resta in carica fino all'approvazione del rendiconto** del
+  quarto anno (art. 8.4): evita il vuoto tra la scadenza e l'Assemblea;
+- la discipline sportive aggiunte dal CD purché comprese nel RASD (art.
+  2.2 e 8.6 g);
+- i **tesserati** non soci contribuiscono ai costi delle strutture (art.
+  16.3);
+- le norme sportive degli enti di affiliazione vincolano l'Associazione
+  (art. 1.5: già nella bozza all'art. 2, senza «parte integrante»).
+
+**Dove il CSEN e la bozza divergono** (decide Paolo; tutte e due le
+soluzioni sono ammesse):
+
+| Punto | CSEN | Bozza / scelte di Paolo |
+|---|---|---|
+| Chi esclude il socio | l'Assemblea, a voto segreto (tranne la morosità) | il CD, con ricorso all'Assemblea |
+| Chi fissa la quota | l'Assemblea | il CD |
+| Preavviso del CD | 8 giorni | 3 giorni, 24 ore se urgente |
+| Recesso | a fine anno, con 3 mesi di preavviso | immediato (deciso) |
+| Modifiche dello statuto | presenza di 3/4, poi 2/3 dei soci | metà più uno, poi un terzo; 2/3 dei presenti favorevoli (deciso, §8) |
+| Diniego della domanda | 60 giorni e 60 per l'appello | 10 e 30 giorni |
+| Rimborsi ai volontari | anche forfettari | solo analitici (regolamento) |
+| Organo di controllo | solo revisori iscritti, 3 anni | scelta libera, durata del CD |
