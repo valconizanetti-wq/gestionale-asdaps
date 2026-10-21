@@ -24,13 +24,13 @@
 
 4.  Le condizioni di accesso agli impianti e di partecipazione alle attività, compreso il tesseramento richiesto, sono stabilite dal regolamento interno.
 
-5.  L'Associazione chiede l'iscrizione nel Registro nazionale delle attività sportive dilettantistiche (RASD) ai sensi del D.Lgs. 28 febbraio 2021, n. 36. Con l'iscrizione assume la denominazione "Compagnia Arcieri Castel Viscardo – Associazione Sportiva Dilettantistica", in forma abbreviata "Compagnia Arcieri Castel Viscardo A.S.D.".
+5.  L'Associazione può chiedere, con delibera del Consiglio Direttivo, l'iscrizione nel Registro nazionale delle attività sportive dilettantistiche (RASD) ai sensi del D.Lgs. 28 febbraio 2021, n. 36. Con l'iscrizione assume la denominazione "Compagnia Arcieri Castel Viscardo – Associazione Sportiva Dilettantistica", in forma abbreviata "Compagnia Arcieri Castel Viscardo A.S.D.".
 
 ### Art. 3 – Scopo e oggetto sociale
 
 1.  L'Associazione è apolitica e aconfessionale, ha struttura democratica e non discrimina in base a sesso, origine, religione, opinioni, condizioni personali, economiche e sociali.
 
-2.  L'Associazione ha per oggetto l'esercizio in via stabile e principale dell'organizzazione e gestione di attività sportive dilettantistiche, in particolare del tiro con l'arco in tutte le sue specialità e delle discipline collegate, comprese la formazione, la didattica, la preparazione e l'assistenza all'attività sportiva dilettantistica. Il Consiglio Direttivo può decidere di praticare altre discipline sportive, purché comprese nell'elenco delle attività sportive del RASD.
+2.  L'Associazione ha per oggetto l'esercizio in via stabile e principale dell'organizzazione e gestione di attività sportive dilettantistiche, in particolare del tiro con l'arco in tutte le sue specialità e delle discipline collegate, comprese la formazione, la didattica, la preparazione e l'assistenza all'attività sportiva dilettantistica. Il Consiglio Direttivo può decidere di praticare altre discipline sportive, purché comprese tra le discipline sportive riconosciute dal CONI.
 
 3.  Per realizzare il proprio oggetto l'Associazione, tra l'altro:
 
@@ -74,7 +74,7 @@
 
 4.  Il Consiglio Direttivo fissa ogni anno la quota associativa per ciascuna categoria. La quota è intrasmissibile, non rivalutabile e non è restituita in nessun caso.
 
-5.  I tesserati che non sono soci contribuiscono ai costi delle strutture e delle attività sportive, formative e didattiche, secondo quanto stabilito dal Consiglio Direttivo.
+5.  I tesserati che non sono soci versano, per l'uso degli impianti e la partecipazione alle attività sportive, formative e didattiche, i corrispettivi stabiliti dal Consiglio Direttivo.
 
 ### Art. 6 – Ammissione
 
@@ -145,8 +145,6 @@
 ### Art. 11 – Organi e cariche
 
 1.  Sono organi dell'Associazione l'Assemblea dei soci, il Consiglio Direttivo, il Presidente e, se nominato, l'Organo di controllo.
-
-2.  Le cariche sociali sono svolte secondo l'art. 4, comma 3.
 
 ### Art. 12 – Requisiti per le cariche e incompatibilità
 
@@ -224,7 +222,7 @@
 
 5.  Decade il consigliere che, senza giustificato motivo, non partecipa a tre riunioni consecutive. Il Consiglio Direttivo ne prende atto nella prima riunione utile.
 
-6.  Ogni variazione nella composizione del Consiglio Direttivo e del legale rappresentante è comunicata agli enti di affiliazione e registrata nel RASD entro 30 giorni.
+6.  Ogni variazione nella composizione del Consiglio Direttivo e del legale rappresentante è comunicata agli enti di affiliazione e, se l'Associazione è iscritta, al RASD entro 30 giorni.
 
 ### Art. 17 – Consiglio Direttivo: riunioni e deliberazioni
 
@@ -234,19 +232,7 @@
 
 3.  Il Consiglio è validamente costituito con la presenza della maggioranza dei componenti e delibera a maggioranza dei voti espressi, favorevoli e contrari; gli astenuti concorrono a formare il numero legale ma non il calcolo della maggioranza. In caso di parità prevale il voto del Presidente; se il Presidente non ha espresso un voto favorevole o contrario, la proposta è respinta.
 
-4.  Deliberazione telematica. Su iniziativa del Presidente, il Consiglio può deliberare anche senza riunione, mediante consultazione telematica:
-
-    1.  ogni consigliere riceve all'indirizzo di posta elettronica registrato la proposta di delibera, la documentazione e un collegamento personale e non cedibile per esprimere il voto entro un termine non inferiore a tre giorni; per l'ammissione di nuovi soci il termine è quello dell'art. 6, comma 3;
-
-    2.  il voto contrario all'ammissione di un nuovo socio deve essere motivato;
-
-    3.  la delibera è adottata se hanno votato almeno la maggioranza dei componenti, astenuti compresi, e se ottiene la maggioranza dei voti espressi, favorevoli e contrari; in caso di parità prevale il voto del Presidente, se ha votato, altrimenti la proposta è respinta;
-
-    4.  la consultazione si chiude alla scadenza del termine, o prima quando tutti hanno votato;
-
-    5.  per ogni voto sono registrati data, ora e identificativo del collegamento usato;
-
-    6.  se almeno un terzo dei consiglieri lo chiede entro il termine, la proposta è discussa in riunione.
+4.  Deliberazione telematica. Su iniziativa del Presidente, il Consiglio Direttivo può deliberare anche senza riunione, mediante consultazione telematica: ogni consigliere vota personalmente, con le modalità stabilite dal regolamento interno, che garantiscono l'identificazione del votante, la tracciabilità di ogni voto e un termine adeguato per esprimerlo. La delibera è adottata se ha votato almeno la maggioranza dei componenti, astenuti compresi, e se ottiene la maggioranza prevista dal comma 3. Se almeno un terzo dei consiglieri lo chiede entro il termine, la proposta è discussa in riunione.
 
 5.  La consultazione telematica non può essere usata per la proposta del rendiconto né per l'esclusione di un socio.
 

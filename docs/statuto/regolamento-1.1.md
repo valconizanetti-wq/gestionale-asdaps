@@ -111,8 +111,8 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td>Il campo di tiro "Franco Cortignani", sito in località Macchietto, Viceno (Castel Viscardo), è accessibile esclusivamente ai soci e ai tesserati in regola con il tesseramento all'ente di affiliazione (statuto, art. 2, comma 4).<br />
-La partecipazione a qualsiasi attività associativa, agonistica, didattica e promozionale all'interno degli impianti e delle aree in gestione all'Associazione, comprese le gare e le manifestazioni aperte a partecipanti esterni, è subordinata al preventivo tesseramento all'ente di affiliazione, anche nella forma giornaliera ove prevista.</td>
+<td><p>Il campo di tiro "Franco Cortignani", sito in località Macchietto, Viceno (Castel Viscardo), è accessibile esclusivamente ai soci e ai tesserati in regola con il tesseramento all'ente di affiliazione (statuto, art. 2, comma 4).</p>
+<p>La partecipazione a qualsiasi attività associativa, agonistica, didattica e promozionale all'interno degli impianti e delle aree in gestione all'Associazione, comprese le gare e le manifestazioni aperte a partecipanti esterni, è subordinata al preventivo tesseramento all'ente di affiliazione, anche nella forma giornaliera ove prevista.</p></td>
 <td><em>Garantire la copertura assicurativa obbligatoria prevista dalle norme federali e di promozione sportiva per chiunque frequenti le strutture, tutelando al contempo l'Associazione da responsabilità connesse alla presenza di soggetti non autorizzati.</em></td>
 </tr>
 </tbody>
@@ -447,7 +447,9 @@ La partecipazione a qualsiasi attività associativa, agonistica, didattica e pro
 </thead>
 <tbody>
 <tr class="odd">
-<td>La proposta di delibera può essere preparata dal Segretario; la consultazione è avviata dal Presidente o, in caso di sua assenza o impedimento, dal Vicepresidente. Ogni consigliere riceve un collegamento personale e non cedibile e può votare favorevole, contrario, astenuto o chiedere la discussione in riunione. Il sistema registra data, ora e identificativo del collegamento di ogni voto. Alla chiusura il verbale è redatto con il voto di ciascuno (statuto, art. 17, commi 4–6).</td>
+<td><p>La proposta di delibera può essere preparata dal Segretario; la consultazione è avviata dal Presidente o, in caso di sua assenza o impedimento, dal Vicepresidente (statuto, art. 17, comma 4).</p>
+<p>Ogni consigliere riceve all'indirizzo di posta elettronica registrato la proposta di delibera, la documentazione e un collegamento personale e non cedibile, con il quale vota favorevole, contrario o astenuto, oppure chiede la discussione in riunione. Il termine per votare è indicato nella proposta e non è inferiore a tre giorni; per l'ammissione di nuovi soci è quello dell'art. 6, comma 3, dello statuto. Il voto contrario all'ammissione di un nuovo socio è motivato.</p>
+<p>La consultazione si chiude alla scadenza del termine, oppure prima quando tutti hanno votato o quando un terzo dei consiglieri ha chiesto la discussione in riunione. Per ogni voto sono registrati data, ora e identificativo del collegamento usato. Alla chiusura il verbale è redatto con il voto di ciascun consigliere (statuto, art. 17, commi 4–6).</p></td>
 <td><em>Decidere rapidamente senza riunione mantenendo le garanzie della riunione: voto personale, tracciato e verbalizzato, e possibilità per una minoranza qualificata di chiedere la discussione.</em></td>
 </tr>
 </tbody>
