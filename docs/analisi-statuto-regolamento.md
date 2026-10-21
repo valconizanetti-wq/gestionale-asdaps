@@ -507,3 +507,69 @@ realisti del re».
   che chi recede non deve la quota dell'anno se non l'ha ancora versata
   (lo statuto nuovo, art. 8.2, la chiedeva). La quota già versata **non si
   restituisce**: la bozza lo dice già (artt. 5.4 e 9.3).
+
+## 9. Che cosa può passare dallo statuto al regolamento (21/10/2026)
+
+Criterio: **nello statuto** restano le regole che la legge chiede o che
+toccano i diritti dei soci (RASD, art. 7 del D.Lgs. 36/2021; art. 148 del
+TUIR; codice civile). Sono: denominazione, oggetto, organi e poteri,
+democraticità, voto, quorum e maggioranze, ammissione ed esclusione,
+rendiconto e sua pubblicità, devoluzione, incompatibilità. **Nel
+regolamento** vanno le procedure, i termini operativi e le modalità.
+Ogni volta lo statuto scrive il principio e «con le modalità stabilite dal
+regolamento».
+
+| Bozza del 5/10 | Resta nello statuto | Va nel regolamento |
+|---|---|---|
+| Art. 6.1–6.2 domanda | domanda scritta, anche telematica; decide il CD | modulo, contenuto, ricevuta, link per ritirarla |
+| Art. 6.4 voto sulla domanda | accoglimento d'ufficio se il CD non decide nel termine; parità decisa dal Presidente | il termine (5 giorni), la procedura telematica |
+| Art. 6.5 diniego | motivato, con appello all'Assemblea | i termini (10 e 30 giorni) |
+| Art. 6.6 quota del nuovo socio | l'ammissione si perfeziona con la quota | il termine (5 giorni) e la decadenza della domanda |
+| Art. 8 quota annuale | obbligo della quota; senza quota non si vota | la scadenza (31 gennaio) |
+| Art. 9.1 b morosità | decadenza con sollecito scritto e almeno 30 giorni (§8 bis) | sollecito, termini, presa d'atto |
+| Art. 9 esclusione e sanzioni | cause, sanzioni graduate, contraddittorio, ricorso all'Assemblea | contestazione, 10 giorni per le difese, durata della sospensione, misure urgenti sul campo |
+| Art. 12 Assemblea | preavviso minimo (10/15 giorni), 24 ore tra le convocazioni, pubblicità | modalità dell'avviso (email, posta, affissione, sito), conferma di presenza |
+| Deleghe | ammesse, fino a 3, anche ai consiglieri; anche del genitore | forma, copia del documento, consegna |
+| Art. 13 svolgimento | scrutinio segreto per le elezioni; voto a distanza ammesso | scrutatori, modalità di voto, voto telematico segreto |
+| Art. 16.1 convocazione del CD | — | 3 giorni, 24 ore se urgente, per email |
+| Art. 16.4 consultazione telematica | ammessa su iniziativa del Presidente; validità con la maggioranza dei componenti; un terzo può chiedere la riunione; esclusa per rendiconto ed esclusione | link personale, termine minimo, registrazione di data e ora, data certa con PEC, verbale |
+| Art. 23 libri | libri informatici con integrità e tracciabilità | firma digitale, rettifiche, data certa PEC |
+| Art. 24 volontari | rimborsi solo spese documentate | rimborsi analitici, trasferte fuori comune, niente forfettari |
+
+**Restano nello statuto** (non si spostano):
+- la decadenza del consigliere dopo tre assenze, perché fa perdere la
+  carica;
+- maggioranze e quorum;
+- il rendiconto separato delle raccolte pubbliche di fondi, che è un
+  obbligo di legge;
+- le norme transitorie.
+
+### Il regolamento è normativo?
+
+Nella bozza del 5/10 lo è, ma solo per implicito:
+- obbligo di osservarlo (art. 8.1);
+- accettazione nella domanda (art. 6.2);
+- esclusione per violazione grave (art. 9.1 c);
+- predisposto dal CD, approvato dall'Assemblea, mai contro lo statuto
+  (art. 25).
+
+Proposta di nuovo art. 25, senza la formula «parte integrante» (§2.1
+n. 5):
+
+> 1. Il regolamento interno disciplina le materie che lo statuto gli
+>    affida e le altre norme di funzionamento, compresi l'uso del campo di
+>    tiro e le regole di sicurezza.
+> 2. Il regolamento è predisposto dal Consiglio Direttivo e approvato e
+>    modificato dall'Assemblea ordinaria. Entra in vigore il giorno
+>    successivo all'approvazione ed è pubblicato sul sito dell'Associazione.
+> 3. Il regolamento è vincolante per tutti i soci e i tesserati, che lo
+>    accettano con la domanda di ammissione o con il tesseramento. La sua
+>    violazione è sanzionata secondo l'art. 9.
+> 4. In caso di contrasto prevale lo statuto.
+> 5. Per ragioni di sicurezza il Consiglio Direttivo può adottare
+>    disposizioni urgenti sull'uso del campo, efficaci subito e sottoposte
+>    all'Assemblea nella prima riunione utile.
+
+**Gestionale**: il modulo della domanda dovrà far accettare anche il
+regolamento, con la sua versione (come lo statuto: `regolamento_versione`),
+e la pagina pubblica `/regolamento`.
