@@ -413,3 +413,78 @@ Nuove domande:
   stesse regole degli adulti. Il voto al genitore nasce per non togliere
   rappresentanza al minore, e senza la delega il minore resta l'unico socio
   che non può farsi rappresentare. Decide Paolo.
+
+## 8. Confronto con il modello di statuto del CSEN (21/10/2026)
+
+Modello «per associazioni dotate della qualifica di ASD affiliate a CSEN
+APS» (`MODELLO_STATUTO_ASD_2_3.pdf`, mandato da Paolo; ha qualche errore,
+ma dice che cosa il CSEN considera accettabile). Serve a «non essere più
+realisti del re».
+
+**Il modello conferma le scelte di Paolo:**
+- **minorenni rappresentati in Assemblea dai genitori** (art. 7.2):
+  l'avvertenza ⚖️ del §7 n. 1 si può allentare;
+- **deleghe fino a tre**, scritte, anche in calce alla convocazione, **con
+  la copia del documento del delegante** (art. 7.3); nessun limite per i
+  consiglieri;
+- nessun divieto per i consiglieri di votare il rendiconto. Questo va con
+  la **possibilità B** del §7 (lo statuto non dice niente): S13 si può
+  chiudere con la B;
+- **seconda convocazione dell'ordinaria valida con qualunque numero di
+  presenti** (art. 7.9): è il modello normale;
+- CD **da 3 a 7** membri, **4 anni**, Presidente eletto dall'Assemblea,
+  Vicepresidente e Segretario nominati dal CD (artt. 8, 9).
+
+**Da prendere dal modello e portare nella bozza:**
+1. **Almeno 24 ore tra prima e seconda convocazione** (art. 7.4), non un'ora
+   come nella bozza: più difendibile in un controllo.
+2. **Incompatibilità per tutti i consiglieri**, non solo per il Presidente
+   (art. 8.10). È quello che dice l'art. 11 del D.Lgs. 36/2021 («gli
+   amministratori»): **la bozza del 5/10 qui sbagliava**.
+3. **Pubblicità** di convocazioni, delibere e rendiconti con affissione,
+   **sito web** o email (art. 7.13): aggiungere il sito alla bozza.
+4. **Assemblea a distanza «tenuta nel luogo in cui si trovano il Presidente e
+   il Segretario»** (art. 7.12): utile per il verbale.
+5. **Morosità con sollecito scritto** (art. 5.4): si perde la qualifica 30
+   giorni dopo un sollecito per email o PEC, poi ratifica del CD. È più
+   garantista della decadenza automatica. Proposta:
+   - quota entro il 31 gennaio, senza voto finché non si versa;
+   - sollecito scritto dopo il 31 gennaio;
+   - decadenza 30 giorni dopo il sollecito, e comunque non prima del 30
+     aprile.
+
+   Per il gestionale è un cambio a Rinnovi quota: data del sollecito per
+   socio, decadenza calcolata da lì.
+
+**Da non prendere:**
+- **Modifiche dello statuto** con la presenza di 3/4 dei soci in prima
+  convocazione e di **2/3 in seconda** (art. 7.10). Con l'affluenza bassa
+  della Compagnia lo statuto diventerebbe immodificabile. La bozza (in
+  seconda almeno un terzo dei soci e 2/3 dei presenti favorevoli) è
+  ammessa dall'art. 21 c.c. («salvo diversa disposizione»): si tiene.
+- **CD «a maggioranza dei presenti»** (art. 8.7): stessa ambiguità sugli
+  astenuti dello statuto nuovo. Si tiene «voti espressi».
+- **Convocazione del CD 8 giorni prima** (art. 8.11): la bozza ha 3 giorni,
+  o 24 ore se urgente. Si tengono.
+- **Recesso efficace a fine anno con 3 mesi di preavviso** (art. 5.3), che
+  per di più si contraddice sulla delibera del CD: si tiene il recesso
+  immediato, senza quota (§7 n. 4).
+- **Organo di controllo scelto tra i revisori iscritti** (art. 10.2): la
+  bozza lascia libera la scelta, ed è più adatta a un ente piccolo.
+- **Esclusione decisa dall'Assemblea** (art. 5.2): la bozza la lascia al CD
+  con ricorso all'Assemblea; tutte e due sono ammesse.
+
+**Errori del modello**, per non ricopiarli:
+- il rendiconto chiamato anche «bilancio»;
+- il recesso contraddittorio;
+- refusi («dilattantistico»).
+- «Parte integrante del presente statuto» le norme degli enti affilianti
+  (art. 1.5): è probabilmente da qui che lo statuto nuovo ha preso la
+  formula per il regolamento (§2.1 n. 5).
+
+**Effetti sul gestionale (v0.45.0 e Rinnovi quota):**
+- seconda convocazione almeno 24 ore dopo la prima;
+- deleghe fino a tre (impostazione) con la copia del documento;
+- dichiarazione di incompatibilità per ogni membro del CD (il campo c'è
+  già in `gl_governance_cd`, senza pagina);
+- sollecito della quota con la data e la decadenza 30 giorni dopo.
