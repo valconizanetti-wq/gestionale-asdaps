@@ -249,3 +249,15 @@ Ordine della Fase 0 aggiornato:
    - il CSV del portale CSEN non basta: mancano email e residenza.
 5. ~~Data dell'Assemblea~~: entro novembre, circa il 16/11 (§2-ter).
 6. ~~CD vero~~: §2-ter.
+
+## 5. App per Android (domanda di Paolo, 23/10/2026)
+
+Domanda: si può trasformare il gestionale in un'app per Android? Sì. Tre strade, dalla più semplice:
+
+1. **PWA (app installabile dal sito)**: file manifest (nome, icone, colori) e service worker. Chrome su Android propone «Installa app»; il gestionale si apre a schermo intero con l'icona sulla home. Pochi giorni di lavoro, stesso codice, aggiornamenti automatici con il solito caricamento. Funziona anche su iPhone. In seguito: notifiche push (Web Push) per consultazioni del CD, convocazioni, scadenze.
+2. **TWA sul Play Store**: la PWA impacchettata con PWABuilder o Bubblewrap; dentro resta il gestionale online. Servono un account sviluppatore Google (25 $ una tantum; con account personale test chiuso di 12 tester per 14 giorni prima della pubblicazione, con account di organizzazione serve il D-U-N-S) e il file Digital Asset Links (`/.well-known/assetlinks.json`) sul dominio. Vantaggio: presenza nel negozio.
+3. **App nativa** (Kotlin o Flutter) con un'API da costruire (es. Sanctum): interfaccia da riscrivere e mantenere in parallelo. Sconsigliata con un solo sviluppatore.
+
+Cautele: solo online, nessuna copia offline dei dati personali (soci, minori) per la privacy; il service worker non mette in cache le pagine con dati personali. I link personali (consultazioni, conferme) possono aprirsi direttamente nell'app.
+
+Proposta: dopo il 1° dicembre, quindi nel 2027. PWA come passo piccolo in Fase 1, oppure nel modello unico in Fase 2 così da valere anche per il Dante; Play Store eventualmente dopo. Decisione da prendere con il piano 2027.
