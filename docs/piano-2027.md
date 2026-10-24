@@ -274,3 +274,8 @@ Domanda: si può collegare il gestionale a PayPal o al pagamento con carta? Cosa
 - **Consiglio**: Stripe (carte, Apple/Google Pay, SEPA; costi più bassi), PayPal eventualmente come seconda scelta; per i rinnovi annuali valutare l'addebito SEPA. Contanti e bonifico restano. Dopo il 1° dicembre: nel 2027, meglio nel modello unico (Fase 2) così vale anche per il Dante. Decisione con il piano 2027.
 
 **Decisione di Paolo (24/10/2026, precisata)**: la piattaforma che stiamo sviluppando (oggi Gestionale ASD) è già il modello unico: ci migrerà il Dante e potrà servire qualsiasi altro ente (ASD, APS, ETS), con moduli da spegnere per le realtà più semplici (`analisi-impianto-asd-aps.md` §7). Ogni sviluppo si fa su questa piattaforma e in forma generale, non legata alla sola Compagnia; il Dante attuale riceve solo correzioni. App (§5) e pagamenti online (§6) saranno quindi moduli attivabili della piattaforma, nel 2027, valutando la fase con il piano.
+
+
+## 7. Eventi, gite, polizze e sinistri (24/10/2026)
+
+Analisi in `analisi-eventi-gite.md`: modulo attivabile «Eventi e uscite» con iscrizioni, foglio presenze, condizioni di partecipazione accettate (non «liberatoria»), voce DM 39 e natura fiscale per evento, registro delle polizze e registro dei sinistri (senza dati sanitari). Nel 2027, fase da decidere.
