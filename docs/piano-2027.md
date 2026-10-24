@@ -261,3 +261,14 @@ Domanda: si può trasformare il gestionale in un'app per Android? Sì. Tre strad
 Cautele: solo online, nessuna copia offline dei dati personali (soci, minori) per la privacy; il service worker non mette in cache le pagine con dati personali. I link personali (consultazioni, conferme) possono aprirsi direttamente nell'app.
 
 Proposta: dopo il 1° dicembre, quindi nel 2027. PWA come passo piccolo in Fase 1, oppure nel modello unico in Fase 2 così da valere anche per il Dante; Play Store eventualmente dopo. Decisione da prendere con il piano 2027.
+
+## 6. Pagamenti online: PayPal e carte (domanda di Paolo, 24/10/2026)
+
+Domanda: si può collegare il gestionale a PayPal o al pagamento con carta? Cosa comporta? Sì.
+
+- **Come**: pagina di pagamento ospitata dal fornitore (Stripe Checkout o PayPal Checkout). Il gestionale crea il pagamento (quota, iscrizione a gara, corso), il socio paga sulla pagina del fornitore, il fornitore avvisa il gestionale (webhook firmato) e il gestionale registra l'incasso. I dati della carta non passano mai dal nostro server: obblighi PCI minimi (SAQ A).
+- **Costi** (listini al 24/10/2026, quota da 50 €): Stripe carta europea standard 1,5% + 0,25 € (1,00 €), premium 2,8% + 0,25 €; addebito SEPA 0,35 €; PayPal con conto PayPal 3,40% + 0,35 € (2,05 €), carta senza conto PayPal 1,20% + 0,35 €; nessun canone. Tariffa PayPal per enti benefici 1,80% solo su approvazione (dubbia per una B.A.S./ASD). Contestazioni: 14–20 €.
+- **Contabilità**: l'accredito arriva al netto delle commissioni e raggruppato. In prima nota: incasso lordo per ogni socio + commissione come costo (oneri bancari) + giroconto dal conto del fornitore al conto corrente. Il conto Stripe/PayPal va trattato come un conto finanziario dell'associazione, con riconciliazione. Pagamenti tracciati: coerenti con l'art. 23 dello statuto. La natura fiscale dell'entrata non cambia; la ricevuta resta.
+- **Gestionale**: collegamento con domanda di iscrizione (l'ammissione si perfeziona con il versamento), rinnovi, scadenzario, iscrizioni alle gare. Stato del pagamento, link di pagamento via email, rimborsi solo dove previsti (la quota non è restituita).
+- **Adempimenti**: conto business intestato all'associazione (codice fiscale), verifica dell'identità del legale rappresentante (da aggiornare al cambio di Presidente), informativa privacy aggiornata (il fornitore come titolare autonomo), condizioni del servizio, ambiente di prova prima dell'uso reale.
+- **Consiglio**: Stripe (carte, Apple/Google Pay, SEPA; costi più bassi), PayPal eventualmente come seconda scelta; per i rinnovi annuali valutare l'addebito SEPA. Contanti e bonifico restano. Dopo il 1° dicembre: nel 2027, meglio nel modello unico (Fase 2) così vale anche per il Dante. Decisione con il piano 2027.
